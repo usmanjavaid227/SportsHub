@@ -70,7 +70,7 @@
             <div class="alert alert-info d-flex align-items-center">
                 <i class="fa-solid fa-filter me-2"></i>
                 <span>Showing challenges with status: <strong>{{ status_filter|title }}</strong></span>
-                <a href="?status=all" class="btn btn-sm btn-outline-primary ms-auto">Clear Filter</a>
+                <a href="?status=all" class="btn btn-sm btn-outline-primary ms-auto">Show All</a>
             </div>
             {% endif %}
         </div>
@@ -114,26 +114,93 @@
                     
                     <!-- Challenger Info -->
                     <div class="mb-3">
-                        <h6 class="card-title mb-1">
-                            <i class="fa-solid fa-user me-2 text-primary"></i>
-                            <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none fw-bold">
-                                {{ challenge.challenger.username }}
-                            </a>
-                        </h6>
-                        
-                        {% if challenge.opponent %}
-                            <div class="text-muted small">
-                                <i class="fa-solid fa-user-friends me-1"></i> 
-                                <span class="fw-medium">vs</span> 
-                                <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">
-                                    {{ challenge.opponent.username }}
-                                </a>
+                        {% if challenge.challenge_type == 'SINGLE_WICKET' %}
+                            <!-- Single Wicket Challenge Participants -->
+                            <h6 class="card-title mb-2">
+                                <i class="fa-solid fa-users me-2 text-primary"></i>
+                                <span class="fw-bold">Single Wicket Challenge</span>
+                            </h6>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fa-solid fa-users me-1"></i> 
+                                        <span class="fw-medium">Team 1</span>
+                                    </div>
+                                    {% if challenge.team1_batter %}
+                                        <div class="small">
+                                            <a href="{% url 'public_profile' challenge.team1_batter.id %}" class="text-decoration-none">
+                                                {{ challenge.team1_batter.username }}
+                                            </a>
+                                            <span class="text-muted">(Batter)</span>
+                                            {% if challenge.team1_batter_accepted %}
+                                                <i class="fa-solid fa-check text-success ms-1"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if challenge.team1_bowler %}
+                                        <div class="small">
+                                            <a href="{% url 'public_profile' challenge.team1_bowler.id %}" class="text-decoration-none">
+                                                {{ challenge.team1_bowler.username }}
+                                            </a>
+                                            <span class="text-muted">(Bowler)</span>
+                                            {% if challenge.team1_bowler_accepted %}
+                                                <i class="fa-solid fa-check text-success ms-1"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fa-solid fa-users me-1"></i> 
+                                        <span class="fw-medium">Team 2</span>
+                                    </div>
+                                    {% if challenge.team2_batter %}
+                                        <div class="small">
+                                            <a href="{% url 'public_profile' challenge.team2_batter.id %}" class="text-decoration-none">
+                                                {{ challenge.team2_batter.username }}
+                                            </a>
+                                            <span class="text-muted">(Batter)</span>
+                                            {% if challenge.team2_batter_accepted %}
+                                                <i class="fa-solid fa-check text-success ms-1"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if challenge.team2_bowler %}
+                                        <div class="small">
+                                            <a href="{% url 'public_profile' challenge.team2_bowler.id %}" class="text-decoration-none">
+                                                {{ challenge.team2_bowler.username }}
+                                            </a>
+                                            <span class="text-muted">(Bowler)</span>
+                                            {% if challenge.team2_bowler_accepted %}
+                                                <i class="fa-solid fa-check text-success ms-1"></i>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         {% else %}
-                            <div class="text-muted small">
-                                <i class="fa-solid fa-globe me-1"></i> 
-                                <span class="fw-medium">Open to All</span>
-                            </div>
+                            <!-- Regular Challenge -->
+                            <h6 class="card-title mb-1">
+                                <i class="fa-solid fa-user me-2 text-primary"></i>
+                                <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none fw-bold">
+                                    {{ challenge.challenger.username }}
+                                </a>
+                            </h6>
+                            
+                            {% if challenge.opponent %}
+                                <div class="text-muted small">
+                                    <i class="fa-solid fa-user-friends me-1"></i> 
+                                    <span class="fw-medium">vs</span> 
+                                    <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">
+                                        {{ challenge.opponent.username }}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="text-muted small">
+                                    <i class="fa-solid fa-globe me-1"></i> 
+                                    <span class="fw-medium">Open to All</span>
+                                </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                     
@@ -207,14 +274,48 @@
                                 <i class="fa-solid fa-eye me-1"></i>View Details
                             </a>
                             
-                            {% if challenge.status == 'OPEN' and user.is_authenticated and user != challenge.challenger %}
-                                <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success btn-sm">
-                                    <i class="fa-solid fa-handshake me-1"></i>Accept
-                                </a>
-                            {% elif challenge.status == 'PENDING' and user.is_authenticated and user == challenge.opponent %}
-                                <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success btn-sm">
-                                    <i class="fa-solid fa-check me-1"></i>Accept
-                                </a>
+                            {% if challenge.challenge_type == 'SINGLE_WICKET' %}
+                                <!-- Single Wicket Challenge Logic -->
+                                {% if user.is_authenticated %}
+                                    {% if challenge.team1_batter == user or challenge.team1_bowler == user or challenge.team2_batter == user or challenge.team2_bowler == user %}
+                                        <!-- User is a participant -->
+                                        {% if challenge.team1_batter == user and challenge.team1_batter_accepted %}
+                                            <span class="btn btn-success btn-sm disabled">
+                                                <i class="fa-solid fa-check me-1"></i>Accepted
+                                            </span>
+                                        {% elif challenge.team1_bowler == user and challenge.team1_bowler_accepted %}
+                                            <span class="btn btn-success btn-sm disabled">
+                                                <i class="fa-solid fa-check me-1"></i>Accepted
+                                            </span>
+                                        {% elif challenge.team2_batter == user and challenge.team2_batter_accepted %}
+                                            <span class="btn btn-success btn-sm disabled">
+                                                <i class="fa-solid fa-check me-1"></i>Accepted
+                                            </span>
+                                        {% elif challenge.team2_bowler == user and challenge.team2_bowler_accepted %}
+                                            <span class="btn btn-success btn-sm disabled">
+                                                <i class="fa-solid fa-check me-1"></i>Accepted
+                                            </span>
+                                        {% else %}
+                                            <!-- User hasn't accepted yet -->
+                                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success btn-sm">
+                                                <i class="fa-solid fa-handshake me-1"></i>Accept
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <!-- User is not a participant - no action buttons for non-participants -->
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                <!-- Regular Challenge Logic -->
+                                {% if challenge.status == 'OPEN' and user.is_authenticated and user != challenge.challenger %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-handshake me-1"></i>Accept
+                                    </a>
+                                {% elif challenge.status == 'PENDING' and user.is_authenticated and user == challenge.opponent %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success btn-sm">
+                                        <i class="fa-solid fa-check me-1"></i>Accept
+                                    </a>
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>

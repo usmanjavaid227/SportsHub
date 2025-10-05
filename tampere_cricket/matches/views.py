@@ -35,7 +35,7 @@ class ChallengeViewSet(viewsets.ModelViewSet):
 # Traditional Django views for templates
 def challenges_list(request):
     """List all challenges with optional status filtering"""
-    status_filter = request.GET.get('status', 'all')
+    status_filter = request.GET.get('status', 'open')  # Default to 'open' instead of 'all'
     
     # Base queryset
     challenges = Challenge.objects.all().order_by('-created_at')
@@ -51,6 +51,9 @@ def challenges_list(request):
         challenges = challenges.filter(status='PENDING')
     elif status_filter == 'cancelled':
         challenges = challenges.filter(status='CANCELLED')
+    elif status_filter == 'all':
+        # Show all challenges when explicitly requested
+        pass
     
     # Get counts for each status
     status_counts = {
@@ -149,27 +152,63 @@ def challenge_accept(request, challenge_id):
     """Accept a challenge"""
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
-    # Check if user can accept this challenge
-    if challenge.challenger == request.user:
-        messages.error(request, "You cannot accept your own challenge")
-        return redirect('challenge_detail', challenge_id=challenge_id)
-    
-    # For PENDING challenges, only the specific opponent can accept
-    if challenge.status == 'PENDING':
-        if challenge.opponent != request.user:
-            messages.error(request, "This challenge was sent to a specific player. Only they can accept it.")
+    # Handle single wicket challenges differently
+    if challenge.challenge_type == 'SINGLE_WICKET':
+        # Check if user is one of the participants
+        participants = challenge.get_participants()
+        if request.user not in participants:
+            messages.error(request, "You are not a participant in this single wicket challenge")
             return redirect('challenge_detail', challenge_id=challenge_id)
-    elif challenge.status != 'OPEN':
-        messages.error(request, "This challenge is not available for acceptance")
-        return redirect('challenge_detail', challenge_id=challenge_id)
-    
-    if request.method == 'POST':
-        challenge.opponent = request.user
-        challenge.status = 'ACCEPTED'
-        challenge.accepted_at = timezone.now()
-        challenge.save()
-        messages.success(request, "Challenge accepted successfully!")
-        return redirect('challenge_detail', challenge_id=challenge_id)
+        
+        # Check if challenge is still pending
+        if challenge.status not in ['PENDING', 'OPEN']:
+            messages.error(request, "This challenge is not available for acceptance")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+        
+        if request.method == 'POST':
+            # Mark the specific participant as accepted
+            if challenge.team1_batter == request.user:
+                challenge.team1_batter_accepted = True
+            elif challenge.team1_bowler == request.user:
+                challenge.team1_bowler_accepted = True
+            elif challenge.team2_batter == request.user:
+                challenge.team2_batter_accepted = True
+            elif challenge.team2_bowler == request.user:
+                challenge.team2_bowler_accepted = True
+            
+            # Check if all participants have accepted
+            if challenge.all_participants_accepted():
+                challenge.status = 'ACCEPTED'
+                challenge.accepted_at = timezone.now()
+                messages.success(request, "All participants have accepted! Challenge is now ready to play.")
+            else:
+                messages.success(request, "You have accepted the challenge. Waiting for other participants...")
+            
+            challenge.save()
+            return redirect('challenge_detail', challenge_id=challenge_id)
+    else:
+        # Regular challenge logic
+        # Check if user can accept this challenge
+        if challenge.challenger == request.user:
+            messages.error(request, "You cannot accept your own challenge")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+        
+        # For PENDING challenges, only the specific opponent can accept
+        if challenge.status == 'PENDING':
+            if challenge.opponent != request.user:
+                messages.error(request, "This challenge was sent to a specific player. Only they can accept it.")
+                return redirect('challenge_detail', challenge_id=challenge_id)
+        elif challenge.status != 'OPEN':
+            messages.error(request, "This challenge is not available for acceptance")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+        
+        if request.method == 'POST':
+            challenge.opponent = request.user
+            challenge.status = 'ACCEPTED'
+            challenge.accepted_at = timezone.now()
+            challenge.save()
+            messages.success(request, "Challenge accepted successfully!")
+            return redirect('challenge_detail', challenge_id=challenge_id)
     
     return render(request, 'challenges/accept_confirm.html', {'challenge': challenge})
 

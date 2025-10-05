@@ -5,6 +5,25 @@
 
 {% block content %}
 <div class="container py-5">
+    <!-- Login Required Notice for Non-Authenticated Users -->
+    {% if not user.is_authenticated %}
+    <div class="alert alert-info d-flex align-items-center mb-4">
+        <i class="fa-solid fa-info-circle me-3 fa-2x"></i>
+        <div class="flex-grow-1">
+            <h5 class="mb-2">Login Required to Participate</h5>
+            <p class="mb-3">You're viewing a challenge preview. Login to accept challenges, view full details, and participate in the cricket community.</p>
+            <div class="d-flex gap-2">
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-sign-in-alt me-1"></i>Login
+                </a>
+                <a href="{% url 'signup' %}" class="btn btn-outline-primary">
+                    <i class="fa-solid fa-user-plus me-1"></i>Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
     <div class="row">
         <!-- Main Content Column -->
         <div class="col-12 col-lg-8">
@@ -186,6 +205,268 @@
             </div>
             {% endif %}
 
+            <!-- Single Wicket Challenge Participants -->
+            {% if challenge.challenge_type == 'SINGLE_WICKET' %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3" style="color: var(--sh-orange);">
+                        <i class="fa-solid fa-users me-2"></i>SINGLE WICKET PARTICIPANTS
+                    </h5>
+                    
+                    <!-- Access Control Messages -->
+                    {% if not user.is_authenticated %}
+                    <div class="alert alert-info mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-info-circle me-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-1"><strong>Login Required</strong></h6>
+                                <p class="mb-0">Login to view participant details and participate in challenges.</p>
+                                <a href="{% url 'login' %}" class="btn btn-sm btn-primary mt-2">
+                                    <i class="fa-solid fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% elif user.is_authenticated and user not in challenge.get_participants %}
+                    <div class="alert alert-warning mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fa-solid fa-lock me-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-1"><strong>Restricted Access</strong></h6>
+                                <p class="mb-0">This single wicket challenge is only visible to the selected team participants. You are not a participant in this challenge.</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                    <div class="row">
+                        <!-- Team 1 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">Team 1</h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Team 1 Batter -->
+                                    {% if challenge.team1_batter %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            {% if challenge.team1_batter.avatar %}
+                                                <img src="{{ challenge.team1_batter.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ challenge.team1_batter.username }}">
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                                                    <i class="fa-solid fa-user"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                                <a href="{% url 'public_profile' challenge.team1_batter.id %}" class="text-decoration-none">{{ challenge.team1_batter.username }}</a>
+                                            </h6>
+                                            <p class="mb-0 small text-muted">
+                                                <i class="fa-solid fa-baseball me-1"></i><strong>Batter</strong>
+                                            </p>
+                                        </div>
+                                        <div class="ms-2">
+                                            {% if challenge.team1_batter_accepted %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Accepted
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock"></i> Pending
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Team 1 Bowler -->
+                                    {% if challenge.team1_bowler %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            {% if challenge.team1_bowler.avatar %}
+                                                <img src="{{ challenge.team1_bowler.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ challenge.team1_bowler.username }}">
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                                                    <i class="fa-solid fa-user"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                                <a href="{% url 'public_profile' challenge.team1_bowler.id %}" class="text-decoration-none">{{ challenge.team1_bowler.username }}</a>
+                                            </h6>
+                                            <p class="mb-0 small text-muted">
+                                                <i class="fa-solid fa-bowling-ball me-1"></i><strong>Bowler</strong>
+                                            </p>
+                                        </div>
+                                        <div class="ms-2">
+                                            {% if challenge.team1_bowler_accepted %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Accepted
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock"></i> Pending
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Team 2 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Team 2</h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Team 2 Batter -->
+                                    {% if challenge.team2_batter %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            {% if challenge.team2_batter.avatar %}
+                                                <img src="{{ challenge.team2_batter.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ challenge.team2_batter.username }}">
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                                                    <i class="fa-solid fa-user"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                                <a href="{% url 'public_profile' challenge.team2_batter.id %}" class="text-decoration-none">{{ challenge.team2_batter.username }}</a>
+                                            </h6>
+                                            <p class="mb-0 small text-muted">
+                                                <i class="fa-solid fa-baseball me-1"></i><strong>Batter</strong>
+                                            </p>
+                                        </div>
+                                        <div class="ms-2">
+                                            {% if challenge.team2_batter_accepted %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Accepted
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock"></i> Pending
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Team 2 Bowler -->
+                                    {% if challenge.team2_bowler %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            {% if challenge.team2_bowler.avatar %}
+                                                <img src="{{ challenge.team2_bowler.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ challenge.team2_bowler.username }}">
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                                                    <i class="fa-solid fa-user"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                                <a href="{% url 'public_profile' challenge.team2_bowler.id %}" class="text-decoration-none">{{ challenge.team2_bowler.username }}</a>
+                                            </h6>
+                                            <p class="mb-0 small text-muted">
+                                                <i class="fa-solid fa-bowling-ball me-1"></i><strong>Bowler</strong>
+                                            </p>
+                                        </div>
+                                        <div class="ms-2">
+                                            {% if challenge.team2_bowler_accepted %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Accepted
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock"></i> Pending
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Acceptance Status Summary -->
+                    <div class="alert alert-info mt-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Single Wicket Challenge:</strong> Each team has one batter and one bowler. 
+                                The winner is determined by which batter scores more runs.
+                            </div>
+                            <div>
+                                {% if challenge.all_participants_accepted %}
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-check-circle"></i> All Accepted
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark fs-6">
+                                        <i class="fas fa-clock"></i> Waiting for Participants
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Individual Accept Buttons for Single Wicket -->
+                    {% if challenge.challenge_type == 'SINGLE_WICKET' and user.is_authenticated and challenge.status in 'PENDING,OPEN' %}
+                        {% if user in challenge.get_participants %}
+                            <div class="mt-3 pt-3 border-top">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fa-solid fa-handshake me-2"></i>Your Participation
+                                </h6>
+                                
+                                {% if user == challenge.team1_batter and not challenge.team1_batter_accepted %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success">
+                                        <i class="fa-solid fa-check"></i> Accept as Team 1 Batter
+                                    </a>
+                                {% elif user == challenge.team1_bowler and not challenge.team1_bowler_accepted %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success">
+                                        <i class="fa-solid fa-check"></i> Accept as Team 1 Bowler
+                                    </a>
+                                {% elif user == challenge.team2_batter and not challenge.team2_batter_accepted %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success">
+                                        <i class="fa-solid fa-check"></i> Accept as Team 2 Batter
+                                    </a>
+                                {% elif user == challenge.team2_bowler and not challenge.team2_bowler_accepted %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-success">
+                                        <i class="fa-solid fa-check"></i> Accept as Team 2 Bowler
+                                    </a>
+                                {% else %}
+                                    <div class="alert alert-success">
+                                        <i class="fa-solid fa-check-circle me-2"></i>
+                                        You have already accepted this challenge!
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <!-- Non-participant message -->
+                            <div class="mt-3 pt-3 border-top">
+                                <div class="alert alert-info">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    <strong>Single Wicket Challenge:</strong> This challenge is restricted to the selected team participants only. 
+                                    You are not a participant in this challenge and cannot accept it.
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
                     <div class="row g-3 mb-4">
                         <div class="col-12 col-md-6">
                             <h6 class="text-muted mb-1">Challenger</h6>
@@ -306,14 +587,54 @@
                     {% endif %}
 
                     <div class="d-flex gap-2">
-                        {% if challenge.status == 'OPEN' and user.is_authenticated and user != challenge.challenger %}
-                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
-                                <i class="fa-solid fa-handshake"></i> Accept Challenge
-                            </a>
-                        {% elif challenge.status == 'PENDING' and user.is_authenticated and user == challenge.opponent %}
-                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
-                                <i class="fa-solid fa-check"></i> Accept Challenge
-                            </a>
+                        {% if not user.is_authenticated %}
+                            <!-- Login Required for Non-Authenticated Users -->
+                            <div class="alert alert-warning flex-grow-1">
+                                <i class="fa-solid fa-lock me-2"></i>
+                                <strong>Login Required:</strong> You must be logged in to accept challenges and participate.
+                                <a href="{% url 'login' %}" class="btn btn-sm btn-primary ms-2">
+                                    <i class="fa-solid fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </div>
+                        {% else %}
+                            {% if challenge.challenge_type == 'SINGLE_WICKET' %}
+                                <!-- Single Wicket Challenge - only show accept button for participants -->
+                                {% if user in challenge.get_participants and challenge.status in 'PENDING,OPEN' %}
+                                    {% if user == challenge.team1_batter and not challenge.team1_batter_accepted %}
+                                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                            <i class="fa-solid fa-handshake"></i> Accept as Team 1 Batter
+                                        </a>
+                                    {% elif user == challenge.team1_bowler and not challenge.team1_bowler_accepted %}
+                                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                            <i class="fa-solid fa-handshake"></i> Accept as Team 1 Bowler
+                                        </a>
+                                    {% elif user == challenge.team2_batter and not challenge.team2_batter_accepted %}
+                                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                            <i class="fa-solid fa-handshake"></i> Accept as Team 2 Batter
+                                        </a>
+                                    {% elif user == challenge.team2_bowler and not challenge.team2_bowler_accepted %}
+                                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                            <i class="fa-solid fa-handshake"></i> Accept as Team 2 Bowler
+                                        </a>
+                                    {% endif %}
+                                {% elif user not in challenge.get_participants %}
+                                    <div class="alert alert-warning">
+                                        <i class="fa-solid fa-lock me-2"></i>
+                                        <strong>Restricted:</strong> This single wicket challenge is only for selected team participants.
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <!-- Regular Challenge Logic -->
+                                {% if challenge.status == 'OPEN' and user != challenge.challenger %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                        <i class="fa-solid fa-handshake"></i> Accept Challenge
+                                    </a>
+                                {% elif challenge.status == 'PENDING' and user == challenge.opponent %}
+                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                        <i class="fa-solid fa-check"></i> Accept Challenge
+                                    </a>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                         
                         {% if user.is_authenticated and user == challenge.challenger %}

@@ -70,7 +70,8 @@ class ChallengeForm(forms.ModelForm):
         model = Challenge
         fields = [
             'opponent', 'challenge_type', 'condition_text', 'ground', 
-            'date', 'time', 'description'
+            'date', 'time', 'description', 'team1_batter', 'team1_bowler', 
+            'team2_batter', 'team2_bowler'
         ]
         widgets = {
             'opponent': forms.Select(attrs={'class': 'form-select'}),
@@ -94,7 +95,11 @@ class ChallengeForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 2,
                 'placeholder': 'Additional details or comments (optional)'
-            })
+            }),
+            'team1_batter': forms.Select(attrs={'class': 'form-select'}),
+            'team1_bowler': forms.Select(attrs={'class': 'form-select'}),
+            'team2_batter': forms.Select(attrs={'class': 'form-select'}),
+            'team2_bowler': forms.Select(attrs={'class': 'form-select'})
         }
     
     def __init__(self, *args, **kwargs):
@@ -145,6 +150,34 @@ class ChallengeForm(forms.ModelForm):
         self.fields['over_count'].help_text = 'How many overs for this challenge?'
         self.fields['over_count'].required = False
         
+        # Single Wicket Challenge fields
+        self.fields['team1_batter'].label = 'Team 1 - Batter'
+        self.fields['team1_batter'].help_text = 'Select the batter for Team 1'
+        self.fields['team1_batter'].empty_label = 'Select Team 1 Batter'
+        self.fields['team1_batter'].required = False
+        
+        self.fields['team1_bowler'].label = 'Team 1 - Bowler'
+        self.fields['team1_bowler'].help_text = 'Select the bowler for Team 1'
+        self.fields['team1_bowler'].empty_label = 'Select Team 1 Bowler'
+        self.fields['team1_bowler'].required = False
+        
+        self.fields['team2_batter'].label = 'Team 2 - Batter'
+        self.fields['team2_batter'].help_text = 'Select the batter for Team 2'
+        self.fields['team2_batter'].empty_label = 'Select Team 2 Batter'
+        self.fields['team2_batter'].required = False
+        
+        self.fields['team2_bowler'].label = 'Team 2 - Bowler'
+        self.fields['team2_bowler'].help_text = 'Select the bowler for Team 2'
+        self.fields['team2_bowler'].empty_label = 'Select Team 2 Bowler'
+        self.fields['team2_bowler'].required = False
+        
+        # Set querysets for all user fields - allow same user to be selected multiple times
+        if user:
+            user_queryset = User.objects.exclude(id=user.id)
+            self.fields['team1_batter'].queryset = user_queryset
+            self.fields['team1_bowler'].queryset = user_queryset
+            self.fields['team2_batter'].queryset = user_queryset
+            self.fields['team2_bowler'].queryset = user_queryset
     
     def save(self, commit=True):
         challenge = super().save(commit=False)

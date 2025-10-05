@@ -25,6 +25,18 @@ class Challenge(models.Model):
     challenger = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_made')
     opponent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_received', null=True, blank=True)
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_won', null=True, blank=True)
+    
+    # Single Wicket Challenge participants
+    team1_batter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team1_batter_challenges', null=True, blank=True)
+    team1_bowler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team1_bowler_challenges', null=True, blank=True)
+    team2_batter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team2_batter_challenges', null=True, blank=True)
+    team2_bowler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team2_bowler_challenges', null=True, blank=True)
+    
+    # Single Wicket Challenge acceptance tracking
+    team1_batter_accepted = models.BooleanField(default=False)
+    team1_bowler_accepted = models.BooleanField(default=False)
+    team2_batter_accepted = models.BooleanField(default=False)
+    team2_bowler_accepted = models.BooleanField(default=False)
     ground = models.ForeignKey('grounds.Ground', on_delete=models.CASCADE, null=True, blank=True)
     challenge_type = models.CharField(max_length=20, choices=CHALLENGE_TYPE_CHOICES, default="SINGLE_WICKET")
     condition_text = models.TextField(blank=True, help_text="Special conditions or rules for this challenge")
@@ -46,18 +58,116 @@ class Challenge(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        try:
-            challenger_name = self.challenger.username if self.challenger else 'Unknown'
-        except:
-            challenger_name = 'Unknown'
-        
-        try:
-            opponent_name = self.opponent.username if self.opponent else 'TBD'
-        except:
-            opponent_name = 'TBD'
+        if self.challenge_type == 'SINGLE_WICKET':
+            try:
+                team1_batter_name = self.team1_batter.username if self.team1_batter else 'TBD'
+                team1_bowler_name = self.team1_bowler.username if self.team1_bowler else 'TBD'
+                team2_batter_name = self.team2_batter.username if self.team2_batter else 'TBD'
+                team2_bowler_name = self.team2_bowler.username if self.team2_bowler else 'TBD'
+                return f"Team 1 ({team1_batter_name} & {team1_bowler_name}) vs Team 2 ({team2_batter_name} & {team2_bowler_name})"
+            except:
+                return "Single Wicket Challenge"
+        else:
+            try:
+                challenger_name = self.challenger.username if self.challenger else 'Unknown'
+            except:
+                challenger_name = 'Unknown'
             
-        return f"{challenger_name} vs {opponent_name}"
+            try:
+                opponent_name = self.opponent.username if self.opponent else 'TBD'
+            except:
+                opponent_name = 'TBD'
+                
+            return f"{challenger_name} vs {opponent_name}"
     
+    def get_participants(self):
+        """Get all participants in the challenge"""
+        if self.challenge_type == 'SINGLE_WICKET':
+            participants = []
+            if self.team1_batter:
+                participants.append(self.team1_batter)
+            if self.team1_bowler:
+                participants.append(self.team1_bowler)
+            if self.team2_batter:
+                participants.append(self.team2_batter)
+            if self.team2_bowler:
+                participants.append(self.team2_bowler)
+            return participants
+        else:
+            participants = [self.challenger]
+            if self.opponent:
+                participants.append(self.opponent)
+            return participants
+    
+    def get_batters(self):
+        """Get all batters in the challenge"""
+        if self.challenge_type == 'SINGLE_WICKET':
+            batters = []
+            if self.team1_batter:
+                batters.append(self.team1_batter)
+            if self.team2_batter:
+                batters.append(self.team2_batter)
+            return batters
+        else:
+            return [self.challenger] if self.challenger else []
+    
+    def get_bowlers(self):
+        """Get all bowlers in the challenge"""
+        if self.challenge_type == 'SINGLE_WICKET':
+            bowlers = []
+            if self.team1_bowler:
+                bowlers.append(self.team1_bowler)
+            if self.team2_bowler:
+                bowlers.append(self.team2_bowler)
+            return bowlers
+        else:
+            return [self.opponent] if self.opponent else []
+    
+    def all_participants_accepted(self):
+        """Check if all participants have accepted the challenge"""
+        if self.challenge_type == 'SINGLE_WICKET':
+            # Check if all 4 participants have accepted
+            return (self.team1_batter_accepted and 
+                    self.team1_bowler_accepted and 
+                    self.team2_batter_accepted and 
+                    self.team2_bowler_accepted)
+        else:
+            # For regular challenges, just check if opponent accepted
+            return self.status == 'ACCEPTED'
+    
+    def get_participant_acceptance_status(self):
+        """Get acceptance status for all participants"""
+        if self.challenge_type == 'SINGLE_WICKET':
+            return {
+                'team1_batter': {
+                    'user': self.team1_batter,
+                    'accepted': self.team1_batter_accepted
+                },
+                'team1_bowler': {
+                    'user': self.team1_bowler,
+                    'accepted': self.team1_bowler_accepted
+                },
+                'team2_batter': {
+                    'user': self.team2_batter,
+                    'accepted': self.team2_batter_accepted
+                },
+                'team2_bowler': {
+                    'user': self.team2_bowler,
+                    'accepted': self.team2_bowler_accepted
+                }
+            }
+        else:
+            return {
+                'challenger': {
+                    'user': self.challenger,
+                    'accepted': True  # Challenger is always considered accepted
+                },
+                'opponent': {
+                    'user': self.opponent,
+                    'accepted': self.status == 'ACCEPTED'
+                }
+            }
+
     def clean(self):
         if self.date and self.date < timezone.now().date():
             raise ValidationError("Challenge date cannot be in the past")
@@ -68,6 +178,12 @@ class Challenge(models.Model):
                 raise ValidationError("You cannot challenge yourself")
         except:
             # If challenger is not set yet, skip this check
+            pass
+        
+        # Single wicket challenge validation
+        if self.challenge_type == 'SINGLE_WICKET':
+            # Allow participants to be the same person - no validation needed
+            # This allows flexibility for players to take multiple roles
             pass
 
 
@@ -150,24 +266,38 @@ class MatchResult(models.Model):
     
     def determine_winner(self):
         """Determine winner based on challenge metric and target"""
-        challenger_score = self.get_challenger_score() or 0
-        opponent_score = self.get_opponent_score() or 0
-        target = self.challenge.target_value
-        
-        # If no target is set, winner is whoever scored higher
-        if target is None:
-            return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
-        
-        # If both met target, winner is whoever scored higher
-        if challenger_score >= target and opponent_score >= target:
-            return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
-        elif challenger_score >= target:
-            return self.challenge.challenger
-        elif opponent_score >= target:
-            return self.challenge.opponent
+        if self.challenge.challenge_type == 'SINGLE_WICKET':
+            # For single wicket challenges, compare batter runs
+            team1_batter_runs = self.challenger_runs or 0
+            team2_batter_runs = self.opponent_runs or 0
+            
+            if team1_batter_runs > team2_batter_runs:
+                return self.challenge.team1_batter
+            elif team2_batter_runs > team1_batter_runs:
+                return self.challenge.team2_batter
+            else:
+                # Tie - return None for draw
+                return None
         else:
-            # Neither met target, winner is whoever scored higher
-            return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
+            # Regular challenge logic
+            challenger_score = self.get_challenger_score() or 0
+            opponent_score = self.get_opponent_score() or 0
+            target = self.challenge.target_value
+            
+            # If no target is set, winner is whoever scored higher
+            if target is None:
+                return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
+            
+            # If both met target, winner is whoever scored higher
+            if challenger_score >= target and opponent_score >= target:
+                return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
+            elif challenger_score >= target:
+                return self.challenge.challenger
+            elif opponent_score >= target:
+                return self.challenge.opponent
+            else:
+                # Neither met target, winner is whoever scored higher
+                return self.challenge.challenger if challenger_score > opponent_score else self.challenge.opponent
     
     class Meta:
         verbose_name = "Match Result"

@@ -49,6 +49,76 @@
               {% endif %}
             </div>
 
+            <!-- Single Wicket Challenge Participants -->
+            <div id="single-wicket-participants" class="mb-4" style="display: none;">
+              <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                  <h6 class="mb-0">
+                    <i class="fas fa-users"></i> Single Wicket Challenge Participants
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <!-- Team 1 -->
+                    <div class="col-md-6">
+                      <div class="card border-info">
+                        <div class="card-header bg-info text-white">
+                          <h6 class="mb-0">Team 1</h6>
+                        </div>
+                        <div class="card-body">
+                          <div class="mb-3">
+                            <label class="form-label">Batter <span class="text-danger">*</span></label>
+                            {{ form.team1_batter }}
+                            {% if form.team1_batter.errors %}
+                              <div class="text-danger small">{{ form.team1_batter.errors|striptags }}</div>
+                            {% endif %}
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Bowler <span class="text-danger">*</span></label>
+                            {{ form.team1_bowler }}
+                            {% if form.team1_bowler.errors %}
+                              <div class="text-danger small">{{ form.team1_bowler.errors|striptags }}</div>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Team 2 -->
+                    <div class="col-md-6">
+                      <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                          <h6 class="mb-0">Team 2</h6>
+                        </div>
+                        <div class="card-body">
+                          <div class="mb-3">
+                            <label class="form-label">Batter <span class="text-danger">*</span></label>
+                            {{ form.team2_batter }}
+                            {% if form.team2_batter.errors %}
+                              <div class="text-danger small">{{ form.team2_batter.errors|striptags }}</div>
+                            {% endif %}
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Bowler <span class="text-danger">*</span></label>
+                            {{ form.team2_bowler }}
+                            {% if form.team2_bowler.errors %}
+                              <div class="text-danger small">{{ form.team2_bowler.errors|striptags }}</div>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Single Wicket Challenge:</strong> Each team has one batter and one bowler. 
+                    The winner is determined by which batter scores more runs. Participants can be the same person across different roles.
+                  </div>
+                </div>
+              </div>
+            </div>
+
         <!-- Challenge Details -->
         <div class="mb-3">
           <label class="form-label">Challenge Description <span class="text-danger">*</span></label>
@@ -222,6 +292,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const timeSlotSelect = document.getElementById('time-slot-select');
     const timeSlotLoading = document.getElementById('time-slot-loading');
     const timeSlotError = document.getElementById('time-slot-error');
+    const singleWicketParticipants = document.getElementById('single-wicket-participants');
+
+    // Function to toggle single wicket participants
+    function toggleSingleWicketParticipants() {
+        if (challengeTypeSelect && singleWicketParticipants) {
+            if (challengeTypeSelect.value === 'SINGLE_WICKET') {
+                singleWicketParticipants.style.display = 'block';
+                // Make single wicket fields required
+                const teamFields = ['team1_batter', 'team1_bowler', 'team2_batter', 'team2_bowler'];
+                teamFields.forEach(fieldName => {
+                    const field = document.querySelector(`select[name="${fieldName}"]`);
+                    if (field) {
+                        field.required = true;
+                    }
+                });
+            } else {
+                singleWicketParticipants.style.display = 'none';
+                // Make single wicket fields not required
+                const teamFields = ['team1_batter', 'team1_bowler', 'team2_batter', 'team2_bowler'];
+                teamFields.forEach(fieldName => {
+                    const field = document.querySelector(`select[name="${fieldName}"]`);
+                    if (field) {
+                        field.required = false;
+                        field.value = '';
+                    }
+                });
+            }
+        }
+    }
+
+    // Add event listener for challenge type change
+    if (challengeTypeSelect) {
+        challengeTypeSelect.addEventListener('change', toggleSingleWicketParticipants);
+        // Initial call to set correct state
+        toggleSingleWicketParticipants();
+    }
 
     // Function to generate challenge description
     function generateChallengeDescription() {

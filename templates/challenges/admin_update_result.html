@@ -653,12 +653,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get challenge data from Django template
     const challengeData = {
+        challengeType: '{{ challenge.challenge_type }}',
         metric: '{{ challenge.metric }}',
         targetValue: {{ challenge.target_value|default:"null" }},
         challengerId: {{ challenge.challenger.id }},
         opponentId: {{ challenge.opponent.id }},
         challengerName: '{{ challenge.challenger.username }}',
-        opponentName: '{{ challenge.opponent.username }}'
+        opponentName: '{{ challenge.opponent.username }}',
+        team1BatterId: {{ challenge.team1_batter.id|default:"null" }},
+        team1BowlerId: {{ challenge.team1_bowler.id|default:"null" }},
+        team2BatterId: {{ challenge.team2_batter.id|default:"null" }},
+        team2BowlerId: {{ challenge.team2_bowler.id|default:"null" }},
+        team1BatterName: '{{ challenge.team1_batter.username|default:"" }}',
+        team1BowlerName: '{{ challenge.team1_bowler.username|default:"" }}',
+        team2BatterName: '{{ challenge.team2_batter.username|default:"" }}',
+        team2BowlerName: '{{ challenge.team2_bowler.username|default:"" }}'
     };
 
     // Get form elements
@@ -709,25 +718,45 @@ document.addEventListener('DOMContentLoaded', function() {
         const opponentFours = parseInt(document.getElementById('id_opponent_fours')?.value || 0);
         const opponentDots = parseInt(document.getElementById('id_opponent_dots')?.value || 0);
 
-        // Calculate scores - always use runs for automatic winner detection
-        let challengerScore = challengerRuns;
-        let opponentScore = opponentRuns;
-
-        // Determine winner - simplified logic: most runs wins
-        let winner, winnerName, winnerType;
+        // Calculate scores based on challenge type
+        let challengerScore, opponentScore, winner, winnerName, winnerType;
         
-        if (challengerScore === opponentScore) {
-            winner = 'draw';
-            winnerName = 'Draw/Tie';
-            winnerType = 'draw';
-        } else if (challengerScore > opponentScore) {
-            winner = 'challenger';
-            winnerName = challengeData.challengerName;
-            winnerType = 'challenger';
+        if (challengeData.challengeType === 'SINGLE_WICKET') {
+            // For single wicket challenges, compare batter runs
+            challengerScore = challengerRuns; // Team 1 batter runs
+            opponentScore = opponentRuns;    // Team 2 batter runs
+            
+            if (challengerScore === opponentScore) {
+                winner = 'draw';
+                winnerName = 'Draw/Tie';
+                winnerType = 'draw';
+            } else if (challengerScore > opponentScore) {
+                winner = 'team1_batter';
+                winnerName = challengeData.team1BatterName;
+                winnerType = 'team1_batter';
+            } else {
+                winner = 'team2_batter';
+                winnerName = challengeData.team2BatterName;
+                winnerType = 'team2_batter';
+            }
         } else {
-            winner = 'opponent';
-            winnerName = challengeData.opponentName;
-            winnerType = 'opponent';
+            // Regular challenges - always use runs for automatic winner detection
+            challengerScore = challengerRuns;
+            opponentScore = opponentRuns;
+            
+            if (challengerScore === opponentScore) {
+                winner = 'draw';
+                winnerName = 'Draw/Tie';
+                winnerType = 'draw';
+            } else if (challengerScore > opponentScore) {
+                winner = 'challenger';
+                winnerName = challengeData.challengerName;
+                winnerType = 'challenger';
+            } else {
+                winner = 'opponent';
+                winnerName = challengeData.opponentName;
+                winnerType = 'opponent';
+            }
         }
 
         // Update UI
@@ -749,7 +778,12 @@ document.addEventListener('DOMContentLoaded', function() {
         automaticPreview.style.display = 'block';
         
         // Update preview text
-        let previewText = `${winnerName} (${challengerScore} runs vs ${opponentScore} runs)`;
+        let previewText;
+        if (challengeData.challengeType === 'SINGLE_WICKET') {
+            previewText = `${winnerName} (Team 1: ${challengerScore} runs vs Team 2: ${opponentScore} runs)`;
+        } else {
+            previewText = `${winnerName} (${challengerScore} runs vs ${opponentScore} runs)`;
+        }
         automaticWinnerText.textContent = previewText;
 
         // Show indicator on the winning option
