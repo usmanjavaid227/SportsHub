@@ -235,6 +235,19 @@
                                         </h6>
                                     </div>
                                     <div class="card-body">
+                                        <!-- Automatic Winner Preview -->
+                                        <div class="automatic-winner-preview mb-4" id="automatic-winner-preview" style="display: none;">
+                                            <div class="alert alert-success">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-robot text-success mr-2"></i>
+                                                    <div>
+                                                        <strong>Automatic Winner Detection:</strong>
+                                                        <span id="automatic-winner-text">Calculating...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label for="{{ form.manual_winner.id_for_label }}" class="font-weight-bold text-dark mb-3">
                                                 <i class="fas fa-crown text-warning"></i> Select Match Winner
@@ -243,7 +256,7 @@
                                             <div class="winner-selection-container">
                                                 <div class="row">
                                                     <div class="col-md-6 mb-3">
-                                                        <div class="winner-option challenger-option">
+                                                        <div class="winner-option challenger-option" id="challenger-option">
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="{{ challenge.challenger.id }}" 
@@ -258,6 +271,9 @@
                                                                         </div>
                                                                         <div class="winner-stats">
                                                                             <small class="text-muted">Rating: {{ challenge.challenger.profile.rating|default:"N/A" }}</small>
+                                                                            <div class="automatic-indicator" id="challenger-auto-indicator" style="display: none;">
+                                                                                <small class="text-success"><i class="fas fa-check-circle"></i> Auto-detected</small>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </label>
@@ -266,7 +282,7 @@
                                                     </div>
                                                     
                                                     <div class="col-md-6 mb-3">
-                                                        <div class="winner-option opponent-option">
+                                                        <div class="winner-option opponent-option" id="opponent-option">
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="{{ challenge.opponent.id }}" 
@@ -281,6 +297,9 @@
                                                                         </div>
                                                                         <div class="winner-stats">
                                                                             <small class="text-muted">Rating: {{ challenge.opponent.profile.rating|default:"N/A" }}</small>
+                                                                            <div class="automatic-indicator" id="opponent-auto-indicator" style="display: none;">
+                                                                                <small class="text-success"><i class="fas fa-check-circle"></i> Auto-detected</small>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </label>
@@ -289,7 +308,7 @@
                                                     </div>
                                                     
                                                     <div class="col-12">
-                                                        <div class="winner-option draw-option">
+                                                        <div class="winner-option draw-option" id="draw-option">
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="" 
@@ -304,6 +323,9 @@
                                                                         </div>
                                                                         <div class="winner-stats">
                                                                             <small class="text-muted">Match ended in a draw</small>
+                                                                            <div class="automatic-indicator" id="draw-auto-indicator" style="display: none;">
+                                                                                <small class="text-success"><i class="fas fa-check-circle"></i> Auto-detected</small>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </label>
@@ -596,5 +618,165 @@
         font-size: 1rem;
     }
 }
+
+/* Automatic winner detection styles */
+.automatic-winner-preview {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.automatic-indicator {
+    margin-top: 0.25rem;
+    animation: pulse 1.5s infinite;
+}
+
+.automatic-indicator i {
+    color: #28a745;
+}
+
+.winner-card.auto-detected {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #d4edda, #ffffff);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+}
+
+.winner-card.auto-detected::before {
+    background: linear-gradient(90deg, #28a745, #1e7e34);
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get challenge data from Django template
+    const challengeData = {
+        metric: '{{ challenge.metric }}',
+        targetValue: {{ challenge.target_value|default:"null" }},
+        challengerId: {{ challenge.challenger.id }},
+        opponentId: {{ challenge.opponent.id }},
+        challengerName: '{{ challenge.challenger.username }}',
+        opponentName: '{{ challenge.opponent.username }}'
+    };
+
+    // Get form elements
+    const form = document.querySelector('form');
+    const automaticPreview = document.getElementById('automatic-winner-preview');
+    const automaticWinnerText = document.getElementById('automatic-winner-text');
+    
+    // Get all input fields that affect scoring
+    const scoringInputs = [
+        'id_challenger_runs', 'id_challenger_wickets', 'id_challenger_sixes', 'id_challenger_fours', 'id_challenger_dots',
+        'id_opponent_runs', 'id_opponent_wickets', 'id_opponent_sixes', 'id_opponent_fours', 'id_opponent_dots'
+    ];
+
+    // Add event listeners to all scoring inputs
+    scoringInputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('input', calculateAutomaticWinner);
+            input.addEventListener('change', calculateAutomaticWinner);
+        }
+    });
+
+    // Add event listeners to manual winner selection
+    const manualWinnerInputs = document.querySelectorAll('input[name="manual_winner"]');
+    manualWinnerInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value) {
+                // Manual selection made, hide automatic preview
+                hideAutomaticPreview();
+            } else {
+                // Automatic selection, show preview
+                calculateAutomaticWinner();
+            }
+        });
+    });
+
+    function calculateAutomaticWinner() {
+        // Get current form values
+        const challengerRuns = parseInt(document.getElementById('id_challenger_runs')?.value || 0);
+        const challengerWickets = parseInt(document.getElementById('id_challenger_wickets')?.value || 0);
+        const challengerSixes = parseInt(document.getElementById('id_challenger_sixes')?.value || 0);
+        const challengerFours = parseInt(document.getElementById('id_challenger_fours')?.value || 0);
+        const challengerDots = parseInt(document.getElementById('id_challenger_dots')?.value || 0);
+        
+        const opponentRuns = parseInt(document.getElementById('id_opponent_runs')?.value || 0);
+        const opponentWickets = parseInt(document.getElementById('id_opponent_wickets')?.value || 0);
+        const opponentSixes = parseInt(document.getElementById('id_opponent_sixes')?.value || 0);
+        const opponentFours = parseInt(document.getElementById('id_opponent_fours')?.value || 0);
+        const opponentDots = parseInt(document.getElementById('id_opponent_dots')?.value || 0);
+
+        // Calculate scores - always use runs for automatic winner detection
+        let challengerScore = challengerRuns;
+        let opponentScore = opponentRuns;
+
+        // Determine winner - simplified logic: most runs wins
+        let winner, winnerName, winnerType;
+        
+        if (challengerScore === opponentScore) {
+            winner = 'draw';
+            winnerName = 'Draw/Tie';
+            winnerType = 'draw';
+        } else if (challengerScore > opponentScore) {
+            winner = 'challenger';
+            winnerName = challengeData.challengerName;
+            winnerType = 'challenger';
+        } else {
+            winner = 'opponent';
+            winnerName = challengeData.opponentName;
+            winnerType = 'opponent';
+        }
+
+        // Update UI
+        updateAutomaticWinnerDisplay(winner, winnerName, winnerType, challengerScore, opponentScore);
+    }
+
+    function updateAutomaticWinnerDisplay(winner, winnerName, winnerType, challengerScore, opponentScore) {
+        // Hide all automatic indicators
+        document.querySelectorAll('.automatic-indicator').forEach(indicator => {
+            indicator.style.display = 'none';
+        });
+        
+        // Remove auto-detected class from all cards
+        document.querySelectorAll('.winner-card').forEach(card => {
+            card.classList.remove('auto-detected');
+        });
+
+        // Show automatic preview
+        automaticPreview.style.display = 'block';
+        
+        // Update preview text
+        let previewText = `${winnerName} (${challengerScore} runs vs ${opponentScore} runs)`;
+        automaticWinnerText.textContent = previewText;
+
+        // Show indicator on the winning option
+        if (winnerType === 'challenger') {
+            document.getElementById('challenger-auto-indicator').style.display = 'block';
+            document.querySelector('#challenger-option .winner-card').classList.add('auto-detected');
+        } else if (winnerType === 'opponent') {
+            document.getElementById('opponent-auto-indicator').style.display = 'block';
+            document.querySelector('#opponent-option .winner-card').classList.add('auto-detected');
+        } else if (winnerType === 'draw') {
+            document.getElementById('draw-auto-indicator').style.display = 'block';
+            document.querySelector('#draw-option .winner-card').classList.add('auto-detected');
+        }
+    }
+
+    function hideAutomaticPreview() {
+        automaticPreview.style.display = 'none';
+        document.querySelectorAll('.automatic-indicator').forEach(indicator => {
+            indicator.style.display = 'none';
+        });
+        document.querySelectorAll('.winner-card').forEach(card => {
+            card.classList.remove('auto-detected');
+        });
+    }
+
+    // Initial calculation
+    calculateAutomaticWinner();
+});
+</script>
 {% endblock %}

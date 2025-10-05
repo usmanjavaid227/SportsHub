@@ -104,19 +104,37 @@
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Matches</div>
-            <div class="display-6">{{ profile_user.profile.matches_played|default:0 }}</div>
+            <div class="display-6">{{ profile.matches_played|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Wins</div>
-            <div class="display-6 text-success">{{ profile_user.profile.wins|default:0 }}</div>
+            <div class="display-6 text-success">{{ profile.wins|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Losses</div>
-            <div class="display-6 text-danger">{{ profile_user.profile.losses|default:0 }}</div>
+            <div class="display-6 text-danger">{{ profile.losses|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Rating</div>
-            <div class="display-6">{{ profile_user.profile.rating|default:0|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Win Rate</div>
+            <div class="display-6 text-primary">{{ profile.get_win_rate|floatformat:1 }}%</div>
+          </div>
+        </div>
+        <div class="row text-center mt-3">
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Overall Rating</div>
+            <div class="h4">{{ profile.rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Batting Rating</div>
+            <div class="h4 text-info">{{ profile.batting_rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Bowling Rating</div>
+            <div class="h4 text-warning">{{ profile.bowling_rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Total Runs</div>
+            <div class="h4 text-success">{{ profile.runs|default:0 }}</div>
           </div>
         </div>
       </div>
@@ -128,46 +146,153 @@
         <h6 class="mb-0">Win/Loss Ratio</h6>
       </div>
       <div class="card-body">
-        <canvas id="winLossChart" width="400" height="200"></canvas>
+        <div style="height: 200px; width: 100%;">
+          <canvas id="winLossChart"></canvas>
+        </div>
+        {% if profile.matches_played > 0 %}
+        <div class="row mt-3">
+          <div class="col-6 text-center">
+            <div class="fw-bold text-success">Win Rate: {{ profile.get_win_rate|floatformat:1 }}%</div>
+          </div>
+          <div class="col-6 text-center">
+            <div class="fw-bold text-muted">Total Matches: {{ profile.matches_played }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="text-center text-muted mt-3">
+          <p>No matches played yet</p>
+        </div>
+        {% endif %}
       </div>
     </div>
 
     <!-- Cricket Performance Stats -->
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-header">
         <h6 class="mb-0">Cricket Performance</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Runs</div>
-            <div class="h4">{{ profile_user.profile.runs|default:0 }}</div>
+            <div class="fw-bold text-muted">Total Runs</div>
+            <div class="h4 text-success">{{ profile.runs|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Wickets</div>
-            <div class="h4">{{ profile_user.profile.wickets|default:0 }}</div>
+            <div class="fw-bold text-muted">Total Wickets</div>
+            <div class="h4 text-danger">{{ profile.wickets|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Batting Rating</div>
-            <div class="h4">{{ profile_user.profile.batting_rating|default:0|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Batting Average</div>
+            <div class="h4 text-info">{{ profile.get_batting_average }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Bowling Rating</div>
-            <div class="h4">{{ profile_user.profile.bowling_rating|default:0|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Bowling Average</div>
+            <div class="h4 text-warning">{{ profile.get_bowling_average }}</div>
           </div>
         </div>
         
         <!-- Performance Chart -->
-        <div class="mt-4">
-          <canvas id="performanceChart" width="400" height="200"></canvas>
+        <div class="mt-4" style="height: 200px; width: 100%;">
+          <canvas id="performanceChart"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Challenge History -->
-    <div class="card mt-4">
+    <!-- Performance Trend Chart -->
+    {% if performance_trend %}
+    <div class="card mb-4">
       <div class="card-header">
-        <h6 class="mb-0">Recent Challenges</h6>
+        <h6 class="mb-0">Performance Trend (Last 30 Days)</h6>
+      </div>
+      <div class="card-body">
+        <div style="height: 200px; width: 100%;">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Matches -->
+    {% if recent_matches %}
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">Recent Matches</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th class="text-white">Date</th>
+                <th class="text-white">Opponent</th>
+                <th class="text-white">Result</th>
+                <th class="text-white">Runs</th>
+                <th class="text-white">Wickets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for match in recent_matches %}
+              <tr>
+                <td>
+                  {% if match.completed_at %}
+                    {{ match.completed_at|date:"M d, Y" }}
+                  {% elif match.scheduled_at %}
+                    {{ match.scheduled_at|date:"M d, Y" }}
+                  {% elif match.date %}
+                    {{ match.date|date:"M d, Y" }}
+                  {% else %}
+                    {{ match.created_at|date:"M d, Y" }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.challenger == profile_user %}
+                    {{ match.opponent.username }}
+                  {% else %}
+                    {{ match.challenger.username }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.winner == profile_user %}
+                    <span class="badge bg-success">Won</span>
+                  {% else %}
+                    <span class="badge bg-danger">Lost</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.match_result %}
+                    {% if match.challenger == profile_user %}
+                      {{ match.match_result.challenger_runs }}
+                    {% else %}
+                      {{ match.match_result.opponent_runs }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.match_result %}
+                    {% if match.challenger == profile_user %}
+                      {{ match.match_result.challenger_wickets }}
+                    {% else %}
+                      {{ match.match_result.opponent_wickets }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Challenge History -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">Challenge Statistics</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
@@ -184,7 +309,7 @@
             <div class="h4">{{ profile_user.challenges_won.count }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Win Rate</div>
+            <div class="fw-bold text-muted">Challenge Win Rate</div>
             <div class="h4">
               {% if profile_user.challenges_made.count > 0 %}
                 {% widthratio profile_user.challenges_won.count profile_user.challenges_made.count 100 %}%
@@ -208,10 +333,10 @@ const winLossCtx = document.getElementById('winLossChart').getContext('2d');
 const winLossChart = new Chart(winLossCtx, {
     type: 'doughnut',
     data: {
-        labels: ['Wins', 'Losses'],
+        labels: {{ chart_data.win_loss.labels|safe }},
         datasets: [{
-            data: [{{ profile_user.profile.wins|default:0 }}, {{ profile_user.profile.losses|default:0 }}],
-            backgroundColor: ['#28a745', '#dc3545'],
+            data: {{ chart_data.win_loss.data|safe }},
+            backgroundColor: {{ chart_data.win_loss.colors|safe }},
             borderWidth: 2,
             borderColor: '#fff'
         }]
@@ -232,22 +357,12 @@ const performanceCtx = document.getElementById('performanceChart').getContext('2
 const performanceChart = new Chart(performanceCtx, {
     type: 'bar',
     data: {
-        labels: ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
+        labels: {{ chart_data.performance.labels|safe }},
         datasets: [{
             label: 'Performance',
-            data: [{{ profile_user.profile.runs|default:0 }}, {{ profile_user.profile.wickets|default:0 }}, {{ profile_user.profile.batting_rating|default:0|floatformat:0 }}, {{ profile_user.profile.bowling_rating|default:0|floatformat:0 }}],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
+            data: {{ chart_data.performance.data|safe }},
+            backgroundColor: {{ chart_data.performance.colors|safe }},
+            borderColor: {{ chart_data.performance.colors|safe }},
             borderWidth: 1
         }]
     },
@@ -266,5 +381,45 @@ const performanceChart = new Chart(performanceCtx, {
         }
     }
 });
+
+{% if performance_trend %}
+// Performance Trend Chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+const trendChart = new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: {{ chart_data.trend.labels|safe }},
+        datasets: [{
+            label: 'Win Rate %',
+            data: {{ chart_data.trend.data|safe }},
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true
+            }
+        }
+    }
+});
+{% endif %}
 </script>
 {% endblock %}

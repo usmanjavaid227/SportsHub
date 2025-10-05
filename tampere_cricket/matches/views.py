@@ -418,6 +418,7 @@ def admin_update_match_result(request, challenge_id):
             
             challenge.winner = winner
             challenge.status = 'COMPLETED'
+            challenge.completed_at = timezone.now()  # Set completion timestamp
             challenge.save()
             
             messages.success(request, f'Match results updated successfully! Winner: {winner.username}')

@@ -66,3 +66,173 @@ class Profile(models.Model):
     balls_faced = models.PositiveIntegerField(default=0)
     balls_bowled = models.PositiveIntegerField(default=0)
     fcm_token = models.CharField(max_length=300, blank=True)
+    
+    def update_statistics(self):
+        """Update user statistics based on completed challenges"""
+        from tampere_cricket.matches.models import Challenge, MatchResult
+        
+        # Get all completed challenges where user was either challenger or opponent
+        completed_challenges = Challenge.objects.filter(
+            models.Q(challenger=self.user) | models.Q(opponent=self.user),
+            status='COMPLETED'
+        )
+        
+        # Reset counters
+        self.matches_played = 0
+        self.wins = 0
+        self.losses = 0
+        self.runs = 0
+        self.wickets = 0
+        self.balls_faced = 0
+        self.balls_bowled = 0
+        
+        for challenge in completed_challenges:
+            self.matches_played += 1
+            
+            # Check if user won
+            if challenge.winner == self.user:
+                self.wins += 1
+            else:
+                self.losses += 1
+            
+            # Get match result if exists
+            try:
+                match_result = challenge.match_result
+                if challenge.challenger == self.user:
+                    # User was challenger
+                    self.runs += match_result.challenger_runs
+                    self.wickets += match_result.challenger_wickets
+                    # Add other stats as needed
+                elif challenge.opponent == self.user:
+                    # User was opponent
+                    self.runs += match_result.opponent_runs
+                    self.wickets += match_result.opponent_wickets
+            except MatchResult.DoesNotExist:
+                pass
+        
+        # Calculate win rate
+        if self.matches_played > 0:
+            win_rate = (self.wins / self.matches_played) * 100
+        else:
+            win_rate = 0
+        
+        # Update ratings based on performance (simplified Elo system)
+        self._update_ratings()
+        
+        self.save()
+        return {
+            'matches_played': self.matches_played,
+            'wins': self.wins,
+            'losses': self.losses,
+            'win_rate': win_rate,
+            'runs': self.runs,
+            'wickets': self.wickets,
+            'rating': self.rating,
+            'batting_rating': self.batting_rating,
+            'bowling_rating': self.bowling_rating
+        }
+    
+    def _update_ratings(self):
+        """Update Elo-style ratings based on performance"""
+        if self.matches_played == 0:
+            return
+        
+        # Simple rating calculation based on win rate
+        win_rate = self.wins / self.matches_played if self.matches_played > 0 else 0
+        
+        # Base rating adjustment
+        rating_adjustment = (win_rate - 0.5) * 200  # Adjust by up to ±100 points
+        self.rating = max(800, min(1200, 1000 + rating_adjustment))
+        
+        # Batting rating based on runs per match
+        if self.matches_played > 0:
+            runs_per_match = self.runs / self.matches_played
+            batting_adjustment = (runs_per_match - 20) * 5  # Adjust based on 20 runs per match baseline
+            self.batting_rating = max(800, min(1200, 1000 + batting_adjustment))
+        
+        # Bowling rating based on wickets per match
+        if self.matches_played > 0:
+            wickets_per_match = self.wickets / self.matches_played
+            bowling_adjustment = (wickets_per_match - 2) * 50  # Adjust based on 2 wickets per match baseline
+            self.bowling_rating = max(800, min(1200, 1000 + bowling_adjustment))
+    
+    def get_win_rate(self):
+        """Get win rate percentage"""
+        if self.matches_played == 0:
+            return 0
+        return (self.wins / self.matches_played) * 100
+    
+    def get_batting_average(self):
+        """Calculate batting average: Total Runs ÷ (Total Innings - Not Outs)"""
+        # For simplicity, we'll use matches_played as innings
+        # In real cricket, you'd track not-outs separately
+        if self.matches_played == 0:
+            return 0.0
+        return round(self.runs / self.matches_played, 2)
+    
+    def get_bowling_average(self):
+        """Calculate bowling average: Total Runs Conceded ÷ Total Wickets"""
+        # For this system, we'll use a simplified approach
+        # In real cricket, you'd track runs conceded separately
+        if self.wickets == 0:
+            return 0.0
+        # Estimate runs conceded based on wickets (simplified)
+        # In a real system, you'd track this properly
+        estimated_runs_conceded = self.wickets * 15  # Rough estimate
+        return round(estimated_runs_conceded / self.wickets, 2)
+    
+    def get_avg_runs_per_match(self):
+        """Get average runs per match (for backward compatibility)"""
+        return self.get_batting_average()
+    
+    def get_avg_wickets_per_match(self):
+        """Get average wickets per match (for backward compatibility)"""
+        if self.matches_played == 0:
+            return 0.0
+        return round(self.wickets / self.matches_played, 2)
+    
+    def get_recent_matches(self, limit=5):
+        """Get recent completed matches"""
+        from tampere_cricket.matches.models import Challenge
+        from django.db.models import F, Case, When, Value
+        from django.db.models.functions import Coalesce
+        
+        return Challenge.objects.filter(
+            models.Q(challenger=self.user) | models.Q(opponent=self.user),
+            status='COMPLETED'
+        ).order_by(
+            '-completed_at',  # Primary: completed_at (most recent first)
+            '-scheduled_at',  # Secondary: scheduled_at if completed_at is null
+            '-created_at'    # Tertiary: created_at if both are null
+        )[:limit]
+    
+    def get_performance_trend(self, days=30):
+        """Get performance trend over last N days"""
+        from tampere_cricket.matches.models import Challenge
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        start_date = timezone.now() - timedelta(days=days)
+        recent_challenges = Challenge.objects.filter(
+            models.Q(challenger=self.user) | models.Q(opponent=self.user),
+            status='COMPLETED',
+            completed_at__gte=start_date
+        ).order_by('completed_at')
+        
+        trend_data = []
+        cumulative_wins = 0
+        cumulative_matches = 0
+        
+        for challenge in recent_challenges:
+            cumulative_matches += 1
+            if challenge.winner == self.user:
+                cumulative_wins += 1
+            
+            win_rate = (cumulative_wins / cumulative_matches) * 100 if cumulative_matches > 0 else 0
+            trend_data.append({
+                'date': challenge.completed_at.date(),
+                'win_rate': win_rate,
+                'matches': cumulative_matches
+            })
+        
+        return trend_data

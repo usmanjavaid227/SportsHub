@@ -49,7 +49,24 @@ def custom_login(request):
 @login_required
 def profile(request):
     """User profile view"""
-    return render(request, 'profile.html', {'user': request.user})
+    # Get or create profile for the user
+    from tampere_cricket.accounts.models import Profile
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+    
+    # Update statistics based on completed matches
+    stats = profile.update_statistics()
+    
+    # Get recent matches for the user
+    recent_matches = profile.get_recent_matches(limit=10)
+    
+    return render(request, 'profile.html', {
+        'user': request.user,
+        'profile': profile,
+        'recent_matches': recent_matches
+    })
 
 
 def public_profile_view(request, user_id):
@@ -63,9 +80,44 @@ def public_profile_view(request, user_id):
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=user)
     
+    # Update statistics based on completed matches
+    stats = profile.update_statistics()
+    
+    # Get additional data for charts and trends
+    recent_matches = profile.get_recent_matches(limit=10)
+    performance_trend = profile.get_performance_trend(days=30)
+    
+    # Calculate averages
+    avg_runs_per_match = profile.runs / profile.matches_played if profile.matches_played > 0 else 0
+    avg_wickets_per_match = profile.wickets / profile.matches_played if profile.matches_played > 0 else 0
+    
+    # Prepare chart data
+    chart_data = {
+        'win_loss': {
+            'labels': ['Wins', 'Losses'],
+            'data': [profile.wins, profile.losses],
+            'colors': ['#28a745', '#dc3545']
+        },
+        'performance': {
+            'labels': ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
+            'data': [profile.runs, profile.wickets, int(profile.batting_rating), int(profile.bowling_rating)],
+            'colors': ['#007bff', '#dc3545', '#ffc107', '#28a745']
+        },
+        'trend': {
+            'labels': [str(item['date']) for item in performance_trend],
+            'data': [item['win_rate'] for item in performance_trend]
+        }
+    }
+    
     return render(request, 'profiles/public_profile.html', {
         'profile_user': user,
-        'profile': profile
+        'profile': profile,
+        'stats': stats,
+        'recent_matches': recent_matches,
+        'performance_trend': performance_trend,
+        'chart_data': chart_data,
+        'avg_runs_per_match': avg_runs_per_match,
+        'avg_wickets_per_match': avg_wickets_per_match
     })
 
 

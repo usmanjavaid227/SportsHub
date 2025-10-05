@@ -23,6 +23,23 @@
         {% if user.bio %}
         <p class="small text-muted">{{ user.bio|truncatewords:20 }}</p>
         {% endif %}
+        
+        <!-- Contact Information -->
+        <div class="mt-3">
+          {% if user.email %}
+          <p class="small text-muted mb-1">
+            <i class="fa-solid fa-envelope me-1"></i>
+            {{ user.email }}
+          </p>
+          {% endif %}
+          {% if user.phone %}
+          <p class="small text-muted mb-1">
+            <i class="fa-solid fa-phone me-1"></i>
+            {{ user.phone }}
+          </p>
+          {% endif %}
+        </div>
+        
         <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
       </div>
     </div>
@@ -57,6 +74,25 @@
         </div>
       </div>
     </div>
+
+    <!-- Recent Activity -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0">Recent Activity</h6>
+      </div>
+      <div class="card-body">
+        <p class="small text-muted">
+          <i class="fa-solid fa-calendar me-1"></i>
+          Joined {{ user.date_joined|date:"M d, Y" }}
+        </p>
+        {% if user.last_login %}
+        <p class="small text-muted">
+          <i class="fa-solid fa-clock me-1"></i>
+          Last seen {{ user.last_login|timesince }} ago
+        </p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   <!-- Stats and Charts -->
@@ -70,19 +106,37 @@
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Matches</div>
-            <div class="display-6">{{ user.profile.matches_played }}</div>
+            <div class="display-6">{{ user.profile.matches_played|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Wins</div>
-            <div class="display-6 text-success">{{ user.profile.wins }}</div>
+            <div class="display-6 text-success">{{ user.profile.wins|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Losses</div>
-            <div class="display-6 text-danger">{{ user.profile.losses }}</div>
+            <div class="display-6 text-danger">{{ user.profile.losses|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Rating</div>
-            <div class="display-6">{{ user.profile.rating|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Win Rate</div>
+            <div class="display-6 text-primary">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
+          </div>
+        </div>
+        <div class="row text-center mt-3">
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Overall Rating</div>
+            <div class="h4">{{ user.profile.rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Batting Rating</div>
+            <div class="h4 text-info">{{ user.profile.batting_rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Bowling Rating</div>
+            <div class="h4 text-warning">{{ user.profile.bowling_rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Total Runs</div>
+            <div class="h4 text-success">{{ user.profile.runs|default:0 }}</div>
           </div>
         </div>
       </div>
@@ -94,38 +148,164 @@
         <h6 class="mb-0">Win/Loss Ratio</h6>
       </div>
       <div class="card-body">
-        <canvas id="winLossChart" width="400" height="200"></canvas>
+        <div style="height: 200px; width: 100%;">
+          <canvas id="winLossChart"></canvas>
+        </div>
+        {% if user.profile.matches_played > 0 %}
+        <div class="row mt-3">
+          <div class="col-6 text-center">
+            <div class="fw-bold text-success">Win Rate: {{ user.profile.get_win_rate|floatformat:1 }}%</div>
+          </div>
+          <div class="col-6 text-center">
+            <div class="fw-bold text-muted">Total Matches: {{ user.profile.matches_played }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="text-center text-muted mt-3">
+          <p>No matches played yet</p>
+        </div>
+        {% endif %}
       </div>
     </div>
 
     <!-- Cricket Performance Stats -->
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-header">
         <h6 class="mb-0">Cricket Performance</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Runs</div>
-            <div class="h4">{{ user.profile.runs }}</div>
+            <div class="fw-bold text-muted">Total Runs</div>
+            <div class="h4 text-success">{{ user.profile.runs|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Wickets</div>
-            <div class="h4">{{ user.profile.wickets }}</div>
+            <div class="fw-bold text-muted">Total Wickets</div>
+            <div class="h4 text-danger">{{ user.profile.wickets|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Batting Rating</div>
-            <div class="h4">{{ user.profile.batting_rating|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Batting Average</div>
+            <div class="h4 text-info">{{ user.profile.get_batting_average }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Bowling Rating</div>
-            <div class="h4">{{ user.profile.bowling_rating|floatformat:0 }}</div>
+            <div class="fw-bold text-muted">Bowling Average</div>
+            <div class="h4 text-warning">{{ user.profile.get_bowling_average }}</div>
           </div>
         </div>
         
         <!-- Performance Chart -->
-        <div class="mt-4">
-          <canvas id="performanceChart" width="400" height="200"></canvas>
+        <div class="mt-4" style="height: 200px; width: 100%;">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Matches -->
+    {% if recent_matches %}
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">Recent Matches</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th class="text-white">Date</th>
+                <th class="text-white">Opponent</th>
+                <th class="text-white">Result</th>
+                <th class="text-white">Runs</th>
+                <th class="text-white">Wickets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for match in recent_matches %}
+              <tr>
+                <td>
+                  {% if match.completed_at %}
+                    {{ match.completed_at|date:"M d, Y" }}
+                  {% elif match.scheduled_at %}
+                    {{ match.scheduled_at|date:"M d, Y" }}
+                  {% elif match.date %}
+                    {{ match.date|date:"M d, Y" }}
+                  {% else %}
+                    {{ match.created_at|date:"M d, Y" }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.challenger == user %}
+                    {{ match.opponent.username }}
+                  {% else %}
+                    {{ match.challenger.username }}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.winner == user %}
+                    <span class="badge bg-success">Won</span>
+                  {% else %}
+                    <span class="badge bg-danger">Lost</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.match_result %}
+                    {% if match.challenger == user %}
+                      {{ match.match_result.challenger_runs }}
+                    {% else %}
+                      {{ match.match_result.opponent_runs }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td>
+                  {% if match.match_result %}
+                    {% if match.challenger == user %}
+                      {{ match.match_result.challenger_wickets }}
+                    {% else %}
+                      {{ match.match_result.opponent_wickets }}
+                    {% endif %}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Challenge History -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">Challenge Statistics</h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Challenges Created</div>
+            <div class="h4">{{ user.challenges_made.count }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Challenges Accepted</div>
+            <div class="h4">{{ user.challenges_received.count }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Challenges Won</div>
+            <div class="h4">{{ user.challenges_won.count }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Challenge Win Rate</div>
+            <div class="h4">
+              {% if user.challenges_made.count > 0 %}
+                {% widthratio user.challenges_won.count user.challenges_made.count 100 %}%
+              {% else %}
+                0%
+              {% endif %}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -143,7 +323,7 @@ const winLossChart = new Chart(winLossCtx, {
     data: {
         labels: ['Wins', 'Losses'],
         datasets: [{
-            data: [{{ user.profile.wins }}, {{ user.profile.losses }}],
+            data: [{{ user.profile.wins|default:0 }}, {{ user.profile.losses|default:0 }}],
             backgroundColor: ['#28a745', '#dc3545'],
             borderWidth: 2,
             borderColor: '#fff'
@@ -165,21 +345,21 @@ const performanceCtx = document.getElementById('performanceChart').getContext('2
 const performanceChart = new Chart(performanceCtx, {
     type: 'bar',
     data: {
-        labels: ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
+        labels: ['Total Runs', 'Total Wickets', 'Batting Rating', 'Bowling Rating'],
         datasets: [{
             label: 'Performance',
-            data: [{{ user.profile.runs }}, {{ user.profile.wickets }}, {{ user.profile.batting_rating|floatformat:0 }}, {{ user.profile.bowling_rating|floatformat:0 }}],
+            data: [{{ user.profile.runs|default:0 }}, {{ user.profile.wickets|default:0 }}, {{ user.profile.batting_rating|floatformat:0 }}, {{ user.profile.bowling_rating|floatformat:0 }}],
             backgroundColor: [
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)'
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(23, 162, 184, 0.8)',
+                'rgba(255, 193, 7, 0.8)'
             ],
             borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
+                'rgba(40, 167, 69, 1)',
+                'rgba(220, 53, 69, 1)',
+                'rgba(23, 162, 184, 1)',
+                'rgba(255, 193, 7, 1)'
             ],
             borderWidth: 1
         }]

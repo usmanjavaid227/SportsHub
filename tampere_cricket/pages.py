@@ -14,22 +14,40 @@ def home(request):
     # Get top 3 recent challenges
     recent_challenges = Challenge.objects.filter(status__in=['OPEN', 'PENDING', 'ACCEPTED']).order_by('-created_at')[:3]
     
-    # Get top 3 players for leaderboard preview
-    players = User.objects.annotate(
-        total_matches=Count('challenges_made', filter=Q(challenges_made__status='COMPLETED')) + 
-                     Count('challenges_received', filter=Q(challenges_received__status='COMPLETED')),
-        total_wins=Count('challenges_won')
-    ).filter(total_matches__gt=0).order_by('-total_wins')[:3]
+    # Get top 3 players for leaderboard preview using Profile statistics
+    from tampere_cricket.accounts.models import Profile
     
-    # Calculate ratings for top 3 players
-    for player in players:
-        if player.total_matches > 0:
-            win_rate = (player.total_wins / player.total_matches) * 100
-            player.rating = win_rate + (player.total_matches * 10)
-            player.win_rate = round(win_rate, 1)
-        else:
-            player.rating = 0
-            player.win_rate = 0
+    all_players = []
+    for user in User.objects.all():
+        try:
+            profile = Profile.objects.get(user=user)
+            stats = profile.update_statistics()
+            
+            player = user
+            player.total_matches = profile.matches_played
+            player.total_wins = profile.wins
+            player.total_losses = profile.losses
+            player.win_rate = profile.get_win_rate()
+            player.rating = profile.rating
+            
+            if player.total_matches > 0:
+                all_players.append(player)
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=user)
+            stats = profile.update_statistics()
+            
+            player = user
+            player.total_matches = profile.matches_played
+            player.total_wins = profile.wins
+            player.total_losses = profile.losses
+            player.win_rate = profile.get_win_rate()
+            player.rating = profile.rating
+            
+            if player.total_matches > 0:
+                all_players.append(player)
+    
+    # Sort and get top 3
+    players = sorted(all_players, key=lambda x: (x.rating, x.total_matches, x.total_wins), reverse=True)[:3]
     
     # Get top 3 grounds
     from tampere_cricket.grounds.models import Ground
@@ -51,29 +69,44 @@ def home(request):
 def leaderboard(request):
     """Leaderboard page view"""
     from django.db.models import Count, Q, F
+    from tampere_cricket.accounts.models import Profile
     
-    # Get all users with their statistics
-    players = User.objects.annotate(
-        total_matches=Count('challenges_made', filter=Q(challenges_made__status='COMPLETED')) + 
-                     Count('challenges_received', filter=Q(challenges_received__status='COMPLETED')),
-        total_wins=Count('challenges_won'),
-        total_losses=Count('challenges_made', filter=Q(challenges_made__status='COMPLETED', challenges_made__winner__isnull=False)) + 
-                    Count('challenges_received', filter=Q(challenges_received__status='COMPLETED', challenges_received__winner__isnull=False)) - 
-                    Count('challenges_won')
-    ).filter(total_matches__gt=0).order_by('-total_wins', '-total_matches')
+    # Get all users with their profile statistics
+    players = []
+    for user in User.objects.all():
+        try:
+            profile = Profile.objects.get(user=user)
+            # Update statistics to ensure they're current
+            stats = profile.update_statistics()
+            
+            # Create a player object with the correct statistics
+            player = user
+            player.total_matches = profile.matches_played
+            player.total_wins = profile.wins
+            player.total_losses = profile.losses
+            player.win_rate = profile.get_win_rate()
+            player.rating = profile.rating
+            
+            # Only include players with matches
+            if player.total_matches > 0:
+                players.append(player)
+        except Profile.DoesNotExist:
+            # Create profile if it doesn't exist
+            profile = Profile.objects.create(user=user)
+            stats = profile.update_statistics()
+            
+            player = user
+            player.total_matches = profile.matches_played
+            player.total_wins = profile.wins
+            player.total_losses = profile.losses
+            player.win_rate = profile.get_win_rate()
+            player.rating = profile.rating
+            
+            if player.total_matches > 0:
+                players.append(player)
     
-    # Calculate ratings and win rates for each player
-    for player in players:
-        if player.total_matches > 0:
-            win_rate = (player.total_wins / player.total_matches) * 100
-            player.rating = win_rate + (player.total_matches * 10)  # Bonus for more matches
-            player.win_rate = round(win_rate, 1)
-        else:
-            player.rating = 0
-            player.win_rate = 0
-    
-    # Re-sort by rating
-    players = sorted(players, key=lambda x: x.rating, reverse=True)
+    # Sort by rating (descending), then by total_matches (descending), then by total_wins (descending)
+    players = sorted(players, key=lambda x: (x.rating, x.total_matches, x.total_wins), reverse=True)
     
     context = {
         'players': players,
