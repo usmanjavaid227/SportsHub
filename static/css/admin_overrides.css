@@ -1,0 +1,15 @@
+/* SportsHub admin dark theme overrides */
+:root{color-scheme:dark}
+body, #header, #content, .module, .app-auth .module{background:#000;color:#fff}
+#header{background:#000;border-bottom:1px solid #333}
+#header a:link, #header a:visited{color:#fff}
+a, a:link, a:visited{color:#FF9900}
+a:hover{color:#E68A00}
+.button, input[type=submit], input[type=button]{background:#FF9900;border-color:#FF9900;color:#000}
+.button:hover, input[type=submit]:hover, input[type=button]:hover{background:#E68A00;border-color:#E68A00;color:#fff}
+table, .table, .module caption, .module h2{color:#fff}
+th, td{border-color:#333}
+fieldset, .module{border-color:#222}
+select, input, textarea{background:#111;color:#fff;border-color:#333}
+select:focus, input:focus, textarea:focus{border-color:#FF9900;box-shadow:0 0 0 .2rem rgba(255,153,0,.15)}
+

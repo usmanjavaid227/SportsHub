@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Challenge - {{ challenge.challenger.username }} vs {{ challenge.opponent.username|default:"Open to All" }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-trash me-2"></i>Delete Challenge
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. The challenge will be permanently deleted.
+                    </div>
+                    
+                    <h5>Challenge Details:</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Challenger:</strong> {{ challenge.challenger.username }}</p>
+                            <p><strong>Opponent:</strong> {{ challenge.opponent.username|default:"Open to All" }}</p>
+                            <p><strong>Type:</strong> {{ challenge.get_challenge_type_display }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Date:</strong> {{ challenge.date|date:"F d, Y" }}</p>
+                            <p><strong>Time:</strong> {{ challenge.time|time:"g:i A" }}</p>
+                            <p><strong>Status:</strong> {{ challenge.get_status_display }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if challenge.metric and challenge.target_value %}
+                    <div class="mt-3">
+                        <h6>Challenge Metrics:</h6>
+                        <p><strong>{{ challenge.metric|title }}:</strong> {{ challenge.target_value }}</p>
+                        {% if challenge.over_count %}
+                        <p><strong>Overs:</strong> {{ challenge.over_count }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if challenge.description %}
+                    <div class="mt-3">
+                        <h6>Description:</h6>
+                        <p class="text-muted">{{ challenge.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger me-2">
+                            <i class="fa-solid fa-trash me-1"></i>Yes, Delete Challenge
+                        </button>
+                    </form>
+                    <a href="{% url 'challenge_detail' challenge.id %}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

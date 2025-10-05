@@ -1,0 +1,87 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:matches_timeslot_changelist' %}">{% trans 'Time slots' %}</a>
+&rsaquo; {% trans 'Bulk Create Time Slots' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h1>{% trans 'Bulk Create Time Slots' %}</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <fieldset class="module aligned">
+            <h2>{% trans 'Time Slot Configuration' %}</h2>
+            
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.ground.id_for_label }}">{{ form.ground.label }}:</label>
+                    {{ form.ground }}
+                    {% if form.ground.help_text %}
+                        <p class="help">{{ form.ground.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}:</label>
+                    {{ form.start_date }}
+                    {% if form.start_date.help_text %}
+                        <p class="help">{{ form.start_date.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}:</label>
+                    {{ form.end_date }}
+                    {% if form.end_date.help_text %}
+                        <p class="help">{{ form.end_date.help_text }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div>
+                    <label for="{{ form.time_slots.id_for_label }}">{{ form.time_slots.label }}:</label>
+                    {{ form.time_slots }}
+                    {% if form.time_slots.help_text %}
+                        <p class="help">{{ form.time_slots.help_text|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </fieldset>
+        
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Create Time Slots' %}" class="default" />
+            <a href="{% url 'admin:matches_timeslot_changelist' %}" class="button">{% trans 'Cancel' %}</a>
+        </div>
+    </form>
+    
+    <div class="help">
+        <h3>{% trans 'Instructions' %}</h3>
+        <ul>
+            <li>Select a ground for the time slots</li>
+            <li>Choose the date range (start and end dates)</li>
+            <li>Enter time slots in the format: <code>HH:MM-HH:MM:Price</code></li>
+            <li>One time slot per line</li>
+            <li>Example:
+                <pre>09:00-11:00:50.00
+11:00-13:00:60.00
+13:00-15:00:70.00
+15:00-17:00:80.00</pre>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

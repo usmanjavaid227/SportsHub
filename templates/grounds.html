@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% block title %}Grounds & Venues{% endblock %}
+{% block content %}
+{% load static %}
+<div class="container py-5">
+  <div class="section-heading mb-4">
+    <div class="bar"></div>
+    <h2 class="h4 m-0">Grounds & Venues</h2>
+  </div>
+  
+  <div class="row g-4">
+    <!-- Interactive Map -->
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="fa-solid fa-map me-2"></i>Interactive Map</h5>
+          <div id="selected-ground-info" class="text-muted small">
+            <i class="fa-solid fa-info-circle me-1"></i>Click on a ground to view details
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="rounded overflow-hidden">
+            <iframe id="mapFrame"
+              width="100%"
+              height="500"
+              frameborder="0"
+              scrolling="no"
+              marginheight="0"
+              marginwidth="0"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=23.835488%2C61.444324%2C23.855488%2C61.464324&layer=mapnik&marker=61.454324%2C23.845488">
+            </iframe>
+          </div>
+          <div class="small text-secondary mt-2">
+            <i class="fa-solid fa-location-dot me-1"></i>
+            <span id="coordinates">Lat: 61.454324, Lng: 23.845488</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Grounds List -->
+    <div class="col-12 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Available Grounds</h5>
+        </div>
+        <div class="card-body p-0">
+          {% if grounds %}
+            <div class="list-group list-group-flush">
+              {% for g in grounds %}
+              <div class="list-group-item list-group-item-action ground-item {% if forloop.first %}active{% endif %}" 
+                   data-lat="{{ g.lat|default:61.454324 }}" 
+                   data-lng="{{ g.lng|default:23.845488 }}"
+                   data-name="{{ g.name }}"
+                   data-address="{{ g.address }}">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1 text-tcc">{{ g.name }}</h6>
+                    <p class="mb-1 text-muted small">{{ g.address|default:"Address not provided" }}</p>
+                    {% if g.lat and g.lng %}
+                      <small class="text-secondary">
+                        <i class="fa-solid fa-map-pin me-1"></i>
+                        {{ g.lat }}, {{ g.lng }}
+                      </small>
+                    {% endif %}
+                  </div>
+                  <div class="ms-2">
+                    <i class="fa-solid fa-chevron-right text-muted"></i>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="p-4 text-center">
+              <i class="fa-solid fa-map-marked-alt fa-3x text-muted mb-3"></i>
+              <p class="text-muted">No grounds available at the moment.</p>
+              <small class="text-secondary">Check back later for new venues.</small>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Ground Details Card -->
+      <div class="card mt-4" id="ground-details-card" style="display: none;">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fa-solid fa-info-circle me-2"></i>Ground Details</h5>
+        </div>
+        <div class="card-body">
+          <div id="ground-details-content">
+            <!-- Content will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Ground Statistics -->
+  {% if grounds %}
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6 col-md-3">
+              <div class="text-tcc h4 mb-1">{{ grounds|length }}</div>
+              <div class="text-muted small">Total Grounds</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="text-tcc h4 mb-1">{{ grounds|length }}</div>
+              <div class="text-muted small">Available</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="text-tcc h4 mb-1">24/7</div>
+              <div class="text-muted small">Access</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="text-tcc h4 mb-1">Free</div>
+              <div class="text-muted small">Usage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Build OpenStreetMap embed URL
+    function buildOsmEmbedSrc(lat, lng) {
+        var dLat = 0.010;
+        var dLng = 0.010;
+        var bbox = [
+            (lng - dLng).toFixed(6),
+            (lat - dLat).toFixed(6),
+            (lng + dLng).toFixed(6),
+            (lat + dLat).toFixed(6)
+        ];
+        var marker = [lat.toFixed(6), lng.toFixed(6)];
+        return 'https://www.openstreetmap.org/export/embed.html?bbox=' +
+            encodeURIComponent(bbox.join(',')) + '&layer=mapnik&marker=' +
+            encodeURIComponent(marker.join(','));
+    }
+
+    // Update map with new coordinates
+    function updateMap(lat, lng, groundName) {
+        var frame = document.getElementById('mapFrame');
+        var coordinates = document.getElementById('coordinates');
+        var selectedInfo = document.getElementById('selected-ground-info');
+        
+        if (!frame) return;
+        
+        frame.src = buildOsmEmbedSrc(lat, lng);
+        coordinates.textContent = 'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
+        
+        if (groundName) {
+            selectedInfo.innerHTML = '<i class="fa-solid fa-map-pin me-1"></i>Viewing: ' + groundName;
+        }
+        
+        // Smooth scroll to map
+        frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Show ground details
+    function showGroundDetails(name, address, lat, lng) {
+        var detailsCard = document.getElementById('ground-details-card');
+        var detailsContent = document.getElementById('ground-details-content');
+        
+        if (!detailsCard || !detailsContent) return;
+        
+        detailsContent.innerHTML = `
+            <h6 class="text-tcc mb-3">${name}</h6>
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa-solid fa-map-marker-alt text-tcc me-2"></i>
+                    <strong>Address:</strong>
+                </div>
+                <p class="text-muted ms-4">${address || 'Address not provided'}</p>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa-solid fa-map-pin text-tcc me-2"></i>
+                    <strong>Coordinates:</strong>
+                </div>
+                <p class="text-muted ms-4">${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa-solid fa-clock text-tcc me-2"></i>
+                    <strong>Availability:</strong>
+                </div>
+                <p class="text-muted ms-4">24/7 Access</p>
+            </div>
+            <div class="mb-0">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa-solid fa-dollar-sign text-tcc me-2"></i>
+                    <strong>Cost:</strong>
+                </div>
+                <p class="text-muted ms-4">Free to use</p>
+            </div>
+        `;
+        
+        detailsCard.style.display = 'block';
+    }
+
+    // Handle ground item clicks
+    document.addEventListener('click', function(e) {
+        var groundItem = e.target.closest('.ground-item');
+        if (!groundItem) return;
+        
+        e.preventDefault();
+        
+        // Remove active class from all items
+        document.querySelectorAll('.ground-item').forEach(function(item) {
+            item.classList.remove('active');
+        });
+        
+        // Add active class to clicked item
+        groundItem.classList.add('active');
+        
+        // Get ground data
+        var lat = parseFloat(groundItem.getAttribute('data-lat')) || 61.454324;
+        var lng = parseFloat(groundItem.getAttribute('data-lng')) || 23.845488;
+        var name = groundItem.getAttribute('data-name');
+        var address = groundItem.getAttribute('data-address');
+        
+        // Update map and show details
+        updateMap(lat, lng, name);
+        showGroundDetails(name, address, lat, lng);
+    });
+
+    // Initialize with first ground if available
+    var firstGround = document.querySelector('.ground-item');
+    if (firstGround) {
+        var lat = parseFloat(firstGround.getAttribute('data-lat')) || 61.454324;
+        var lng = parseFloat(firstGround.getAttribute('data-lng')) || 23.845488;
+        var name = firstGround.getAttribute('data-name');
+        var address = firstGround.getAttribute('data-address');
+        
+        updateMap(lat, lng, name);
+        showGroundDetails(name, address, lat, lng);
+    }
+});
+</script>
+{% endblock %}
+
+

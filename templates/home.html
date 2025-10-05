@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home • SportsHub{% endblock %}
+{% block content %}
+  <!-- Hero Banner -->
+  <section class="hero position-relative">
+    <!-- Hero Image with extra top padding -->
+    <img class="hero-image" src="{% static 'img/hero.jpg' %}" alt="Cricket hero">
+
+    <!-- Transparent Overlay Layer -->
+    <div class="overlay"></div>
+
+    <!-- Content over the image -->
+    <div class="content container py-5">
+        <h1 class="mb-5">Challenge. Compete. Conquer Tampere Cricket.</h1>
+        <p class="lead mb-4">Join open single‑wicket challenges across Tampere and rise to the top.</p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+            <a href="{% url 'challenges_list' %}" class="btn btn-tcc btn-lg">
+                <i class="fa-solid fa-bullseye"></i> Join a Challenge
+            </a>
+            <a href="{% url 'leaderboard' %}" class="btn btn-outline-tcc btn-lg">
+                <i class="fa-solid fa-trophy"></i> View Leaderboard
+            </a>
+        </div>
+    </div>
+</section>
+
+
+  <div class="container py-5">
+    <!-- Recent Challenges -->
+    <div class="mb-5">
+      <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Recent Challenges</h2></div>
+      <div class="row g-4">
+        {% for ch in recent_challenges %}
+          <div class="col-12 col-md-6 col-xl-4 fade-in">
+            <div class="card h-100">
+              <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  {% if ch.status == 'OPEN' %}
+                    <span class="badge bg-success">OPEN</span>
+                  {% elif ch.status == 'PENDING' %}
+                    <span class="badge bg-warning text-dark">PENDING</span>
+                  {% elif ch.status == 'ACCEPTED' %}
+                    <span class="badge bg-info">ACCEPTED</span>
+                  {% elif ch.status == 'COMPLETED' %}
+                    <span class="badge bg-primary">COMPLETED</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ ch.status }}</span>
+                  {% endif %}
+                  <small class="text-secondary">{{ ch.created_at|date:'M d, Y' }}</small>
+                </div>
+                
+                <h5 class="card-title mb-1">
+                  <i class="fa-regular fa-user"></i> 
+                  <a href="{% url 'public_profile' ch.challenger.id %}" class="link-light text-decoration-none">{{ ch.challenger.username }}</a>
+                </h5>
+                
+                {% if ch.opponent %}
+                  <div class="text-secondary small mb-2">
+                    <i class="fa-solid fa-user-friends"></i> vs {{ ch.opponent.username }}
+                  </div>
+                {% else %}
+                  <div class="text-success small mb-2">
+                    <i class="fa-solid fa-globe"></i> Open to All
+                  </div>
+                {% endif %}
+                
+                {% if ch.challenge_type %}
+                  <div class="text-tcc small mb-2">
+                    <i class="fa-solid fa-bullseye"></i> {{ ch.get_challenge_type_display }}
+                  </div>
+                {% endif %}
+                
+                {% if ch.metric and ch.target_value %}
+                  <div class="text-info small mb-2">
+                    <i class="fa-solid fa-chart-line"></i> {{ ch.get_metric_display|default:ch.metric }}: {{ ch.target_value }}
+                  </div>
+                {% endif %}
+                
+                {% if ch.over_count %}
+                  <div class="text-secondary small mb-2">
+                    <i class="fa-solid fa-stopwatch"></i> {{ ch.over_count }} over{{ ch.over_count|pluralize }}
+                  </div>
+                {% endif %}
+                
+                {% if ch.condition_text %}
+                  <div class="text-muted small mb-2">
+                    <i class="fa-solid fa-quote-left"></i> {{ ch.condition_text|truncatechars:50 }}
+                  </div>
+                {% endif %}
+                
+                {% if ch.ground %}
+                  <div class="text-secondary small mb-2">
+                    <i class="fa-solid fa-location-dot"></i> 
+                    <a href="{% url 'ground_detail' ch.ground.id %}" class="text-decoration-none text-primary">
+                      {{ ch.ground.name }}
+                    </a>
+                  </div>
+                {% endif %}
+                
+                {% if ch.scheduled_at %}
+                  <div class="text-secondary small mb-3">
+                    <i class="fa-regular fa-calendar"></i> {{ ch.scheduled_at|date:'M d, H:i' }}
+                  </div>
+                {% endif %}
+                
+                {% if ch.status == 'COMPLETED' and ch.winner %}
+                  <div class="text-warning small mb-3">
+                    <i class="fa-solid fa-trophy"></i> Winner: {{ ch.winner.username }}
+                  </div>
+                {% endif %}
+                
+                <div class="mt-auto d-flex gap-2">
+                  <a href="{% url 'challenge_detail' ch.id %}" class="btn btn-outline-light btn-sm">
+                    <i class="fa-solid fa-eye"></i> View Details
+                  </a>
+                  {% if ch.status == 'OPEN' and user.is_authenticated and user != ch.challenger %}
+                    <a href="{% url 'challenge_detail' ch.id %}" class="btn btn-tcc btn-sm">
+                      <i class="fa-solid fa-handshake"></i> Accept
+                    </a>
+                  {% elif ch.status == 'PENDING' and user.is_authenticated and user == ch.opponent %}
+                    <a href="{% url 'challenge_accept' ch.id %}" class="btn btn-tcc btn-sm">
+                      <i class="fa-solid fa-check"></i> Accept
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12">
+            <div class="alert alert-secondary text-center">
+              <i class="fa-solid fa-info-circle me-2"></i>
+              No challenges yet. Be the first to create one!
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      {% if recent_challenges %}
+      <div class="text-center mt-4">
+        <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
+          <i class="fa-solid fa-list"></i> View All Challenges
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Leaderboard Preview -->
+    <div class="mb-5">
+      <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Top Players</h2></div>
+      <div class="card">
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle m-0">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Player</th>
+                <th scope="col">Matches</th>
+                <th scope="col">Wins</th>
+                <th scope="col">Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% with top=players|default_if_none:None %}
+              {% if top %}
+                {% for p in top|slice:":3" %}
+                <tr>
+                  <td>
+                    {% if forloop.counter == 1 %}
+                      <i class="fa-solid fa-crown text-warning me-2"></i>
+                    {% elif forloop.counter == 2 %}
+                      <i class="fa-solid fa-medal text-secondary me-2"></i>
+                    {% elif forloop.counter == 3 %}
+                      <i class="fa-solid fa-medal text-warning me-2"></i>
+                    {% endif %}
+                    {{ forloop.counter }}
+                  </td>
+                  <td><a href="{% url 'public_profile' p.id %}" class="link-light text-decoration-none fw-bold">{{ p.username }}</a></td>
+                  <td>{{ p.total_matches }}</td>
+                  <td>{{ p.total_wins }}</td>
+                  <td><span class="badge text-bg-warning">{{ p.rating|floatformat:0 }}</span></td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr><td colspan="5" class="text-center text-secondary">No players yet. Be the first to complete a challenge!</td></tr>
+              {% endif %}
+              {% endwith %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-body text-center">
+          <a href="{% url 'leaderboard' %}" class="btn btn-outline-tcc">
+            <i class="fa-solid fa-list me-2"></i>View All Challenges
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grounds & Venues -->
+    <div class="mb-5" id="grounds">
+      <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Top Grounds</h2></div>
+      <div class="row g-4">
+        {% for ground in top_grounds %}
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                  <i class="fa-solid fa-location-dot fa-2x text-primary"></i>
+                </div>
+                <div>
+                  <h5 class="card-title mb-1">
+                    <a href="{% url 'ground_detail' ground.id %}" class="text-decoration-none">
+                      {{ ground.name }}
+                    </a>
+                  </h5>
+                  <div class="text-secondary small">
+                    <i class="fa-solid fa-map-marker-alt"></i> {{ ground.location }}
+                  </div>
+                </div>
+              </div>
+              <div class="mb-2">
+                <span class="badge bg-info me-2">
+                  <i class="fa-solid fa-users"></i> {{ ground.capacity }} capacity
+                </span>
+                {% if ground.is_available %}
+                  <span class="badge bg-success">Available</span>
+                {% else %}
+                  <span class="badge bg-danger">Unavailable</span>
+                {% endif %}
+              </div>
+              {% if ground.facilities %}
+                <p class="card-text small text-muted">
+                  <i class="fa-solid fa-list"></i> {{ ground.facilities|truncatechars:60 }}
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body text-center py-5">
+              <i class="fa-solid fa-location-dot fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">No grounds available</h5>
+              <p class="text-muted">Check back later for available grounds.</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-4">
+        <a href="{% url 'grounds_list' %}" class="btn btn-outline-tcc">
+          <i class="fa-solid fa-list me-2"></i>View All Grounds
+        </a>
+      </div>
+    </div>
+
+    <!-- News & Updates -->
+    <div class="mb-5" id="news">
+      <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Latest News</h2></div>
+      <div class="row g-4">
+        {% for news_item in recent_news %}
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="card h-100">
+            {% if news_item.featured_image %}
+              <img src="{{ news_item.featured_image.url }}" class="card-img-top" alt="{{ news_item.title }}">
+            {% else %}
+              <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="fa-solid fa-newspaper fa-3x text-white"></i>
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ news_item.title }}</h5>
+              <p class="card-text flex-grow-1">{{ news_item.content|truncatechars:120 }}</p>
+              <div class="mt-auto">
+                <small class="text-muted">
+                  <i class="fa-solid fa-calendar"></i> {{ news_item.created_at|date:'M d, Y' }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body text-center py-5">
+              <i class="fa-solid fa-newspaper fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">No news available</h5>
+              <p class="text-muted">Check back later for updates.</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-4">
+        <a href="{% url 'news' %}" class="btn btn-outline-tcc">
+          <i class="fa-solid fa-list me-2"></i>View All News
+        </a>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="my-5">
+      <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">About</h2></div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-8">
+              <p class="mb-0">Our mission is to grow Tampere’s cricket community through open, accessible single‑wicket challenges. Play anywhere, anytime, and track your progress on the leaderboard.</p>
+            </div>
+            <div class="col-12 col-lg-4 text-center">
+              <i class="fa-solid fa-trophy fa-3x text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% comment %} <!-- Contact -->
+    <div class="my-5" id="contact">
+      <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">Contact</h2></div>
+      <div class="card">
+        <div class="card-body">
+          <form method="post" action="#">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" placeholder="Your name">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" placeholder="you@example.com">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Message</label>
+                <textarea class="form-control" rows="4" placeholder="How can we help?"></textarea>
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <button class="btn btn-tcc" type="submit">Send</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div> {% endcomment %}
+  </div>
+{% endblock %}
+
+

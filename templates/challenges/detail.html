@@ -1,0 +1,573 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Challenge Details • SportsHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content Column -->
+        <div class="col-12 col-lg-8">
+            <!-- Challenge Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1 class="h2 mb-0" style="color: var(--sh-orange);">{{ challenge.get_challenge_type_display|upper }} CHALLENGE</h1>
+                        {% if challenge.status == 'OPEN' %}
+                            <span class="badge bg-success fs-6">OPEN</span>
+                        {% elif challenge.status == 'PENDING' %}
+                            <span class="badge bg-warning text-dark fs-6">PENDING</span>
+                        {% elif challenge.status == 'ACCEPTED' %}
+                            <span class="badge bg-info fs-6">ACCEPTED</span>
+                        {% elif challenge.status == 'COMPLETED' %}
+                            <span class="badge bg-primary fs-6">COMPLETED</span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">{{ challenge.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Challenge Details Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3" style="color: var(--sh-orange);">
+                        <i class="fa-solid fa-clipboard-list me-2"></i>CHALLENGE DETAILS
+                    </h5>
+                    
+                    {% if challenge.condition_text %}
+                    <div class="mb-3">
+                        <p class="mb-2"><strong>Description:</strong></p>
+                        <div class="bg-primary bg-opacity-10 border border-primary border-opacity-25 p-3 rounded-3">
+                            <div class="text-primary fw-medium">
+                                <i class="fa-solid fa-quote-left me-2"></i>
+                                {{ challenge.condition_text }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1"><strong>Sport:</strong> Cricket</p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1"><strong>Type:</strong> {{ challenge.get_challenge_type_display }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="mb-1"><strong>Created:</strong> {{ challenge.created_at|date:'M d, Y H:i' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Section -->
+            {% if challenge.scheduled_at or challenge.date or challenge.time %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3" style="color: var(--sh-orange);">
+                        <i class="fa-solid fa-calendar me-2"></i>SCHEDULE
+                    </h5>
+                    
+                    <div class="row g-3">
+                        {% if challenge.scheduled_at %}
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1">
+                                <i class="fa-regular fa-calendar me-2"></i>
+                                <strong>Date:</strong> {{ challenge.scheduled_at|date:'M d, Y' }}
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1">
+                                <i class="fa-solid fa-clock me-2"></i>
+                                <strong>Time:</strong> {{ challenge.scheduled_at|date:'H:i' }}
+                                {% if challenge.duration %}
+                                    - {{ challenge.scheduled_at|date:'H:i'|add:challenge.duration|date:'H:i' }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        {% elif challenge.date and challenge.time %}
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1">
+                                <i class="fa-regular fa-calendar me-2"></i>
+                                <strong>Date:</strong> {{ challenge.date|date:'M d, Y' }}
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <p class="mb-1">
+                                <i class="fa-solid fa-clock me-2"></i>
+                                <strong>Time:</strong> {{ challenge.time|date:'H:i' }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.ground %}
+                        <div class="col-12">
+                            <p class="mb-1">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                <strong>Location:</strong> {{ challenge.ground.name }}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Creator Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3" style="color: var(--sh-orange);">
+                        <i class="fa-solid fa-user me-2"></i>CREATOR
+                    </h5>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            {% if challenge.challenger.avatar %}
+                                <img src="{{ challenge.challenger.avatar.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ challenge.challenger.username }}">
+                            {% else %}
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: var(--sh-orange); color: #000;">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none">{{ challenge.challenger.username }}</a>
+                            </h6>
+                            <p class="mb-1 small text-muted">
+                                <strong>Role:</strong> {{ challenge.challenger.get_role_display|default:"Player" }}
+                            </p>
+                            <p class="mb-1 small text-muted">
+                                <strong>City:</strong> {{ challenge.challenger.city|default:"Not specified" }}
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                <strong>Member since:</strong> {{ challenge.challenger.date_joined|date:'M Y' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opponent Section -->
+            {% if challenge.opponent %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3" style="color: var(--sh-orange);">
+                        <i class="fa-solid fa-user-friends me-2"></i>OPPONENT
+                    </h5>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            {% if challenge.opponent.avatar %}
+                                <img src="{{ challenge.opponent.avatar.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="{{ challenge.opponent.username }}">
+                            {% else %}
+                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: var(--sh-orange); color: #000;">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--sh-orange);">
+                                <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">{{ challenge.opponent.username }}</a>
+                            </h6>
+                            <p class="mb-1 small text-muted">
+                                <strong>Role:</strong> {{ challenge.opponent.get_role_display|default:"Player" }}
+                            </p>
+                            <p class="mb-1 small text-muted">
+                                <strong>City:</strong> {{ challenge.opponent.city|default:"Not specified" }}
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                <strong>Member since:</strong> {{ challenge.opponent.date_joined|date:'M Y' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Challenger</h6>
+                            <p class="mb-0">
+                                <i class="fa-regular fa-user me-2"></i>
+                                <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none">{{ challenge.challenger.username }}</a>
+                            </p>
+                        </div>
+                        
+                        {% if challenge.opponent %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Opponent</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-user-friends me-2"></i>
+                                <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">{{ challenge.opponent.username }}</a>
+                            </p>
+                        </div>
+                        {% else %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Availability</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-globe me-2"></i>
+                                <span class="text-success fw-medium">Open to All Players</span>
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.challenge_type %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Challenge Type</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-bullseye me-2"></i>
+                                {{ challenge.get_challenge_type_display }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.metric %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Challenge Metric</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-chart-line me-2"></i>
+                                {{ challenge.metric }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.target_value %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Target Value</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-target me-2"></i>
+                                {{ challenge.target_value }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.over_count %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Overs</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-stopwatch me-2"></i>
+                                {{ challenge.over_count }} over{{ challenge.over_count|pluralize }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.ground %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Ground</h6>
+                            <p class="mb-0">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                <a href="{% url 'ground_detail' challenge.ground.id %}" class="text-decoration-none text-primary fw-medium">
+                                    {{ challenge.ground.name }}
+                                </a>
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if challenge.scheduled_at %}
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Scheduled Time</h6>
+                            <p class="mb-0">
+                                <i class="fa-regular fa-calendar me-2"></i>
+                                {{ challenge.scheduled_at|date:'M d, Y H:i' }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="col-12 col-md-6">
+                            <h6 class="text-muted mb-1">Created</h6>
+                            <p class="mb-0">
+                                <i class="fa-regular fa-clock me-2"></i>
+                                {{ challenge.created_at|date:'M d, Y H:i' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if challenge.condition_text %}
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-2">
+                            <i class="fa-solid fa-clipboard-list me-2"></i>Challenge Conditions
+                        </h6>
+                        <div class="bg-primary bg-opacity-10 border border-primary border-opacity-25 p-3 rounded-3">
+                            <div class="text-primary fw-medium">
+                                <i class="fa-solid fa-quote-left me-2"></i>
+                                {{ challenge.condition_text }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if challenge.status == 'COMPLETED' and challenge.winner %}
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-trophy me-2"></i>
+                        <strong>Winner:</strong> {{ challenge.winner.username }}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2">
+                        {% if challenge.status == 'OPEN' and user.is_authenticated and user != challenge.challenger %}
+                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                <i class="fa-solid fa-handshake"></i> Accept Challenge
+                            </a>
+                        {% elif challenge.status == 'PENDING' and user.is_authenticated and user == challenge.opponent %}
+                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                <i class="fa-solid fa-check"></i> Accept Challenge
+                            </a>
+                        {% endif %}
+                        
+                        {% if user.is_authenticated and user == challenge.challenger %}
+                            {% if challenge.status == 'PENDING' or challenge.status == 'OPEN' %}
+                                <a href="{% url 'challenge_edit' challenge.id %}" class="btn btn-outline-primary">
+                                    <i class="fa-solid fa-edit"></i> Edit
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'challenge_delete' challenge.id %}" class="btn btn-outline-danger">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Admin Controls -->
+                        {% if user.is_authenticated and user.is_staff %}
+                            <div class="mt-3 pt-3 border-top">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fa-solid fa-shield-halved me-2"></i>Admin Controls
+                                </h6>
+                                
+                                {% if challenge.status == 'COMPLETED' %}
+                                    <div class="alert alert-success">
+                                        <i class="fa-solid fa-check-circle me-2"></i>
+                                        <strong>Challenge Completed!</strong>
+                                        {% if challenge.winner %}
+                                            Winner: {{ challenge.winner.username }}
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if challenge.match_result %}
+                                        <div class="mb-3">
+                                            <h6 class="text-muted">Match Statistics</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <p><strong>{{ challenge.challenger.username }}:</strong></p>
+                                                    <ul class="list-unstyled small">
+                                                        <li>Runs: {{ challenge.match_result.challenger_runs }}</li>
+                                                        <li>Wickets: {{ challenge.match_result.challenger_wickets }}</li>
+                                                        <li>Sixes: {{ challenge.match_result.challenger_sixes }}</li>
+                                                        <li>Fours: {{ challenge.match_result.challenger_fours }}</li>
+                                                        <li>Dots: {{ challenge.match_result.challenger_dots }}</li>
+                                                    </ul>
+                                                </div>
+                                                {% if challenge.opponent %}
+                                                <div class="col-md-6">
+                                                    <p><strong>{{ challenge.opponent.username }}:</strong></p>
+                                                    <ul class="list-unstyled small">
+                                                        <li>Runs: {{ challenge.match_result.opponent_runs }}</li>
+                                                        <li>Wickets: {{ challenge.match_result.opponent_wickets }}</li>
+                                                        <li>Sixes: {{ challenge.match_result.opponent_sixes }}</li>
+                                                        <li>Fours: {{ challenge.match_result.opponent_fours }}</li>
+                                                        <li>Dots: {{ challenge.match_result.opponent_dots }}</li>
+                                                    </ul>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <a href="{% url 'admin_update_match_result' challenge.id %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-chart-line me-1"></i>Update Statistics
+                                    </a>
+                                {% elif challenge.status == 'ACCEPTED' %}
+                                    <div class="alert alert-info">
+                                        <i class="fa-solid fa-info-circle me-2"></i>
+                                        Challenge has been accepted and is ready for match.
+                                    </div>
+                                    
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'admin_update_match_result' challenge.id %}" class="btn btn-primary btn-sm">
+                                            <i class="fa-solid fa-chart-line me-1"></i>Update Match Result
+                                        </a>
+                                        <a href="{% url 'admin_select_winner' challenge.id %}" class="btn btn-warning btn-sm">
+                                            <i class="fa-solid fa-trophy me-1"></i>Select Winner
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-secondary">
+                                        <i class="fa-solid fa-clock me-2"></i>
+                                        Challenge is {{ challenge.get_status_display|lower }}. Admin controls will be available when challenge is accepted.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'challenges_list' %}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Challenges
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Countdown Timer for Scheduled Challenges -->
+            {% if challenge.scheduled_at %}
+                <div class="card mt-4" id="countdown-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title mb-3">
+                            <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>
+                            {% if challenge.status == 'ACCEPTED' %}
+                                Challenge Starts In
+                            {% elif challenge.status == 'PENDING' %}
+                                Challenge Scheduled For
+                            {% elif challenge.status == 'OPEN' %}
+                                Challenge Available Until
+                            {% else %}
+                                Challenge Time
+                            {% endif %}
+                        </h5>
+                        <div id="countdown-timer" class="display-4 fw-bold mb-3" style="color: var(--sh-orange);">
+                            <div class="row text-center">
+                                <div class="col-3">
+                                    <div class="countdown-item">
+                                        <div id="days" class="countdown-number">00</div>
+                                        <div class="countdown-label">Days</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="countdown-item">
+                                        <div id="hours" class="countdown-number">00</div>
+                                        <div class="countdown-label">Hours</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="countdown-item">
+                                        <div id="minutes" class="countdown-number">00</div>
+                                        <div class="countdown-label">Minutes</div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="countdown-item">
+                                        <div id="seconds" class="countdown-number">00</div>
+                                        <div class="countdown-label">Seconds</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mb-0">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            <strong>Challenge Time:</strong> {{ challenge.scheduled_at|date:'F d, Y \a\t H:i' }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if challenge.scheduled_at %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the scheduled time from Django template
+    const scheduledTime = new Date('{{ challenge.scheduled_at|date:"c" }}');
+    
+    function updateCountdown() {
+        const now = new Date();
+        const timeLeft = scheduledTime - now;
+        
+        if (timeLeft <= 0) {
+            // Challenge time has passed
+            const status = '{{ challenge.status }}';
+            let message = '';
+            
+            if (status === 'ACCEPTED') {
+                message = '<i class="fa-solid fa-play me-2"></i><strong>Challenge has started!</strong>';
+            } else if (status === 'PENDING') {
+                message = '<i class="fa-solid fa-clock me-2"></i><strong>Challenge time has passed</strong>';
+            } else if (status === 'OPEN') {
+                message = '<i class="fa-solid fa-exclamation-triangle me-2"></i><strong>Challenge time has passed</strong>';
+            } else {
+                message = '<i class="fa-solid fa-info-circle me-2"></i><strong>Challenge time has passed</strong>';
+            }
+            
+            document.getElementById('countdown-timer').innerHTML = `
+                <div class="alert alert-warning text-center">
+                    ${message}
+                </div>
+            `;
+            return;
+        }
+        
+        // Calculate time components
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        // Update the countdown display
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        
+        // Add pulsing effect when less than 1 hour remaining
+        if (timeLeft < 3600000) { // 1 hour in milliseconds
+            document.getElementById('countdown-card').style.animation = 'pulse 1s infinite';
+        }
+    }
+    
+    // Update countdown immediately
+    updateCountdown();
+    
+    // Update countdown every second
+    setInterval(updateCountdown, 1000);
+});
+
+// Add CSS for pulsing animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    
+    .countdown-item {
+        margin-bottom: 1rem;
+    }
+    
+    .countdown-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--sh-orange);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .countdown-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--sh-gray);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 0.5rem;
+    }
+    
+    #countdown-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        border: 1px solid rgba(255, 153, 0, 0.3);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .countdown-number {
+            font-size: 2rem;
+        }
+        
+        .countdown-label {
+            font-size: 0.75rem;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endif %}
+{% endblock %}

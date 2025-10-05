@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Accept Challenge{% endblock %}
+{% block content %}
+<div class="container py-5">
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card border-success">
+      <div class="card-header bg-success text-white">
+        <h5 class="card-title mb-0"><i class="fas fa-handshake me-2"></i>Accept Challenge</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>You are about to accept this challenge!</strong> Once accepted, the challenge cannot be cancelled.
+        </div>
+        
+        <h6 class="text-tcc mb-3">Challenge Details:</h6>
+        <div class="mb-3">
+          <p><strong>Creator:</strong> {{ challenge.creator.username }}</p>
+          <p><strong>Type:</strong> {{ challenge.get_challenge_type_display }}</p>
+          <p><strong>Description:</strong> {{ challenge.condition_text|default:'No description' }}</p>
+          <p><strong>Status:</strong> <span class="badge bg-warning">{{ challenge.status }}</span></p>
+          {% if challenge.scheduled_at %}
+          <p><strong>Scheduled:</strong> {{ challenge.scheduled_at|date:'M d, Y H:i' }}</p>
+          {% endif %}
+          {% if challenge.ground %}
+          <p><strong>Location:</strong> {{ challenge.ground.name }}</p>
+          {% endif %}
+        </div>
+        
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Important:</strong> Make sure you understand the challenge requirements and are available for the scheduled time.
+        </div>
+        
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-check me-2"></i>Yes, Accept Challenge
+            </button>
+            <a href="{% url 'challenge_detail' challenge.id %}" class="btn btn-outline-tcc">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+{% endblock %}

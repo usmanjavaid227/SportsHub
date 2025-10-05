@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Challenge • SportsHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h4 mb-0">
+                            <i class="fa-solid fa-edit me-2"></i>
+                            Edit Challenge
+                        </h1>
+                        <span class="badge bg-warning text-dark">{{ challenge.status }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if challenge.status == 'PENDING' %}
+                        <div class="alert alert-info">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            <strong>Note:</strong> You can only edit this challenge while it's pending (not yet accepted by an opponent). 
+                            Once an opponent accepts the challenge, it cannot be edited.
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Opponent Selection -->
+                            <div class="col-12">
+                                <label for="{{ form.opponent.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-user-friends me-1"></i>
+                                    {{ form.opponent.label }}
+                                </label>
+                                {{ form.opponent }}
+                                {% if form.opponent.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.opponent.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.opponent.help_text }}</div>
+                            </div>
+
+                            <!-- Challenge Type -->
+                            <div class="col-12 col-md-6">
+                                <label for="{{ form.challenge_type.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-bullseye me-1"></i>
+                                    {{ form.challenge_type.label }}
+                                </label>
+                                {{ form.challenge_type }}
+                                {% if form.challenge_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.challenge_type.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.challenge_type.help_text }}</div>
+                            </div>
+
+                            <!-- Ground Selection -->
+                            <div class="col-12 col-md-6">
+                                <label for="{{ form.ground.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-location-dot me-1"></i>
+                                    {{ form.ground.label }}
+                                </label>
+                                {{ form.ground }}
+                                {% if form.ground.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.ground.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.ground.help_text }}</div>
+                            </div>
+
+                            <!-- Challenge Conditions -->
+                            <div class="col-12">
+                                <label for="{{ form.condition_text.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-quote-left me-1"></i>
+                                    {{ form.condition_text.label }}
+                                </label>
+                                {{ form.condition_text }}
+                                {% if form.condition_text.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.condition_text.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.condition_text.help_text }}</div>
+                            </div>
+
+                            <!-- Date and Time -->
+                            <div class="col-12 col-md-6">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">
+                                    <i class="fa-regular fa-calendar me-1"></i>
+                                    {{ form.date.label }}
+                                </label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.date.help_text }}</div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="{{ form.time.id_for_label }}" class="form-label">
+                                    <i class="fa-regular fa-clock me-1"></i>
+                                    {{ form.time.label }}
+                                </label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.time.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.time.help_text }}</div>
+                            </div>
+
+                            <!-- Duration -->
+                            <div class="col-12 col-md-6">
+                                <label for="{{ form.duration.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-hourglass-half me-1"></i>
+                                    {{ form.duration.label }}
+                                </label>
+                                {{ form.duration }}
+                                {% if form.duration.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.duration.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.duration.help_text }}</div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    <i class="fa-solid fa-align-left me-1"></i>
+                                    {{ form.description.label }}
+                                </label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">{{ form.description.help_text }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-tcc">
+                                <i class="fa-solid fa-save me-1"></i>
+                                Update Challenge
+                            </button>
+                            
+                            <a href="{% url 'challenge_detail' challenge.id %}" class="btn btn-outline-secondary">
+                                <i class="fa-solid fa-times me-1"></i>
+                                Cancel
+                            </a>
+                            
+                            <a href="{% url 'challenges_list' %}" class="btn btn-outline-secondary">
+                                <i class="fa-solid fa-arrow-left me-1"></i>
+                                Back to Challenges
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

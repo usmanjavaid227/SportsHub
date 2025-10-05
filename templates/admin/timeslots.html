@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Time Slots Management{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="section-heading m-0">
+      <div class="bar"></div>
+      <h2 class="h4 m-0">Time Slots Management</h2>
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-outline-tcc">
+      <i class="fa-solid fa-arrow-left me-2"></i>Back to Home
+    </a>
+  </div>
+
+  <!-- Create New Time Slot -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0"><i class="fa-solid fa-plus me-2"></i>Create New Time Slot</h5>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Date</label>
+            <input type="date" name="date" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Start Time</label>
+            <input type="time" name="start_time" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">End Time</label>
+            <input type="time" name="end_time" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Max Challenges</label>
+            <input type="number" name="max_challenges" class="form-control" value="1" min="1" required>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button type="submit" class="btn btn-tcc">
+            <i class="fa-solid fa-plus me-2"></i>Create Time Slot
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Time Slots List -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0"><i class="fa-solid fa-clock me-2"></i>Existing Time Slots</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if time_slots %}
+        <div class="table-responsive">
+          <table class="table table-dark table-hover align-middle m-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Max Challenges</th>
+                <th>Status</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for slot in time_slots %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-calendar text-tcc me-2"></i>
+                    <strong>{{ slot.date|date:"M d, Y" }}</strong>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-clock text-tcc me-2"></i>
+                    <strong>{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</strong>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge bg-info">{{ slot.max_challenges }}</span>
+                </td>
+                <td>
+                  {% if slot.is_active %}
+                    <span class="badge bg-success">Active</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+                <td>{{ slot.created_by.username }}</td>
+                <td>{{ slot.created_at|date:"M d, Y H:i" }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="{% url 'admin_timeslot_edit' slot.id %}" class="btn btn-sm btn-outline-tcc">
+                      <i class="fa-solid fa-edit"></i>
+                    </a>
+                    
+                    <form method="post" class="d-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="toggle">
+                      <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                      <button type="submit" class="btn btn-sm {% if slot.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                        <i class="fa-solid fa-{% if slot.is_active %}pause{% else %}play{% endif %}"></i>
+                      </button>
+                    </form>
+                    
+                    <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this time slot? This action cannot be undone.')">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <i class="fa-solid fa-clock fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No time slots created yet</h5>
+          <p class="text-secondary">Create your first time slot to get started.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Usage Instructions -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="mb-0"><i class="fa-solid fa-info-circle me-2"></i>How Time Slots Work</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h6 class="text-tcc">For Admins:</h6>
+          <ul class="list-unstyled">
+            <li><i class="fa-solid fa-check text-success me-2"></i>Create time slots (e.g., 10:00-11:00, 11:00-12:00)</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Set maximum challenges per slot</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Activate/deactivate slots as needed</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Edit existing slots</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h6 class="text-tcc">For Users:</h6>
+          <ul class="list-unstyled">
+            <li><i class="fa-solid fa-check text-success me-2"></i>Can only schedule challenges during active time slots</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Cannot create challenges outside predefined slots</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>See available slots when creating challenges</li>
+            <li><i class="fa-solid fa-check text-success me-2"></i>Slots show availability in real-time</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

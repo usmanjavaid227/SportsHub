@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">My Profile</h2></div>
+<div class="row g-4">
+  <!-- Profile Card -->
+  <div class="col-12 col-lg-4">
+    <div class="card text-center">
+      <div class="card-body">
+        {% if user.avatar and user.avatar.url %}
+        <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+        {% else %}
+        <img src="{% static 'img/avatar-placeholder.png' %}" alt="Avatar" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+        {% endif %}
+        <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+        <p class="text-muted">{{ user.city }}</p>
+        <div class="mb-3">
+          <span class="badge bg-primary">{{ user.get_role_display }}</span>
+          <span class="badge bg-secondary">{{ user.get_experience_level_display }}</span>
+        </div>
+        {% if user.bio %}
+        <p class="small text-muted">{{ user.bio|truncatewords:20 }}</p>
+        {% endif %}
+        <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+      </div>
+    </div>
+
+    <!-- Cricket Details -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0">Cricket Details</h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6 mb-2">
+            <div class="small text-muted">Role</div>
+            <div class="fw-bold">{{ user.get_role_display }}</div>
+          </div>
+          <div class="col-6 mb-2">
+            <div class="small text-muted">Experience</div>
+            <div class="fw-bold">{{ user.years_playing }} years</div>
+          </div>
+          {% if user.preferred_batting_style %}
+          <div class="col-6 mb-2">
+            <div class="small text-muted">Batting</div>
+            <div class="fw-bold">{{ user.get_preferred_batting_style_display }}</div>
+          </div>
+          {% endif %}
+          {% if user.preferred_bowling_style %}
+          <div class="col-6 mb-2">
+            <div class="small text-muted">Bowling</div>
+            <div class="fw-bold">{{ user.get_preferred_bowling_style_display }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats and Charts -->
+  <div class="col-12 col-lg-8">
+    <!-- Basic Stats -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">Match Statistics</h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Matches</div>
+            <div class="display-6">{{ user.profile.matches_played }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Wins</div>
+            <div class="display-6 text-success">{{ user.profile.wins }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Losses</div>
+            <div class="display-6 text-danger">{{ user.profile.losses }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Rating</div>
+            <div class="display-6">{{ user.profile.rating|floatformat:0 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Win/Loss Chart -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">Win/Loss Ratio</h6>
+      </div>
+      <div class="card-body">
+        <canvas id="winLossChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Cricket Performance Stats -->
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">Cricket Performance</h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Runs</div>
+            <div class="h4">{{ user.profile.runs }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Wickets</div>
+            <div class="h4">{{ user.profile.wickets }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Batting Rating</div>
+            <div class="h4">{{ user.profile.batting_rating|floatformat:0 }}</div>
+          </div>
+          <div class="col-6 col-md-3 mb-3">
+            <div class="fw-bold text-muted">Bowling Rating</div>
+            <div class="h4">{{ user.profile.bowling_rating|floatformat:0 }}</div>
+          </div>
+        </div>
+        
+        <!-- Performance Chart -->
+        <div class="mt-4">
+          <canvas id="performanceChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Win/Loss Ratio Chart
+const winLossCtx = document.getElementById('winLossChart').getContext('2d');
+const winLossChart = new Chart(winLossCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Wins', 'Losses'],
+        datasets: [{
+            data: [{{ user.profile.wins }}, {{ user.profile.losses }}],
+            backgroundColor: ['#28a745', '#dc3545'],
+            borderWidth: 2,
+            borderColor: '#fff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Performance Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+const performanceChart = new Chart(performanceCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
+        datasets: [{
+            label: 'Performance',
+            data: [{{ user.profile.runs }}, {{ user.profile.wickets }}, {{ user.profile.batting_rating|floatformat:0 }}, {{ user.profile.bowling_rating|floatformat:0 }}],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

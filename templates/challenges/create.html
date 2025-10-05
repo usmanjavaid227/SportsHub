@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Challenge{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="row justify-content-center">
+    <div class="col-md-8">
+    <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Create New Challenge</h4>
+        </div>
+      <div class="card-body">
+          <!-- Active Challenge Warning -->
+          <div class="alert alert-info mb-4">
+            <i class="fa-solid fa-info-circle me-2"></i>
+            <strong>Challenge Creation Rule:</strong> You can only have one active challenge at a time. 
+            Complete or cancel your current challenge before creating a new one.
+          </div>
+          
+          <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+            
+            <!-- Sport Selection (Fixed) -->
+            <div class="mb-3">
+              <label class="form-label">Sport <span class="text-danger">*</span></label>
+              <select class="form-select" disabled style="background-color: #f8f9fa; color: #000;">
+                <option value="cricket" selected>Cricket</option>
+              </select>
+              <div class="form-text" style="color: #000;">Currently only Cricket is supported</div>
+            </div>
+
+            <!-- Opponent Selection -->
+          <div class="mb-3">
+              <label class="form-label">Opponent <span class="text-danger">*</span></label>
+            {{ form.opponent }}
+            {% if form.opponent.errors %}
+              <div class="text-danger small">{{ form.opponent.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+            <!-- Challenge Type -->
+            <div class="mb-3">
+              <label class="form-label">Challenge Type <span class="text-danger">*</span></label>
+              {{ form.challenge_type }}
+              {% if form.challenge_type.errors %}
+                <div class="text-danger small">{{ form.challenge_type.errors|striptags }}</div>
+              {% endif %}
+            </div>
+
+        <!-- Challenge Details -->
+        <div class="mb-3">
+          <label class="form-label">Challenge Description <span class="text-danger">*</span></label>
+          {{ form.condition_text }}
+          <div class="form-text">
+            <i class="fa-solid fa-magic me-1"></i>This description will be automatically generated based on your selections above. You can edit it if needed.
+          </div>
+          {% if form.condition_text.errors %}
+            <div class="text-danger small">{{ form.condition_text.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+            <!-- Challenge Metrics -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Challenge Metric <span class="text-danger">*</span></label>
+                  {{ form.metric }}
+                  {% if form.metric.errors %}
+                    <div class="text-danger small">{{ form.metric.errors|striptags }}</div>
+                  {% endif %}
+                  <div class="form-text">What will be measured? (e.g., Runs, Wickets, Sixes)</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Target Value <span class="text-danger">*</span></label>
+                  {{ form.target_value }}
+                  {% if form.target_value.errors %}
+                    <div class="text-danger small">{{ form.target_value.errors|striptags }}</div>
+                  {% endif %}
+                  <div class="form-text">What is the target to achieve?</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label">Number of Overs <span class="text-danger">*</span></label>
+                  {{ form.over_count }}
+                  {% if form.over_count.errors %}
+                    <div class="text-danger small">{{ form.over_count.errors|striptags }}</div>
+                  {% endif %}
+                  <div class="form-text">How many overs for this challenge?</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date Selection -->
+            <div class="mb-3">
+              <label class="form-label">Challenge Date <span class="text-danger">*</span></label>
+              <div class="input-group">
+                {{ form.date }}
+                <button type="button" class="btn btn-outline-info" id="show-calendar-btn">
+                  <i class="fa-solid fa-calendar"></i>
+                </button>
+              </div>
+              <div class="form-text">
+                <i class="fa-solid fa-circle text-success me-1"></i>Green: Available slots
+                <i class="fa-solid fa-circle text-warning me-1 ms-3"></i>Yellow: All slots booked
+                <i class="fa-solid fa-circle text-danger me-1 ms-3"></i>Red: No slots available
+              </div>
+              {% if form.date.errors %}
+                <div class="text-danger small">{{ form.date.errors|striptags }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Simple Calendar Modal -->
+            <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="calendarModalLabel">Select Challenge Date</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>Quick Date Selection</h6>
+                        <div class="d-grid gap-2">
+                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(0)">Today</button>
+                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(1)">Tomorrow</button>
+                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(2)">Day After Tomorrow</button>
+                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(3)">In 3 Days</button>
+                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(7)">Next Week</button>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>Manual Date Entry</h6>
+                        <div class="mb-3">
+                          <label class="form-label">Select Date</label>
+                          <input type="date" id="manual-date-input" class="form-control" min="2024-10-04">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="selectManualDate()">Use This Date</button>
+                      </div>
+                    </div>
+                    <div class="mt-3">
+                      <div class="alert alert-info">
+                        <small>
+                          <i class="fa-solid fa-circle text-success me-1"></i>Green: Available slots
+                          <i class="fa-solid fa-circle text-warning me-1 ms-3"></i>Yellow: All slots booked
+                          <i class="fa-solid fa-circle text-danger me-1 ms-3"></i>Red: No slots available
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Time Slot Selection -->
+            <div class="mb-3">
+              <label class="form-label">Available Time Slots <span class="text-danger">*</span></label>
+              <select name="time_slot" id="time-slot-select" class="form-select" required>
+                <option value="">Select a date first</option>
+              </select>
+              <div id="time-slot-loading" class="form-text" style="display: none;">
+                <i class="fa-solid fa-spinner fa-spin me-1"></i>Loading time slots...
+              </div>
+              <div id="time-slot-error" class="form-text text-danger" style="display: none;">
+                Error loading time slots. Please try again.
+              </div>
+              {% if form.time_slot.errors %}
+                <div class="text-danger small">{{ form.time_slot.errors|striptags }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Ground Selection -->
+          <div class="mb-3">
+              <label class="form-label">Ground <span class="text-danger">*</span></label>
+            {{ form.ground }}
+            {% if form.ground.errors %}
+              <div class="text-danger small">{{ form.ground.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+            <!-- Summary -->
+          <div class="mb-3">
+              <label class="form-label">Summary/Comments</label>
+              {{ form.summary }}
+              {% if form.summary.errors %}
+                <div class="text-danger small">{{ form.summary.errors|striptags }}</div>
+              {% endif %}
+              <div class="form-text">Additional comments or special conditions (optional)</div>
+          </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-plus me-2"></i>Create Challenge
+              </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const challengeTypeSelect = document.getElementById('id_challenge_type');
+    const conditionTextInput = document.querySelector('textarea[name="condition_text"]');
+    const metricSelect = document.querySelector('select[name="metric"]');
+    const targetValueInput = document.querySelector('input[name="target_value"]');
+    const overCountInput = document.querySelector('input[name="over_count"]');
+    const dateInput = document.querySelector('input[name="date"]');
+    const timeSlotSelect = document.getElementById('time-slot-select');
+    const timeSlotLoading = document.getElementById('time-slot-loading');
+    const timeSlotError = document.getElementById('time-slot-error');
+
+    // Function to generate challenge description
+    function generateChallengeDescription() {
+        const challengeType = challengeTypeSelect ? challengeTypeSelect.value : '';
+        const metric = metricSelect ? metricSelect.value : '';
+        const targetValue = targetValueInput ? targetValueInput.value : '';
+        const overCount = overCountInput ? overCountInput.value : '';
+        
+        // Show loading indicator
+        if (conditionTextInput) {
+            conditionTextInput.style.borderColor = '#0d6efd';
+            conditionTextInput.style.backgroundColor = '#f8f9fa';
+        }
+        
+        if (metric && targetValue && overCount) {
+            let description = '';
+            const metricText = metric.toLowerCase();
+            const oversText = overCount === '1' ? 'over' : 'overs';
+            
+            if (challengeType === 'BATTING') {
+                if (metric === 'runs') {
+                    description = `I will score at least ${targetValue} runs in ${overCount} ${oversText}.`;
+                } else if (metric === 'sixes') {
+                    description = `I will hit at least ${targetValue} six${targetValue > 1 ? 'es' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'fours') {
+                    description = `I will hit at least ${targetValue} four${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'wickets') {
+                    description = `I will take at least ${targetValue} wicket${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'dots') {
+                    description = `I will bowl at least ${targetValue} dot ball${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                }
+            } else if (challengeType === 'BOWLING') {
+                if (metric === 'runs') {
+                    description = `I will not concede more than ${targetValue} runs in ${overCount} ${oversText}.`;
+                } else if (metric === 'sixes') {
+                    description = `I will not concede more than ${targetValue} six${targetValue > 1 ? 'es' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'fours') {
+                    description = `I will not concede more than ${targetValue} four${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'wickets') {
+                    description = `I will take at least ${targetValue} wicket${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'dots') {
+                    description = `I will bowl at least ${targetValue} dot ball${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                }
+            } else if (challengeType === 'SINGLE_WICKET') {
+                if (metric === 'runs') {
+                    description = `I will score at least ${targetValue} runs in ${overCount} ${oversText}.`;
+                } else if (metric === 'sixes') {
+                    description = `I will hit at least ${targetValue} six${targetValue > 1 ? 'es' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'fours') {
+                    description = `I will hit at least ${targetValue} four${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'wickets') {
+                    description = `I will take at least ${targetValue} wicket${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                } else if (metric === 'dots') {
+                    description = `I will bowl at least ${targetValue} dot ball${targetValue > 1 ? 's' : ''} in ${overCount} ${oversText}.`;
+                }
+            }
+            
+            if (description && conditionTextInput) {
+                conditionTextInput.value = description;
+                // Reset styling after generation
+                setTimeout(() => {
+                    conditionTextInput.style.borderColor = '';
+                    conditionTextInput.style.backgroundColor = '';
+                }, 500);
+            }
+        }
+    }
+
+    // Auto-populate condition text based on challenge type, metric, target value, and overs
+    function updateChallengeDescription() {
+        generateChallengeDescription();
+    }
+
+    // Add event listeners to all relevant fields
+    if (challengeTypeSelect) {
+        challengeTypeSelect.addEventListener('change', updateChallengeDescription);
+    }
+    
+    if (metricSelect) {
+        metricSelect.addEventListener('change', updateChallengeDescription);
+    }
+    
+    if (targetValueInput) {
+        targetValueInput.addEventListener('input', updateChallengeDescription);
+    }
+    
+    if (overCountInput) {
+        overCountInput.addEventListener('input', updateChallengeDescription);
+    }
+
+    // Load time slots when date changes
+    dateInput.addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+            loadTimeSlots(selectedDate);
+        }
+    });
+
+    function loadTimeSlots(date) {
+        timeSlotSelect.innerHTML = '<option value="">Loading...</option>';
+        timeSlotLoading.style.display = 'block';
+        timeSlotError.style.display = 'none';
+        
+        fetch(`/matches/api/timeslots/?date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                timeSlotLoading.style.display = 'none';
+                
+                if (data.slots && data.slots.length > 0) {
+                    timeSlotSelect.innerHTML = '<option value="">Select a time slot</option>';
+                    data.slots.forEach(slot => {
+                        const option = document.createElement('option');
+                        option.value = slot.id;
+                        option.textContent = `${slot.display} (${slot.current_count}/${slot.max_challenges} booked)`;
+                        if (!slot.is_available) {
+                            option.disabled = true;
+                            option.textContent += ' - FULL';
+                        }
+                        timeSlotSelect.appendChild(option);
+                    });
+                } else {
+                    timeSlotSelect.innerHTML = '<option value="">No admin-created time slots available for this date</option>';
+                    // Show additional info about admin-created slots
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'alert alert-info mt-2';
+                    infoDiv.innerHTML = '<i class="fa-solid fa-info-circle me-2"></i>Time slots are created by administrators. Please contact an admin to create time slots for this date.';
+                    timeSlotSelect.parentNode.appendChild(infoDiv);
+                }
+            })
+            .catch(error => {
+                timeSlotLoading.style.display = 'none';
+                timeSlotError.style.display = 'block';
+                timeSlotSelect.innerHTML = '<option value="">Error loading time slots</option>';
+                console.error('Error:', error);
+            });
+    }
+
+    // Calendar modal functions
+    document.getElementById('show-calendar-btn').addEventListener('click', function() {
+        const modalElement = document.getElementById('calendarModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        
+        // Set minimum date to today
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        const manualDateInput = document.getElementById('manual-date-input');
+        if (manualDateInput) {
+            manualDateInput.min = todayStr;
+            manualDateInput.value = todayStr;
+        }
+    });
+
+    // Quick date selection
+    window.selectQuickDate = function(daysFromToday) {
+        const today = new Date();
+        const selectedDate = new Date(today);
+        selectedDate.setDate(today.getDate() + daysFromToday);
+        const dateStr = selectedDate.toISOString().split('T')[0];
+        
+        document.querySelector('input[name="date"]').value = dateStr;
+        bootstrap.Modal.getInstance(document.getElementById('calendarModal')).hide();
+        loadTimeSlots(dateStr);
+    };
+
+    // Manual date selection
+    window.selectManualDate = function() {
+        const manualDateInput = document.getElementById('manual-date-input');
+        const dateStr = manualDateInput.value;
+        
+        if (dateStr) {
+            document.querySelector('input[name="date"]').value = dateStr;
+            bootstrap.Modal.getInstance(document.getElementById('calendarModal')).hide();
+            loadTimeSlots(dateStr);
+        } else {
+            alert('Please select a date first.');
+        }
+    };
+
+    // Trigger change event on page load
+    challengeTypeSelect.dispatchEvent(new Event('change'));
+});
+</script>
+{% endblock %}

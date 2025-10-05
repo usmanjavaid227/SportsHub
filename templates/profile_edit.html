@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">Edit Profile</h2></div>
+  
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Personal Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">Personal Information</h5>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                  <div class="text-danger small">{{ form.first_name.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                  <div class="text-danger small">{{ form.last_name.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email <span class="text-danger">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="text-danger small">{{ form.email.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                  <div class="text-danger small">{{ form.phone.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">City <span class="text-danger">*</span></label>
+                {{ form.city }}
+                {% if form.city.errors %}
+                  <div class="text-danger small">{{ form.city.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Profile Picture</label>
+                {{ form.avatar }}
+                {% if form.avatar.errors %}
+                  <div class="text-danger small">{{ form.avatar.errors|striptags }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Cricket Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">Cricket Information</h5>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Primary Role <span class="text-danger">*</span></label>
+                {{ form.role }}
+                {% if form.role.errors %}
+                  <div class="text-danger small">{{ form.role.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Experience Level <span class="text-danger">*</span></label>
+                {{ form.experience_level }}
+                {% if form.experience_level.errors %}
+                  <div class="text-danger small">{{ form.experience_level.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Years Playing <span class="text-danger">*</span></label>
+                {{ form.years_playing }}
+                {% if form.years_playing.errors %}
+                  <div class="text-danger small">{{ form.years_playing.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Batting Style</label>
+                {{ form.preferred_batting_style }}
+                {% if form.preferred_batting_style.errors %}
+                  <div class="text-danger small">{{ form.preferred_batting_style.errors|striptags }}</div>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Bowling Style</label>
+                {{ form.preferred_bowling_style }}
+                {% if form.preferred_bowling_style.errors %}
+                  <div class="text-danger small">{{ form.preferred_bowling_style.errors|striptags }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3">About You</h5>
+              </div>
+              <div class="col-12 mb-3">
+                <label class="form-label">Bio <span class="text-danger">*</span></label>
+                {{ form.bio }}
+                <div class="form-text">Tell us about your cricket experience, achievements, and what you love about the game.</div>
+                {% if form.bio.errors %}
+                  <div class="text-danger small">{{ form.bio.errors|striptags }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

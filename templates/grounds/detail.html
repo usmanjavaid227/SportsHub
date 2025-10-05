@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ ground.name }} - Ground Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-location-dot me-2"></i>{{ ground.name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-1">Location</h6>
+                            <p class="mb-3">
+                                <i class="fa-solid fa-map-marker-alt me-2"></i>
+                                {{ ground.location }}
+                            </p>
+                            
+                            <h6 class="text-muted mb-1">Capacity</h6>
+                            <p class="mb-3">
+                                <i class="fa-solid fa-users me-2"></i>
+                                {{ ground.capacity }} people
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-1">Availability</h6>
+                            <p class="mb-3">
+                                {% if ground.is_available %}
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-check me-1"></i>Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fa-solid fa-times me-1"></i>Unavailable
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if ground.facilities %}
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-2">Facilities</h6>
+                        <div class="bg-light p-3 rounded">
+                            <i class="fa-solid fa-list me-2"></i>
+                            {{ ground.facilities }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if ground.description %}
+                    <div class="mt-4">
+                        <h6 class="text-muted mb-2">Description</h6>
+                        <div class="bg-light p-3 rounded">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            {{ ground.description }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'challenges_list' %}" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Challenges
+                    </a>
+                    <a href="{% url 'grounds_list' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-list me-1"></i>All Grounds
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fa-solid fa-calendar me-2"></i>Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'challenge_create' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-plus me-1"></i>Create Challenge
+                        </a>
+                        <a href="{% url 'challenges_list' %}" class="btn btn-outline-primary">
+                            <i class="fa-solid fa-list me-1"></i>View All Challenges
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
