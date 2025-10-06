@@ -67,6 +67,14 @@ class Profile(models.Model):
     balls_bowled = models.PositiveIntegerField(default=0)
     fcm_token = models.CharField(max_length=300, blank=True)
     
+    # Ranking fields
+    previous_batting_rank = models.PositiveIntegerField(blank=True, default=0, null=True)
+    previous_bowling_rank = models.PositiveIntegerField(blank=True, default=0, null=True)
+    previous_overall_rank = models.PositiveIntegerField(blank=True, default=0, null=True)
+    ranking_change_batting = models.IntegerField(default=0)
+    ranking_change_bowling = models.IntegerField(default=0)
+    ranking_change_overall = models.IntegerField(default=0)
+    
     def update_statistics(self):
         """Update user statistics based on completed challenges"""
         from tampere_cricket.matches.models import Challenge, MatchResult

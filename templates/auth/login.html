@@ -37,7 +37,10 @@
                                    id="{{ form.username.id_for_label }}" 
                                    name="{{ form.username.name }}" 
                                    value="{{ form.username.value|default:'' }}"
-                                   required>
+                                   required
+                                   style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
+                                   onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
                             {% if form.username.errors %}
                                 <div class="invalid-feedback">
                                     {% for error in form.username.errors %}{{ error }}{% endfor %}
@@ -51,7 +54,10 @@
                                    class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
                                    id="{{ form.password.id_for_label }}" 
                                    name="{{ form.password.name }}" 
-                                   required>
+                                   required
+                                   style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
+                                   onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
                             {% if form.password.errors %}
                                 <div class="invalid-feedback">
                                     {% for error in form.password.errors %}{{ error }}{% endfor %}

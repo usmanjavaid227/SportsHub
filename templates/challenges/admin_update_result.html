@@ -261,7 +261,8 @@
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="{{ challenge.challenger.id }}" 
                                                                        id="winner_challenger"
-                                                                       {% if form.manual_winner.value == challenge.challenger.id %}checked{% endif %}>
+                                                                       {% if form.manual_winner.value == challenge.challenger.id %}checked{% endif %}
+                                                                       style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;">
                                                                 <label class="form-check-label" for="winner_challenger">
                                                                     <div class="winner-card">
                                                                         <div class="winner-header">
@@ -287,7 +288,8 @@
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="{{ challenge.opponent.id }}" 
                                                                        id="winner_opponent"
-                                                                       {% if form.manual_winner.value == challenge.opponent.id %}checked{% endif %}>
+                                                                       {% if form.manual_winner.value == challenge.opponent.id %}checked{% endif %}
+                                                                       style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;">
                                                                 <label class="form-check-label" for="winner_opponent">
                                                                     <div class="winner-card">
                                                                         <div class="winner-header">
@@ -313,7 +315,8 @@
                                                                 <input class="form-check-input" type="radio" name="{{ form.manual_winner.name }}" 
                                                                        value="" 
                                                                        id="winner_draw"
-                                                                       {% if not form.manual_winner.value %}checked{% endif %}>
+                                                                       {% if not form.manual_winner.value %}checked{% endif %}
+                                                                       style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;">
                                                                 <label class="form-check-label" for="winner_draw">
                                                                     <div class="winner-card draw-card">
                                                                         <div class="winner-header">

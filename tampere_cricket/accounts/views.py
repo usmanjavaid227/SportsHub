@@ -15,8 +15,18 @@ def signup(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Auto-create Profile for new user
-            Profile.objects.get_or_create(user=user)
+            # Auto-create Profile for new user with default values
+            Profile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'ranking_change_batting': 0,
+                    'ranking_change_bowling': 0,
+                    'ranking_change_overall': 0,
+                    'previous_batting_rank': 0,
+                    'previous_bowling_rank': 0,
+                    'previous_overall_rank': 0
+                }
+            )
             login(request, user)
             messages.success(request, f'Welcome to SportsHub, {user.username}!')
             return redirect('home')

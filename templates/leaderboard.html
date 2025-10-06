@@ -137,16 +137,16 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="custom-leaderboard-table" id="leaderboardTable">
-                    <thead>
+                    <thead style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                         <tr>
-                            <th class="text-center" style="width: 80px;">Rank</th>
-                            <th class="text-center" style="width: 60px;">Change</th>
-                            <th>Player</th>
-                            <th class="text-center">Matches</th>
-                            <th class="text-center">Wins</th>
-                            <th class="text-center">Losses</th>
-                            <th class="text-center">Win Ratio</th>
-                            <th class="text-center">Rating</th>
+                            <th class="text-center" style="width: 80px; color: var(--sh-white);">Rank</th>
+                            <th class="text-center" style="width: 60px; color: var(--sh-white);">Change</th>
+                            <th style="color: var(--sh-white);">Player</th>
+                            <th class="text-center" style="color: var(--sh-white);">Matches</th>
+                            <th class="text-center" style="color: var(--sh-white);">Wins</th>
+                            <th class="text-center" style="color: var(--sh-white);">Losses</th>
+                            <th class="text-center" style="color: var(--sh-white);">Win Ratio</th>
+                            <th class="text-center" style="color: var(--sh-white);">Rating</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -275,12 +275,12 @@
 }
 
 .custom-leaderboard-table thead {
-    background: #0A0A0A !important;
-    border-bottom: 2px solid var(--sh-orange) !important;
+    background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+    border: 1px solid rgba(255,153,0,0.2) !important;
 }
 
 .custom-leaderboard-table thead th {
-    color: var(--sh-orange) !important;
+    color: var(--sh-white) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;

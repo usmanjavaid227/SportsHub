@@ -208,7 +208,7 @@
                         <h6>Manual Date Entry</h6>
                         <div class="mb-3">
                           <label class="form-label">Select Date</label>
-                          <input type="date" id="manual-date-input" class="form-control" min="2024-10-04">
+                          <input type="date" id="manual-date-input" class="form-control" min="2024-10-04" style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;" onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'" onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
                         </div>
                         <button type="button" class="btn btn-primary" onclick="selectManualDate()">Use This Date</button>
                       </div>
