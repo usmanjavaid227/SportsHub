@@ -5,15 +5,37 @@
 
 <style>
     .ground-item {
-        background: rgba(0, 0, 0, 0.2) !important;
-        border-color:rgba(249, 248, 247, 0.2) !important;
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        transition: all 0.3s ease;
     }
     .ground-item:hover {
-        background: rgba(230, 138, 0, 1) !important;
+        background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, rgba(255,153,0,0.08) 100%) !important;
+        border-color: var(--sh-orange) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,153,0,0.2);
     }
     .ground-item.active {
-        background: rgba(230, 138, 0, 1) !important;
-        border-color:rgba(249, 248, 247, 0.2) !important;
+        background: linear-gradient(135deg, rgba(255,153,0,0.2) 0%, rgba(255,153,0,0.1) 100%) !important;
+        border-color: var(--sh-orange) !important;
+        box-shadow: 0 4px 12px rgba(255,153,0,0.3);
+    }
+    .ground-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        transition: all 0.3s ease;
+    }
+    .ground-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
+        border-color: var(--sh-orange) !important;
+    }
+    .ground-header {
+        background: rgba(255,153,0,0.1) !important;
+        border-bottom: 1px solid var(--sh-orange) !important;
+    }
+    .ground-icon {
+        color: var(--sh-orange) !important;
     }
 </style>
 
@@ -29,11 +51,11 @@
   <div class="row g-4">
     <!-- Interactive Map -->
     <div class="col-12 col-lg-8">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0"><i class="fa-solid fa-map me-2"></i>Interactive Map</h5>
+      <div class="card ground-card">
+        <div class="card-header ground-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-map me-2 ground-icon"></i>Interactive Map</h5>
           <div id="selected-ground-info" class="text-muted small">
-            <i class="fa-solid fa-info-circle me-1"></i>Click on a ground to view details
+            <i class="fa-solid fa-info-circle me-1 ground-icon"></i>Click on a ground to view details
           </div>
         </div>
         <div class="card-body">
@@ -58,9 +80,9 @@
     
     <!-- Grounds List -->
     <div class="col-12 col-lg-4">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Available Grounds</h5>
+      <div class="card ground-card">
+        <div class="card-header ground-header">
+          <h5 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-list me-2 ground-icon"></i>Available Grounds</h5>
         </div>
         <div class="card-body p-0">
           {% if grounds %}
@@ -100,9 +122,9 @@
       </div>
       
       <!-- Ground Details Card -->
-      <div class="card mt-4" id="ground-details-card" style="display: none;">
-        <div class="card-header">
-          <h5 class="mb-0"><i class="fa-solid fa-info-circle me-2"></i>Ground Details</h5>
+      <div class="card mt-4 ground-card" id="ground-details-card" style="display: none;">
+        <div class="card-header ground-header">
+          <h5 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-info-circle me-2 ground-icon"></i>Ground Details</h5>
         </div>
         <div class="card-body">
           <div id="ground-details-content">
@@ -117,7 +139,7 @@
   {% if grounds %}
   <div class="row mt-5">
     <div class="col-12">
-      <div class="card">
+      <div class="card ground-card">
         <div class="card-body">
           <div class="row text-center">
             <div class="col-6 col-md-3">

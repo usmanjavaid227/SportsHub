@@ -14,7 +14,7 @@
         <div class="row g-4">
             {% for article in news %}
                 <div class="col-12 col-md-6 col-xl-4">
-                    <div class="card h-100">
+                    <div class="card h-100" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2); transition: all 0.3s ease;">
                         {% if article.featured_image %}
                             <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
                         {% else %}

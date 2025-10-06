@@ -4,18 +4,18 @@
 {% block title %}Delete Challenge - {{ challenge.challenger.username }} vs {{ challenge.opponent.username|default:"Open to All" }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0">
-                        <i class="fa-solid fa-trash me-2"></i>Delete Challenge
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-header" style="background: rgba(220,53,69,0.1); border-bottom: 1px solid #dc3545;">
+                    <h4 class="mb-0" style="color: var(--sh-white);">
+                        <i class="fa-solid fa-trash me-2" style="color: #dc3545;"></i>Delete Challenge
                     </h4>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning">
-                        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                    <div class="alert" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);">
+                        <i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i>
                         <strong>Warning:</strong> This action cannot be undone. The challenge will be permanently deleted.
                     </div>
                     

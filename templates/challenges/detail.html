@@ -7,16 +7,16 @@
 <div class="container py-5">
     <!-- Login Required Notice for Non-Authenticated Users -->
     {% if not user.is_authenticated %}
-    <div class="alert alert-info d-flex align-items-center mb-4">
-        <i class="fa-solid fa-info-circle me-3 fa-2x"></i>
+    <div class="alert d-flex align-items-center mb-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+        <i class="fa-solid fa-info-circle me-3 fa-2x" style="color: var(--sh-orange);"></i>
         <div class="flex-grow-1">
-            <h5 class="mb-2">Login Required to Participate</h5>
-            <p class="mb-3">You're viewing a challenge preview. Login to accept challenges, view full details, and participate in the cricket community.</p>
+            <h5 class="mb-2" style="color: var(--sh-white);">Login Required to Participate</h5>
+            <p class="mb-3" style="color: var(--sh-gray);">You're viewing a challenge preview. Login to accept challenges, view full details, and participate in the cricket community.</p>
             <div class="d-flex gap-2">
-                <a href="{% url 'login' %}" class="btn btn-primary">
+                <a href="{% url 'login' %}" class="btn btn-tcc">
                     <i class="fa-solid fa-sign-in-alt me-1"></i>Login
                 </a>
-                <a href="{% url 'signup' %}" class="btn btn-outline-primary">
+                <a href="{% url 'register' %}" class="btn btn-outline-tcc">
                     <i class="fa-solid fa-user-plus me-1"></i>Sign Up
                 </a>
             </div>
@@ -28,7 +28,7 @@
         <!-- Main Content Column -->
         <div class="col-12 col-lg-8">
             <!-- Challenge Header -->
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h1 class="h2 mb-0" style="color: var(--sh-orange);">{{ challenge.get_challenge_type_display|upper }} CHALLENGE</h1>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Challenge Details Section -->
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <h5 class="card-title mb-3" style="color: var(--sh-orange);">
                         <i class="fa-solid fa-clipboard-list me-2"></i>CHALLENGE DETAILS
@@ -82,7 +82,7 @@
 
             <!-- Schedule Section -->
             {% if challenge.scheduled_at or challenge.date or challenge.time %}
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <h5 class="card-title mb-3" style="color: var(--sh-orange);">
                         <i class="fa-solid fa-calendar me-2"></i>SCHEDULE
@@ -134,7 +134,7 @@
             {% endif %}
 
             <!-- Creator Section -->
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <h5 class="card-title mb-3" style="color: var(--sh-orange);">
                         <i class="fa-solid fa-user me-2"></i>CREATOR
@@ -170,7 +170,7 @@
 
             <!-- Opponent Section -->
             {% if challenge.opponent %}
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <h5 class="card-title mb-3" style="color: var(--sh-orange);">
                         <i class="fa-solid fa-user-friends me-2"></i>OPPONENT
@@ -207,7 +207,7 @@
 
             <!-- Single Wicket Challenge Participants -->
             {% if challenge.challenge_type == 'SINGLE_WICKET' %}
-            <div class="card mb-4">
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body">
                     <h5 class="card-title mb-3" style="color: var(--sh-orange);">
                         <i class="fa-solid fa-users me-2"></i>SINGLE WICKET PARTICIPANTS

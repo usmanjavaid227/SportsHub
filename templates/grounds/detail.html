@@ -4,39 +4,44 @@
 {% block title %}{{ ground.name }} - Ground Details{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-5">
+    <div class="section-heading mb-4">
+        <div class="bar"></div>
+        <h2 class="h4 m-0" style="color: var(--sh-white);">Ground Details</h2>
+    </div>
+    
     <div class="row">
         <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fa-solid fa-location-dot me-2"></i>{{ ground.name }}
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+                    <h4 class="mb-0" style="color: var(--sh-white);">
+                        <i class="fa-solid fa-location-dot me-2" style="color: var(--sh-orange);"></i>{{ ground.name }}
                     </h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="text-muted mb-1">Location</h6>
-                            <p class="mb-3">
-                                <i class="fa-solid fa-map-marker-alt me-2"></i>
+                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Location</h6>
+                            <p class="mb-3" style="color: var(--sh-white);">
+                                <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange);"></i>
                                 {{ ground.location }}
                             </p>
                             
-                            <h6 class="text-muted mb-1">Capacity</h6>
-                            <p class="mb-3">
-                                <i class="fa-solid fa-users me-2"></i>
+                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Capacity</h6>
+                            <p class="mb-3" style="color: var(--sh-white);">
+                                <i class="fa-solid fa-users me-2" style="color: var(--sh-orange);"></i>
                                 {{ ground.capacity }} people
                             </p>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-muted mb-1">Availability</h6>
+                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Availability</h6>
                             <p class="mb-3">
                                 {% if ground.is_available %}
-                                    <span class="badge bg-success">
+                                    <span class="badge" style="background: #28a745; color: white;">
                                         <i class="fa-solid fa-check me-1"></i>Available
                                     </span>
                                 {% else %}
-                                    <span class="badge bg-danger">
+                                    <span class="badge" style="background: #dc3545; color: white;">
                                         <i class="fa-solid fa-times me-1"></i>Unavailable
                                     </span>
                                 {% endif %}
@@ -46,26 +51,26 @@
                     
                     {% if ground.facilities %}
                     <div class="mt-4">
-                        <h6 class="text-muted mb-2">Facilities</h6>
-                        <div class="bg-light p-3 rounded">
-                            <i class="fa-solid fa-list me-2"></i>
-                            {{ ground.facilities }}
+                        <h6 class="text-muted mb-2" style="color: var(--sh-gray);">Facilities</h6>
+                        <div class="p-3 rounded" style="background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2);">
+                            <i class="fa-solid fa-list me-2" style="color: var(--sh-orange);"></i>
+                            <span style="color: var(--sh-white);">{{ ground.facilities }}</span>
                         </div>
                     </div>
                     {% endif %}
                     
                     {% if ground.description %}
                     <div class="mt-4">
-                        <h6 class="text-muted mb-2">Description</h6>
-                        <div class="bg-light p-3 rounded">
-                            <i class="fa-solid fa-info-circle me-2"></i>
-                            {{ ground.description }}
+                        <h6 class="text-muted mb-2" style="color: var(--sh-gray);">Description</h6>
+                        <div class="p-3 rounded" style="background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2);">
+                            <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
+                            <span style="color: var(--sh-white);">{{ ground.description }}</span>
                         </div>
                     </div>
                     {% endif %}
                 </div>
-                <div class="card-footer">
-                    <a href="{% url 'challenges_list' %}" class="btn btn-outline-primary">
+                <div class="card-footer" style="background: rgba(255,153,0,0.05); border-top: 1px solid rgba(255,153,0,0.2);">
+                    <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
                         <i class="fa-solid fa-arrow-left me-1"></i>Back to Challenges
                     </a>
                     <a href="{% url 'grounds_list' %}" class="btn btn-outline-secondary">
@@ -76,18 +81,18 @@
         </div>
         
         <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">
-                        <i class="fa-solid fa-calendar me-2"></i>Quick Actions
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+                    <h6 class="mb-0" style="color: var(--sh-white);">
+                        <i class="fa-solid fa-calendar me-2" style="color: var(--sh-orange);"></i>Quick Actions
                     </h6>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{% url 'challenge_create' %}" class="btn btn-primary">
+                        <a href="{% url 'challenge_create' %}" class="btn btn-tcc">
                             <i class="fa-solid fa-plus me-1"></i>Create Challenge
                         </a>
-                        <a href="{% url 'challenges_list' %}" class="btn btn-outline-primary">
+                        <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
                             <i class="fa-solid fa-list me-1"></i>View All Challenges
                         </a>
                     </div>
