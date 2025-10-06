@@ -7,18 +7,20 @@
 <div class="row g-4">
   <!-- Profile Card -->
   <div class="col-12 col-lg-4">
-    <div class="card text-center">
+    <div class="card text-center profile-card">
       <div class="card-body">
         {% if user.avatar and user.avatar.url %}
-        <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+        <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle mb-3 profile-avatar" style="width:120px;height:120px;object-fit:cover; border: 3px solid var(--sh-orange);">
         {% else %}
-        <img src="{% static 'img/avatar-placeholder.png' %}" alt="Avatar" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+        <div class="rounded-circle mb-3 profile-avatar-placeholder" style="width:120px;height:120px;background: var(--sh-orange); color: #000; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid var(--sh-orange);">
+          <i class="fa-solid fa-user fa-3x"></i>
+        </div>
         {% endif %}
-        <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+        <h5 class="card-title" style="color: var(--sh-white);">{{ user.get_full_name|default:user.username }}</h5>
         <p class="text-muted">{{ user.city }}</p>
         <div class="mb-3">
-          <span class="badge bg-primary">{{ user.get_role_display }}</span>
-          <span class="badge bg-secondary">{{ user.get_experience_level_display }}</span>
+          <span class="badge" style="background: var(--sh-orange); color: #000;">{{ user.get_role_display }}</span>
+          <span class="badge" style="background: rgba(255,153,0,0.2); color: var(--sh-orange); border: 1px solid var(--sh-orange);">{{ user.get_experience_level_display }}</span>
         </div>
         {% if user.bio %}
         <p class="small text-muted">{{ user.bio|truncatewords:20 }}</p>
@@ -28,47 +30,47 @@
         <div class="mt-3">
           {% if user.email %}
           <p class="small text-muted mb-1">
-            <i class="fa-solid fa-envelope me-1"></i>
+            <i class="fa-solid fa-envelope me-1" style="color: var(--sh-orange);"></i>
             {{ user.email }}
           </p>
           {% endif %}
           {% if user.phone %}
           <p class="small text-muted mb-1">
-            <i class="fa-solid fa-phone me-1"></i>
+            <i class="fa-solid fa-phone me-1" style="color: var(--sh-orange);"></i>
             {{ user.phone }}
           </p>
           {% endif %}
         </div>
         
-        <a href="{% url 'profile_edit' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+        <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc btn-sm">Edit Profile</a>
       </div>
     </div>
 
     <!-- Cricket Details -->
     <div class="card mt-3">
-      <div class="card-header">
-        <h6 class="mb-0">Cricket Details</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-cricket-bat-ball me-2" style="color: var(--sh-orange);"></i>Cricket Details</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-6 mb-2">
             <div class="small text-muted">Role</div>
-            <div class="fw-bold">{{ user.get_role_display }}</div>
+            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_role_display }}</div>
           </div>
           <div class="col-6 mb-2">
             <div class="small text-muted">Experience</div>
-            <div class="fw-bold">{{ user.years_playing }} years</div>
+            <div class="fw-bold" style="color: var(--sh-white);">{{ user.years_playing }} years</div>
           </div>
           {% if user.preferred_batting_style %}
           <div class="col-6 mb-2">
             <div class="small text-muted">Batting</div>
-            <div class="fw-bold">{{ user.get_preferred_batting_style_display }}</div>
+            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_preferred_batting_style_display }}</div>
           </div>
           {% endif %}
           {% if user.preferred_bowling_style %}
           <div class="col-6 mb-2">
             <div class="small text-muted">Bowling</div>
-            <div class="fw-bold">{{ user.get_preferred_bowling_style_display }}</div>
+            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_preferred_bowling_style_display }}</div>
           </div>
           {% endif %}
         </div>
@@ -77,17 +79,17 @@
 
     <!-- Recent Activity -->
     <div class="card mt-3">
-      <div class="card-header">
-        <h6 class="mb-0">Recent Activity</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>Recent Activity</h6>
       </div>
       <div class="card-body">
         <p class="small text-muted">
-          <i class="fa-solid fa-calendar me-1"></i>
+          <i class="fa-solid fa-calendar me-1" style="color: var(--sh-orange);"></i>
           Joined {{ user.date_joined|date:"M d, Y" }}
         </p>
         {% if user.last_login %}
         <p class="small text-muted">
-          <i class="fa-solid fa-clock me-1"></i>
+          <i class="fa-solid fa-clock me-1" style="color: var(--sh-orange);"></i>
           Last seen {{ user.last_login|timesince }} ago
         </p>
         {% endif %}
@@ -99,44 +101,44 @@
   <div class="col-12 col-lg-8">
     <!-- Basic Stats -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h6 class="mb-0">Match Statistics</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-bar me-2" style="color: var(--sh-orange);"></i>Match Statistics</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Matches</div>
-            <div class="display-6">{{ user.profile.matches_played|default:0 }}</div>
+            <div class="display-6" style="color: var(--sh-orange);">{{ user.profile.matches_played|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Wins</div>
-            <div class="display-6 text-success">{{ user.profile.wins|default:0 }}</div>
+            <div class="display-6" style="color: #28a745;">{{ user.profile.wins|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Losses</div>
-            <div class="display-6 text-danger">{{ user.profile.losses|default:0 }}</div>
+            <div class="display-6" style="color: #dc3545;">{{ user.profile.losses|default:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Win Rate</div>
-            <div class="display-6 text-primary">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
+            <div class="display-6" style="color: var(--sh-orange);">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
           </div>
         </div>
         <div class="row text-center mt-3">
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Overall Rating</div>
-            <div class="h4">{{ user.profile.rating|floatformat:0 }}</div>
+            <div class="h4" style="color: var(--sh-orange);">{{ user.profile.rating|floatformat:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Batting Rating</div>
-            <div class="h4 text-info">{{ user.profile.batting_rating|floatformat:0 }}</div>
+            <div class="h4" style="color: #17a2b8;">{{ user.profile.batting_rating|floatformat:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Bowling Rating</div>
-            <div class="h4 text-warning">{{ user.profile.bowling_rating|floatformat:0 }}</div>
+            <div class="h4" style="color: #ffc107;">{{ user.profile.bowling_rating|floatformat:0 }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
             <div class="fw-bold text-muted">Total Runs</div>
-            <div class="h4 text-success">{{ user.profile.runs|default:0 }}</div>
+            <div class="h4" style="color: #28a745;">{{ user.profile.runs|default:0 }}</div>
           </div>
         </div>
       </div>
@@ -144,8 +146,8 @@
 
     <!-- Win/Loss Chart -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h6 class="mb-0">Win/Loss Ratio</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-pie me-2" style="color: var(--sh-orange);"></i>Win/Loss Ratio</h6>
       </div>
       <div class="card-body">
         <div style="height: 200px; width: 100%;">
@@ -170,8 +172,8 @@
 
     <!-- Cricket Performance Stats -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h6 class="mb-0">Cricket Performance</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-cricket-bat-ball me-2" style="color: var(--sh-orange);"></i>Cricket Performance</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
@@ -203,8 +205,8 @@
     <!-- Recent Matches -->
     {% if recent_matches %}
     <div class="card mb-4">
-      <div class="card-header">
-        <h6 class="mb-0">Recent Matches</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-history me-2" style="color: var(--sh-orange);"></i>Recent Matches</h6>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -279,8 +281,8 @@
 
     <!-- Challenge History -->
     <div class="card">
-      <div class="card-header">
-        <h6 class="mb-0">Challenge Statistics</h6>
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>Challenge Statistics</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
