@@ -16,20 +16,20 @@
     {% if players|length >= 3 %}
     <div class="row mb-5">
         <div class="col-12">
-            <div class="card shadow-lg border-0">
-                <div class="card-header text-center bg-gradient" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">
+            <div class="card shadow-lg border-0 custom-podium-card">
+                <div class="card-header text-center custom-podium-header">
                     <h5 class="mb-0 text-white">
                         <i class="fa-solid fa-trophy me-2"></i>Top 3 Players
                     </h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 custom-podium-body">
                     <div class="row align-items-end justify-content-center">
                         <!-- 2nd Place -->
                         <div class="col-md-3 col-4 text-center mb-3">
                             <div class="podium-item position-2">
                                 <div class="podium-rank mb-3">
-                                    <i class="fa-solid fa-medal text-secondary fa-3x"></i>
-                                    <div class="badge bg-secondary fs-6 mt-2">2nd</div>
+                                    <i class="fa-solid fa-medal fa-3x" style="color: #C0C0C0;"></i>
+                                    <div class="badge fs-6 mt-2" style="background-color: transparent !important; color: #C0C0C0 !important; border: 2px solid #C0C0C0 !important;">2nd</div>
                                 </div>
                                 <div class="podium-player">
                                     <div class="player-avatar mb-3">
@@ -42,14 +42,10 @@
                                         {% endif %}
                                     </div>
                                     <h6 class="mb-2">
-                                        <a href="{% url 'public_profile' players.1.id %}" class="text-decoration-none text-dark fw-bold">
+                                        <a href="{% url 'public_profile' players.1.id %}" class="text-decoration-none text-white fw-bold">
                                             {{ players.1.username }}
                                         </a>
                                     </h6>
-                                    <div class="rating-display mb-2">
-                                        <span class="badge bg-primary fs-6">{{ players.1.rating|floatformat:0 }}</span>
-                                    </div>
-                                    <small class="text-muted">{{ players.1.total_wins }}W - {{ players.1.total_losses }}L</small>
                                 </div>
                             </div>
                         </div>
@@ -58,8 +54,8 @@
                         <div class="col-md-3 col-4 text-center mb-3">
                             <div class="podium-item position-1">
                                 <div class="podium-rank mb-3">
-                                    <i class="fa-solid fa-crown text-warning fa-4x"></i>
-                                    <div class="badge bg-warning text-dark fs-6 mt-2">1st</div>
+                                    <i class="fa-solid fa-crown fa-4x" style="color: #FFD700;"></i>
+                                    <div class="badge fs-6 mt-2" style="background-color: transparent !important; color: #FFD700 !important; border: 2px solid #FFD700 !important;">1st</div>
                                 </div>
                                 <div class="podium-player">
                                     <div class="player-avatar mb-3">
@@ -72,14 +68,10 @@
                                         {% endif %}
                                     </div>
                                     <h5 class="mb-2">
-                                        <a href="{% url 'public_profile' players.0.id %}" class="text-decoration-none text-dark fw-bold">
+                                        <a href="{% url 'public_profile' players.0.id %}" class="text-decoration-none text-white fw-bold">
                                             {{ players.0.username }}
                                         </a>
                                     </h5>
-                                    <div class="rating-display mb-2">
-                                        <span class="badge bg-warning text-dark fs-5">{{ players.0.rating|floatformat:0 }}</span>
-                                    </div>
-                                    <small class="text-muted">{{ players.0.total_wins }}W - {{ players.0.total_losses }}L</small>
                                 </div>
                             </div>
                         </div>
@@ -88,8 +80,8 @@
                         <div class="col-md-3 col-4 text-center mb-3">
                             <div class="podium-item position-3">
                                 <div class="podium-rank mb-3">
-                                    <i class="fa-solid fa-medal text-warning fa-3x"></i>
-                                    <div class="badge bg-warning text-dark fs-6 mt-2">3rd</div>
+                                    <i class="fa-solid fa-medal fa-3x" style="color: #CD7F32;"></i>
+                                    <div class="badge fs-6 mt-2" style="background-color: transparent !important; color: #CD7F32 !important; border: 2px solid #CD7F32 !important;">3rd</div>
                                 </div>
                                 <div class="podium-player">
                                     <div class="player-avatar mb-3">
@@ -102,14 +94,10 @@
                                         {% endif %}
                                     </div>
                                     <h6 class="mb-2">
-                                        <a href="{% url 'public_profile' players.2.id %}" class="text-decoration-none text-dark fw-bold">
+                                        <a href="{% url 'public_profile' players.2.id %}" class="text-decoration-none text-white fw-bold">
                                             {{ players.2.username }}
                                         </a>
                                     </h6>
-                                    <div class="rating-display mb-2">
-                                        <span class="badge bg-primary fs-6">{{ players.2.rating|floatformat:0 }}</span>
-                                    </div>
-                                    <small class="text-muted">{{ players.2.total_wins }}W - {{ players.2.total_losses }}L</small>
                                 </div>
                             </div>
                         </div>
@@ -120,90 +108,49 @@
     </div>
     {% endif %}
     
-    <!-- Full Leaderboard Table -->
-    <div class="card shadow border-0">
-        <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">
-                <i class="fa-solid fa-list me-2"></i>Complete Leaderboard
-            </h5>
+    <!-- Complete Leaderboard Header -->
+    <div class="mb-4">
+        <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Complete Leaderboard</h2></div>
+    </div>
+    
+    <!-- Ranking Filter Buttons -->
+    <div class="mb-4">
+        <div class="btn-group w-100" role="group" aria-label="Ranking filters">
+            <input type="radio" class="btn-check" name="rankingFilter" id="battingRanking" autocomplete="off">
+            <label class="btn btn-outline-tcc filter-btn" for="battingRanking">
+                <i class="fa-solid fa-baseball-bat-ball me-2"></i>Batting
+            </label>
+            
+            <input type="radio" class="btn-check" name="rankingFilter" id="bowlingRanking" autocomplete="off">
+            <label class="btn btn-outline-tcc filter-btn" for="bowlingRanking">
+                <i class="fa-solid fa-bullseye me-2"></i>Bowling
+            </label>
+            
+            <input type="radio" class="btn-check" name="rankingFilter" id="allrounderRanking" autocomplete="off" checked>
+            <label class="btn btn-outline-tcc filter-btn active" for="allrounderRanking">
+                <i class="fa-solid fa-star me-2"></i>All-rounder
+            </label>
         </div>
+    </div>
+    
+    <div class="card custom-leaderboard-card">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle m-0">
-                    <thead class="table-dark">
+                <table class="custom-leaderboard-table" id="leaderboardTable">
+                    <thead>
                         <tr>
-                            <th class="ps-4">Rank</th>
+                            <th class="text-center" style="width: 80px;">Rank</th>
+                            <th class="text-center" style="width: 60px;">Change</th>
                             <th>Player</th>
-                            <th>Matches</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                            <th>Win Rate</th>
-                            <th>Rating</th>
+                            <th class="text-center">Matches</th>
+                            <th class="text-center">Wins</th>
+                            <th class="text-center">Losses</th>
+                            <th class="text-center">Win Ratio</th>
+                            <th class="text-center">Rating</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for player in players %}
-                        <tr class="{% if forloop.counter <= 3 %}table-warning{% endif %}">
-                            <td class="ps-4">
-                                {% if forloop.counter == 1 %}
-                                    <i class="fa-solid fa-crown text-warning me-2"></i>
-                                {% elif forloop.counter == 2 %}
-                                    <i class="fa-solid fa-medal text-secondary me-2"></i>
-                                {% elif forloop.counter == 3 %}
-                                    <i class="fa-solid fa-medal text-warning me-2"></i>
-                                {% else %}
-                                    <span class="badge bg-secondary me-2">{{ forloop.counter }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                        {% if player.avatar %}
-                                            <img src="{{ player.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ player.username }}">
-                                        {% else %}
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
-                                                <i class="fa-solid fa-user"></i>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <a href="{% url 'public_profile' player.id %}" class="text-decoration-none fw-bold">
-                                            {% if forloop.counter <= 3 %}
-                                                <span class="text-warning">{{ player.username }}</span>
-                                            {% else %}
-                                                {{ player.username }}
-                                            {% endif %}
-                                        </a>
-                                        <br>
-                                        <small class="text-muted">{{ player.get_role_display|default:"Player" }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{ player.total_matches }}</span>
-                            </td>
-                            <td>
-                                <span class="text-success fw-bold">{{ player.total_wins }}</span>
-                            </td>
-                            <td>
-                                <span class="text-danger fw-bold">{{ player.total_losses }}</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">{{ player.win_rate }}%</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-primary fs-6">{{ player.rating|floatformat:0 }}</span>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <i class="fa-solid fa-trophy fa-3x text-muted mb-3"></i>
-                                <h5 class="text-muted">No players found</h5>
-                                <p class="text-muted">Be the first to complete a challenge!</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        <!-- Table content will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -250,5 +197,349 @@
         order: unset;
     }
 }
+
+/* Filter Button Styling and Table Colors */
+.filter-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn:hover {
+    background-color: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    color: #000 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.filter-btn.active {
+    background-color: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    color: #000 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.filter-btn.active:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.btn-check:checked + .filter-btn {
+    background-color: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+/* Table Badge Colors - Template Theme */
+.badge-matches {
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+.badge-wins {
+    background-color: #28a745 !important;
+    color: #fff !important;
+}
+
+.badge-losses {
+    background-color: #FF3333 !important;
+    color: #fff !important;
+}
+
+.badge-winratio {
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+.badge-rating {
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+/* Custom Leaderboard Table Styling */
+.custom-leaderboard-card {
+    background: #0A0A0A !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+.custom-leaderboard-table {
+    width: 100% !important;
+    background: #0A0A0A !important;
+    color: var(--sh-white) !important;
+    border-collapse: collapse !important;
+    margin: 0 !important;
+}
+
+.custom-leaderboard-table thead {
+    background: #0A0A0A !important;
+    border-bottom: 2px solid var(--sh-orange) !important;
+}
+
+.custom-leaderboard-table thead th {
+    color: var(--sh-orange) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 16px 12px !important;
+    border: none !important;
+    font-size: 12px !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+.custom-leaderboard-table tbody tr {
+    background: #0A0A0A !important;
+    border-bottom: 1px solid rgba(255,153,0,.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.custom-leaderboard-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(255,153,0,.08), rgba(255,153,0,.03)) !important;
+    transform: translateX(4px) !important;
+    box-shadow: 0 4px 12px rgba(255,153,0,.1) !important;
+}
+
+.custom-leaderboard-table tbody td {
+    padding: 16px 12px !important;
+    border: none !important;
+    color: var(--sh-white) !important;
+    vertical-align: middle !important;
+}
+
+/* Custom Podium Styling */
+.custom-podium-card {
+    background: #0A0A0A !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+.custom-podium-header {
+    background: #0A0A0A !important;
+    border-bottom: 2px solid var(--sh-orange) !important;
+    color: var(--sh-white) !important;
+}
+
+.custom-podium-body {
+    background: #0A0A0A !important;
+    color: var(--sh-white) !important;
+}
 </style>
+
+<!-- JavaScript for Ranking Filters -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Actual data from Django backend with category-specific ratings
+    const rankingData = {
+        batting: [
+            {% for player in players %}
+            {
+                id: {{ player.id }},
+                username: "{{ player.username }}",
+                rank: {{ forloop.counter }},
+                ranking_change: {{ player.ranking_change|default:0 }},
+                total_matches: {{ player.total_matches }},
+                total_wins: {{ player.total_wins }},
+                total_losses: {{ player.total_losses|default:0 }},
+                win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
+                total_matches_for_ratio: {{ player.total_matches }},
+                // Batting rating: Use actual batting_rating from Profile model
+                batting_runs: {{ player.profile.runs|default:0 }},
+                batting_average: {{ player.profile.get_batting_average|default:0 }},
+                rating: Math.round({{ player.profile.batting_rating|default:1000 }}),
+                avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
+                country: "{{ player.country|default:'' }}",
+                type: "batting"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        bowling: [
+            {% for player in players %}
+            {
+                id: {{ player.id }},
+                username: "{{ player.username }}",
+                rank: {{ forloop.counter }},
+                ranking_change: {{ player.ranking_change|default:0 }},
+                total_matches: {{ player.total_matches }},
+                total_wins: {{ player.total_wins }},
+                total_losses: {{ player.total_losses|default:0 }},
+                win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
+                total_matches_for_ratio: {{ player.total_matches }},
+                // Bowling rating: Use actual bowling_rating from Profile model
+                bowling_wickets: {{ player.profile.wickets|default:0 }},
+                bowling_average: {{ player.profile.get_bowling_average|default:0 }},
+                rating: Math.round({{ player.profile.bowling_rating|default:1000 }}),
+                avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
+                country: "{{ player.country|default:'' }}",
+                type: "bowling"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        allrounder: [
+            {% for player in players %}
+            {
+                id: {{ player.id }},
+                username: "{{ player.username }}",
+                rank: {{ forloop.counter }},
+                ranking_change: {{ player.ranking_change|default:0 }},
+                total_matches: {{ player.total_matches }},
+                total_wins: {{ player.total_wins }},
+                total_losses: {{ player.total_losses|default:0 }},
+                win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
+                total_matches_for_ratio: {{ player.total_matches }},
+                // All-rounder rating: Combined batting and bowling Elo ratings
+                batting_runs: {{ player.profile.runs|default:0 }},
+                batting_average: {{ player.profile.get_batting_average|default:0 }},
+                bowling_wickets: {{ player.profile.wickets|default:0 }},
+                bowling_average: {{ player.profile.get_bowling_average|default:0 }},
+                rating: Math.round(({{ player.profile.batting_rating|default:1000 }} + {{ player.profile.bowling_rating|default:1000 }}) / 2),
+                avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
+                country: "{{ player.country|default:'' }}",
+                type: "allrounder"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    };
+
+    // Function to render table rows
+    function renderTable(data) {
+        console.log('renderTable called with data:', data);
+        const tbody = document.querySelector('#leaderboardTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+            console.log('No data available, showing empty message');
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary py-4">No players available for this category.</td></tr>';
+            return;
+        }
+
+        data.forEach(player => {
+            const row = document.createElement('tr');
+            
+            // Rank column
+            let rankIcon = '';
+            if (player.rank === 1) rankIcon = '<i class="fa-solid fa-crown text-warning me-2"></i>';
+            else if (player.rank === 2) rankIcon = '<i class="fa-solid fa-medal text-secondary me-2"></i>';
+            else if (player.rank === 3) rankIcon = '<i class="fa-solid fa-medal text-warning me-2"></i>';
+
+            // Change column
+            let changeHtml = '';
+            if (player.ranking_change > 0) {
+                changeHtml = `<div class="d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-arrow-up text-success me-1"></i>
+                    <span class="text-success fw-bold">${player.ranking_change}</span>
+                </div>`;
+            } else if (player.ranking_change < 0) {
+                changeHtml = `<div class="d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-arrow-down text-danger me-1"></i>
+                    <span class="text-danger fw-bold">${Math.abs(player.ranking_change)}</span>
+                </div>`;
+            } else {
+                changeHtml = `<div class="d-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-circle text-muted" style="font-size: 0.5rem;"></i>
+                </div>`;
+            }
+
+            // Avatar
+            const avatarHtml = player.avatar && player.avatar !== 'null' 
+                ? `<img src="${player.avatar}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="${player.username}">`
+                : `<div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                    <i class="fa-solid fa-user"></i>
+                </div>`;
+
+            // Country flag
+            const countryHtml = player.country 
+                ? `<div class="text-muted small">
+                    <i class="fa-solid fa-flag me-1"></i>${player.country}
+                </div>`
+                : '';
+
+            row.innerHTML = `
+                <td class="text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                        ${rankIcon}
+                        <span class="fw-bold" style="color: var(--sh-orange);">${player.rank}</span>
+                    </div>
+                </td>
+                <td class="text-center">${changeHtml}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">${avatarHtml}</div>
+                        <div>
+                            <a href="/profiles/${player.id}/" class="link-light text-decoration-none fw-bold">${player.username}</a>
+                            ${countryHtml}
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <span class="badge badge-matches">${player.total_matches}</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge badge-wins" style="background-color: #28a745 !important; color: #fff !important;">${player.total_wins}</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge badge-losses">${player.total_losses || 0}</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge badge-winratio">${player.total_matches_for_ratio > 0 ? ((player.win_ratio / player.total_matches_for_ratio) * 100).toFixed(1) : '0.0'}%</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge badge-rating fw-bold">${player.rating}</span>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+    }
+
+    // Sort each category by their respective ratings
+    rankingData.batting.sort((a, b) => b.rating - a.rating);
+    rankingData.bowling.sort((a, b) => b.rating - a.rating);
+    rankingData.allrounder.sort((a, b) => b.rating - a.rating);
+    
+    // Update rank numbers after sorting
+    rankingData.batting.forEach((player, index) => {
+        player.rank = index + 1;
+    });
+    rankingData.bowling.forEach((player, index) => {
+        player.rank = index + 1;
+    });
+    rankingData.allrounder.forEach((player, index) => {
+        player.rank = index + 1;
+    });
+
+    // Debug: Log available data
+    console.log('Available ranking data:', rankingData);
+    console.log('Batting data length:', rankingData.batting.length);
+    console.log('Bowling data length:', rankingData.bowling.length);
+    console.log('Allrounder data length:', rankingData.allrounder.length);
+
+    // Filter button event listeners
+    document.querySelectorAll('input[name="rankingFilter"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const filterType = this.id.replace('Ranking', '');
+                console.log('Filter changed to:', filterType);
+                const data = rankingData[filterType] || [];
+                console.log('Data for', filterType, ':', data);
+                renderTable(data);
+                
+                // Update active state
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`label[for="${this.id}"]`).classList.add('active');
+            }
+        });
+    });
+
+    // Initialize with allrounder data (default)
+    console.log('Initializing with allrounder data:', rankingData.allrounder);
+    renderTable(rankingData.allrounder);
+});
+</script>
 {% endblock %}

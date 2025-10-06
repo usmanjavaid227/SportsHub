@@ -149,52 +149,137 @@
     <!-- Leaderboard Preview -->
     <div class="mb-5">
       <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Top Players</h2></div>
-      <div class="card">
-        <div class="table-responsive">
-          <table class="table table-dark table-striped align-middle m-0">
-            <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Player</th>
-                <th scope="col">Matches</th>
-                <th scope="col">Wins</th>
-                <th scope="col">Rating</th>
-              </tr>
-            </thead>
+      
+      <!-- Ranking Filter Buttons -->
+      <div class="mb-4">
+        <div class="btn-group w-100" role="group" aria-label="Ranking filters">
+          <input type="radio" class="btn-check" name="rankingFilter" id="battingRanking" autocomplete="off">
+          <label class="btn btn-outline-tcc filter-btn" for="battingRanking">
+            <i class="fa-solid fa-baseball-bat-ball me-2"></i>Batting
+          </label>
+          
+          <input type="radio" class="btn-check" name="rankingFilter" id="bowlingRanking" autocomplete="off">
+          <label class="btn btn-outline-tcc filter-btn" for="bowlingRanking">
+            <i class="fa-solid fa-bullseye me-2"></i>Bowling
+          </label>
+          
+          <input type="radio" class="btn-check" name="rankingFilter" id="allrounderRanking" autocomplete="off" checked>
+          <label class="btn btn-outline-tcc filter-btn active" for="allrounderRanking">
+            <i class="fa-solid fa-star me-2"></i>All-rounder
+          </label>
+        </div>
+      </div>
+
+      <div class="card custom-leaderboard-card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="custom-leaderboard-table" id="leaderboardTable">
+              <thead>
+                <tr>
+                  <th class="text-center" style="width: 80px;">Rank</th>
+                  <th class="text-center" style="width: 60px;">Change</th>
+                  <th>Player</th>
+                  <th class="text-center">Matches</th>
+                  <th class="text-center">Wins</th>
+                  <th class="text-center">Losses</th>
+                  <th class="text-center">Win Ratio</th>
+                  <th class="text-center">Rating</th>
+                </tr>
+              </thead>
             <tbody>
               {% with top=players|default_if_none:None %}
               {% if top %}
-                {% for p in top|slice:":3" %}
+                {% for p in top|slice:":5" %}
                 <tr>
-                  <td>
-                    {% if forloop.counter == 1 %}
-                      <i class="fa-solid fa-crown text-warning me-2"></i>
-                    {% elif forloop.counter == 2 %}
-                      <i class="fa-solid fa-medal text-secondary me-2"></i>
-                    {% elif forloop.counter == 3 %}
-                      <i class="fa-solid fa-medal text-warning me-2"></i>
-                    {% endif %}
-                    {{ forloop.counter }}
+                  <td class="text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                      {% if forloop.counter == 1 %}
+                        <i class="fa-solid fa-crown text-warning me-2"></i>
+                      {% elif forloop.counter == 2 %}
+                        <i class="fa-solid fa-medal text-secondary me-2"></i>
+                      {% elif forloop.counter == 3 %}
+                        <i class="fa-solid fa-medal text-warning me-2"></i>
+                      {% endif %}
+                      <span class="fw-bold" style="color: var(--sh-orange);">{{ forloop.counter }}</span>
+                    </div>
                   </td>
-                  <td><a href="{% url 'public_profile' p.id %}" class="link-light text-decoration-none fw-bold">{{ p.username }}</a></td>
-                  <td>{{ p.total_matches }}</td>
-                  <td>{{ p.total_wins }}</td>
-                  <td><span class="badge text-bg-warning">{{ p.rating|floatformat:0 }}</span></td>
+                  <td class="text-center">
+                    <!-- Ranking change indicator -->
+                    {% if p.ranking_change > 0 %}
+                      <div class="d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-arrow-up text-success me-1"></i>
+                        <span class="text-success fw-bold">{{ p.ranking_change }}</span>
+                      </div>
+                    {% elif p.ranking_change < 0 %}
+                      <div class="d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-arrow-down text-danger me-1"></i>
+                        <span class="text-danger fw-bold">{{ p.ranking_change|slice:"1:" }}</span>
+                      </div>
+                    {% else %}
+                      <div class="d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-circle text-muted" style="font-size: 0.5rem;"></i>
+                      </div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        {% if p.avatar %}
+                          <img src="{{ p.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ p.username }}">
+                        {% else %}
+                          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                            <i class="fa-solid fa-user"></i>
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div>
+                        <a href="{% url 'public_profile' p.id %}" class="link-light text-decoration-none fw-bold">{{ p.username }}</a>
+                        {% if p.country %}
+                          <div class="text-muted small">
+                            <i class="fa-solid fa-flag me-1"></i>{{ p.country }}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-matches">{{ p.total_matches }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-wins" style="background-color: #28a745 !important; color: #fff !important;">{{ p.total_wins }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-losses">{{ p.total_losses|default:0 }}</span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-winratio">
+                      {% if p.total_matches > 0 %}
+                        {% widthratio p.total_wins p.total_matches 100 %}%
+                      {% else %}
+                        0.0%
+                      {% endif %}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-rating fw-bold">{{ p.rating|floatformat:0 }}</span>
+                  </td>
                 </tr>
                 {% endfor %}
               {% else %}
-                <tr><td colspan="5" class="text-center text-secondary">No players yet. Be the first to complete a challenge!</td></tr>
+                <tr><td colspan="8" class="text-center text-secondary py-4">No players yet. Be the first to complete a challenge!</td></tr>
               {% endif %}
               {% endwith %}
             </tbody>
           </table>
         </div>
-        <div class="card-body text-center">
-          <a href="{% url 'leaderboard' %}" class="btn btn-outline-tcc">
-            <i class="fa-solid fa-list me-2"></i>View All Challenges
-          </a>
-        </div>
       </div>
+    </div>
+    
+    <!-- View Full Leaderboard Button - Outside Table -->
+    <div class="text-center mt-4 mb-5">
+      <a href="{% url 'leaderboard' %}" class="btn btn-outline-tcc">
+        <i class="fa-solid fa-trophy me-2"></i>View Full Leaderboard
+      </a>
     </div>
 
     <!-- Grounds & Venues -->
@@ -207,7 +292,7 @@
             <div class="card-body">
               <div class="d-flex align-items-center mb-3">
                 <div class="me-3">
-                  <i class="fa-solid fa-location-dot fa-2x text-primary"></i>
+                  <i class="fa-solid fa-location-dot fa-2x" style="color: var(--sh-orange) !important;"></i>
                 </div>
                 <div>
                   <h5 class="card-title mb-1">
@@ -215,9 +300,9 @@
                       {{ ground.name }}
                     </a>
                   </h5>
-                  <div class="text-secondary small">
-                    <i class="fa-solid fa-map-marker-alt"></i> {{ ground.location }}
-                  </div>
+                    <div class="small" style="color: var(--sh-orange) !important;">
+                      <i class="fa-solid fa-map-marker-alt" style="color: var(--sh-orange) !important;"></i> {{ ground.location }}
+                    </div>
                 </div>
               </div>
               <div class="mb-2">
@@ -242,7 +327,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-body text-center py-5">
-              <i class="fa-solid fa-location-dot fa-3x text-muted mb-3"></i>
+               <i class="fa-solid fa-location-dot fa-3x mb-3" style="color: var(--sh-orange) !important;"></i>
               <h5 class="text-muted">No grounds available</h5>
               <p class="text-muted">Check back later for available grounds.</p>
             </div>
@@ -312,15 +397,86 @@
 
     <!-- About -->
     <div class="my-5">
-      <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">About</h2></div>
-      <div class="card">
-        <div class="card-body">
+      <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">About SportsHub</h2></div>
+      <div class="card about-card">
+        <div class="card-body p-5">
           <div class="row g-4 align-items-center">
             <div class="col-12 col-lg-8">
-              <p class="mb-0">Our mission is to grow Tampere’s cricket community through open, accessible single‑wicket challenges. Play anywhere, anytime, and track your progress on the leaderboard.</p>
+              <div class="about-content">
+                <h3 class="h5 mb-3" style="color: var(--sh-orange); font-weight: 700;">Our Mission</h3>
+                <p class="mb-4 lead">Our mission is to grow Tampere's cricket community through open, accessible single‑wicket challenges. Play anywhere, anytime, and track your progress on the leaderboard.</p>
+                
+                <div class="row g-3 mb-4">
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <div class="about-icon">
+                          <i class="fa-solid fa-users"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h6 class="mb-1" style="color: var(--sh-white); font-weight: 600;">Community Driven</h6>
+                        <small class="text-muted">Connect with fellow cricket enthusiasts</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <div class="about-icon">
+                          <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h6 class="mb-1" style="color: var(--sh-white); font-weight: 600;">Track Progress</h6>
+                        <small class="text-muted">Monitor your performance and rankings</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <div class="about-icon">
+                          <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h6 class="mb-1" style="color: var(--sh-white); font-weight: 600;">Flexible Venues</h6>
+                        <small class="text-muted">Play at various grounds across Tampere</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="d-flex align-items-center">
+                      <div class="me-3">
+                        <div class="about-icon">
+                          <i class="fa-solid fa-trophy"></i>
+                        </div>
+                      </div>
+                      <div>
+                        <h6 class="mb-1" style="color: var(--sh-white); font-weight: 600;">Competitive Spirit</h6>
+                        <small class="text-muted">Rise through the ranks and compete</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="col-12 col-lg-4 text-center">
-              <i class="fa-solid fa-trophy fa-3x text-warning"></i>
+            <div class="col-12 col-lg-4">
+              <div class="about-stats text-center">
+                <div class="stat-item mb-4">
+                  <div class="stat-number" style="color: var(--sh-orange); font-size: 2.5rem; font-weight: 800;">{{ total_players }}</div>
+                  <div class="stat-label text-muted">Active Players</div>
+                </div>
+                <div class="stat-item mb-4">
+                  <div class="stat-number" style="color: var(--sh-orange); font-size: 2.5rem; font-weight: 800;">{{ total_challenges }}</div>
+                  <div class="stat-label text-muted">Challenges</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number" style="color: var(--sh-orange); font-size: 2.5rem; font-weight: 800;">{{ total_grounds }}</div>
+                  <div class="stat-label text-muted">Grounds</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -356,6 +512,432 @@
       </div>
     </div> {% endcomment %}
   </div>
+
+  <!-- CSS for Filter Button Styling and Table Colors -->
+  <style>
+    .filter-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-btn:hover {
+      background-color: var(--sh-orange) !important;
+      border-color: var(--sh-orange) !important;
+      color: #000 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .filter-btn.active {
+      background-color: var(--sh-orange) !important;
+      border-color: var(--sh-orange) !important;
+      color: #000 !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .filter-btn.active:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .btn-check:checked + .filter-btn {
+      background-color: var(--sh-orange) !important;
+      border-color: var(--sh-orange) !important;
+      color: #000 !important;
+    }
+
+    /* Table Badge Colors - Template Theme */
+    .badge-matches {
+      background-color: var(--sh-orange) !important;
+      color: #000 !important;
+    }
+    
+      .badge-wins {
+        background-color: #28a745 !important;
+        color: #fff !important;
+      }
+      
+      .badge-losses {
+        background-color: #FF3333 !important;
+        color: #fff !important;
+      }
+      
+      .badge-winratio {
+        background-color: var(--sh-orange) !important;
+        color: #000 !important;
+      }
+      
+      .badge-rating {
+        background-color: var(--sh-orange) !important;
+        color: #000 !important;
+      }
+
+      /* Custom Leaderboard Table Styling */
+      .custom-leaderboard-card {
+        background: #0A0A0A !important;
+        border: 1px solid rgba(255,255,255,.10) !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+      }
+      
+      .custom-leaderboard-table {
+        width: 100% !important;
+        background: #0A0A0A !important;
+        color: var(--sh-white) !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+      }
+      
+      .custom-leaderboard-table thead {
+        background: #0A0A0A !important;
+        border-bottom: 2px solid var(--sh-orange) !important;
+      }
+      
+      .custom-leaderboard-table thead th {
+        color: var(--sh-orange) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        padding: 16px 12px !important;
+        border: none !important;
+        font-size: 12px !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+      }
+      
+      .custom-leaderboard-table tbody tr {
+        background: #0A0A0A !important;
+        border-bottom: 1px solid rgba(255,153,0,.2) !important;
+        transition: all 0.3s ease !important;
+      }
+      
+      .custom-leaderboard-table tbody tr:hover {
+        background: linear-gradient(90deg, rgba(255,153,0,.08), rgba(255,153,0,.03)) !important;
+        transform: translateX(4px) !important;
+        box-shadow: 0 4px 12px rgba(255,153,0,.1) !important;
+      }
+      
+      .custom-leaderboard-table tbody td {
+        padding: 16px 12px !important;
+        border: none !important;
+        color: var(--sh-white) !important;
+        vertical-align: middle !important;
+      }
+
+      /* About Section Styling */
+      .about-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .about-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--sh-orange), var(--sh-orange-dark));
+      }
+
+      .about-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--sh-orange), var(--sh-orange-dark));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+      }
+
+      .about-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(255,153,0,0.3);
+      }
+
+      .stat-item {
+        position: relative;
+        padding: 1rem;
+        background: rgba(255,153,0,0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255,153,0,0.1);
+        transition: all 0.3s ease;
+      }
+
+      .stat-item:hover {
+        background: rgba(255,153,0,0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255,153,0,0.15);
+      }
+
+      .stat-number {
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .about-content .lead {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--sh-white);
+        opacity: 0.95;
+      }
+
+      @media (max-width: 768px) {
+        .about-card .card-body {
+          padding: 2rem !important;
+        }
+        
+        .stat-item {
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
+
+  <!-- JavaScript for Ranking Filters -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Actual data from Django backend with category-specific ratings
+      const rankingData = {
+        batting: [
+          {% with top=players|default_if_none:None %}
+          {% if top %}
+            {% for p in top|slice:":5" %}
+            {
+              id: {{ p.id }},
+              username: "{{ p.username }}",
+              rank: {{ forloop.counter }},
+              ranking_change: {{ p.ranking_change|default:0 }},
+              total_matches: {{ p.total_matches }},
+              total_wins: {{ p.total_wins }},
+              total_losses: {{ p.total_losses|default:0 }},
+              win_ratio: {% if p.total_matches > 0 %}{{ p.total_wins|floatformat:1 }}{% else %}0{% endif %},
+              total_matches_for_ratio: {{ p.total_matches }},
+              // Batting rating: Use actual batting_rating from Profile model
+              batting_runs: {{ p.profile.runs|default:0 }},
+              batting_average: {{ p.profile.get_batting_average|default:0 }},
+              rating: Math.round({{ p.profile.batting_rating|default:1000 }}),
+              avatar: "{% if p.avatar %}{{ p.avatar.url }}{% else %}null{% endif %}",
+              country: "{{ p.country|default:'' }}",
+              type: "batting"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+        ],
+        bowling: [
+          {% with top=players|default_if_none:None %}
+          {% if top %}
+            {% for p in top|slice:":5" %}
+            {
+              id: {{ p.id }},
+              username: "{{ p.username }}",
+              rank: {{ forloop.counter }},
+              ranking_change: {{ p.ranking_change|default:0 }},
+              total_matches: {{ p.total_matches }},
+              total_wins: {{ p.total_wins }},
+              total_losses: {{ p.total_losses|default:0 }},
+              win_ratio: {% if p.total_matches > 0 %}{{ p.total_wins|floatformat:1 }}{% else %}0{% endif %},
+              total_matches_for_ratio: {{ p.total_matches }},
+              // Bowling rating: Use actual bowling_rating from Profile model
+              bowling_wickets: {{ p.profile.wickets|default:0 }},
+              bowling_average: {{ p.profile.get_bowling_average|default:0 }},
+              rating: Math.round({{ p.profile.bowling_rating|default:1000 }}),
+              avatar: "{% if p.avatar %}{{ p.avatar.url }}{% else %}null{% endif %}",
+              country: "{{ p.country|default:'' }}",
+              type: "bowling"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+        ],
+        allrounder: [
+          {% with top=players|default_if_none:None %}
+          {% if top %}
+            {% for p in top|slice:":5" %}
+            {
+              id: {{ p.id }},
+              username: "{{ p.username }}",
+              rank: {{ forloop.counter }},
+              ranking_change: {{ p.ranking_change|default:0 }},
+              total_matches: {{ p.total_matches }},
+              total_wins: {{ p.total_wins }},
+              total_losses: {{ p.total_losses|default:0 }},
+              win_ratio: {% if p.total_matches > 0 %}{{ p.total_wins|floatformat:1 }}{% else %}0{% endif %},
+              total_matches_for_ratio: {{ p.total_matches }},
+              // All-rounder rating: Combined batting and bowling Elo ratings
+              batting_runs: {{ p.profile.runs|default:0 }},
+              batting_average: {{ p.profile.get_batting_average|default:0 }},
+              bowling_wickets: {{ p.profile.wickets|default:0 }},
+              bowling_average: {{ p.profile.get_bowling_average|default:0 }},
+              rating: Math.round(({{ p.profile.batting_rating|default:1000 }} + {{ p.profile.bowling_rating|default:1000 }}) / 2),
+              avatar: "{% if p.avatar %}{{ p.avatar.url }}{% else %}null{% endif %}",
+              country: "{{ p.country|default:'' }}",
+              type: "allrounder"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+        ]
+      };
+
+      // Function to render table rows
+      function renderTable(data) {
+        console.log('renderTable called with data:', data);
+        const tbody = document.querySelector('#leaderboardTable tbody');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          console.log('No data available, showing empty message');
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary py-4">No players available for this category.</td></tr>';
+          return;
+        }
+
+        data.forEach(player => {
+          const row = document.createElement('tr');
+          row.className = 'border-bottom border-secondary';
+          
+          // Rank column
+          let rankIcon = '';
+          if (player.rank === 1) rankIcon = '<i class="fa-solid fa-crown text-warning me-2"></i>';
+          else if (player.rank === 2) rankIcon = '<i class="fa-solid fa-medal text-secondary me-2"></i>';
+          else if (player.rank === 3) rankIcon = '<i class="fa-solid fa-medal text-warning me-2"></i>';
+
+          // Change column
+          let changeHtml = '';
+          if (player.ranking_change > 0) {
+            changeHtml = `<div class="d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-arrow-up text-success me-1"></i>
+              <span class="text-success fw-bold">${player.ranking_change}</span>
+            </div>`;
+          } else if (player.ranking_change < 0) {
+            changeHtml = `<div class="d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-arrow-down text-danger me-1"></i>
+              <span class="text-danger fw-bold">${Math.abs(player.ranking_change)}</span>
+            </div>`;
+          } else {
+            changeHtml = `<div class="d-flex align-items-center justify-content-center">
+              <i class="fa-solid fa-circle text-muted" style="font-size: 0.5rem;"></i>
+            </div>`;
+          }
+
+          // Avatar
+          const avatarHtml = player.avatar && player.avatar !== 'null' 
+            ? `<img src="${player.avatar}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="${player.username}">`
+            : `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <i class="fa-solid fa-user text-white"></i>
+              </div>`;
+
+          // Country flag
+          const countryHtml = player.country 
+            ? `<div class="text-muted small">
+                <i class="fa-solid fa-flag me-1"></i>${player.country}
+              </div>`
+            : '';
+
+          row.innerHTML = `
+            <td class="text-center">
+              <div class="d-flex align-items-center justify-content-center">
+                ${rankIcon}
+                <span class="fw-bold text-primary">${player.rank}</span>
+              </div>
+            </td>
+            <td class="text-center">${changeHtml}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="me-3">${avatarHtml}</div>
+                <div>
+                  <a href="/profiles/${player.id}/" class="link-light text-decoration-none fw-bold">${player.username}</a>
+                  ${countryHtml}
+                </div>
+              </div>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-matches">${player.total_matches}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-wins">${player.total_wins}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-losses">${player.total_losses || 0}</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-winratio">${player.total_matches_for_ratio > 0 ? ((player.win_ratio / player.total_matches_for_ratio) * 100).toFixed(1) : '0.0'}%</span>
+            </td>
+            <td class="text-center">
+              <span class="badge badge-rating fw-bold">${player.rating}</span>
+            </td>
+          `;
+          
+          tbody.appendChild(row);
+        });
+      }
+
+      // Add ID to the table for easier selection
+      const table = document.querySelector('.table-responsive table');
+      if (table) {
+        table.id = 'leaderboardTable';
+      }
+
+      // Sort each category by their respective ratings
+      rankingData.batting.sort((a, b) => b.rating - a.rating);
+      rankingData.bowling.sort((a, b) => b.rating - a.rating);
+      rankingData.allrounder.sort((a, b) => b.rating - a.rating);
+      
+      // Update rank numbers after sorting
+      rankingData.batting.forEach((player, index) => {
+        player.rank = index + 1;
+      });
+      rankingData.bowling.forEach((player, index) => {
+        player.rank = index + 1;
+      });
+      rankingData.allrounder.forEach((player, index) => {
+        player.rank = index + 1;
+      });
+
+      // Debug: Log available data
+      console.log('Available ranking data:', rankingData);
+      console.log('Batting data length:', rankingData.batting.length);
+      console.log('Bowling data length:', rankingData.bowling.length);
+      console.log('Allrounder data length:', rankingData.allrounder.length);
+
+      // Filter button event listeners
+      document.querySelectorAll('input[name="rankingFilter"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          if (this.checked) {
+            const filterType = this.id.replace('Ranking', '');
+            console.log('Filter changed to:', filterType);
+            const data = rankingData[filterType] || [];
+            console.log('Data for', filterType, ':', data);
+            renderTable(data);
+            
+            // Update active state
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            document.querySelector(`label[for="${this.id}"]`).classList.add('active');
+          }
+        });
+      });
+
+      // Initialize with allrounder data (default)
+      console.log('Initializing with allrounder data:', rankingData.allrounder);
+      renderTable(rankingData.allrounder);
+    });
+  </script>
 {% endblock %}
 
 

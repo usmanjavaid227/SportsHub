@@ -57,11 +57,19 @@ def home(request):
     from tampere_cricket.news.models import News
     recent_news = News.objects.filter(published=True).order_by('-created_at')[:3]
     
+    # Calculate real statistics for About section
+    total_players = User.objects.count()
+    total_challenges = Challenge.objects.count()
+    total_grounds = Ground.objects.filter(is_available=True).count()
+    
     context = {
         'recent_challenges': recent_challenges,
         'players': players,
         'top_grounds': top_grounds,
         'recent_news': recent_news,
+        'total_players': total_players,
+        'total_challenges': total_challenges,
+        'total_grounds': total_grounds,
     }
     return render(request, 'home.html', context)
 

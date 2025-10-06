@@ -2,6 +2,24 @@
 {% block title %}Grounds & Venues{% endblock %}
 {% block content %}
 {% load static %}
+
+<style>
+    .ground-item {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border-color:rgba(249, 248, 247, 0.2) !important;
+    }
+    .ground-item:hover {
+        background: rgba(230, 138, 0, 1) !important;
+    }
+    .ground-item.active {
+        background: rgba(230, 138, 0, 1) !important;
+        border-color:rgba(249, 248, 247, 0.2) !important;
+    }
+</style>
+
+
+
+
 <div class="container py-5">
   <div class="section-heading mb-4">
     <div class="bar"></div>
