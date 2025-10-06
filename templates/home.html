@@ -200,7 +200,7 @@
                       {% elif forloop.counter == 3 %}
                         <i class="fa-solid fa-medal text-warning me-2"></i>
                       {% endif %}
-                      <span class="fw-bold" style="color: var(--sh-orange);">{{ forloop.counter }}</span>
+                      <span class="fw-bold" style="color: #FFD700;">{{ forloop.counter }}</span>
                     </div>
                   </td>
                   <td class="text-center">
@@ -852,7 +852,7 @@
             <td class="text-center">
               <div class="d-flex align-items-center justify-content-center">
                 ${rankIcon}
-                <span class="fw-bold text-primary">${player.rank}</span>
+                <span class="fw-bold" style="color: #FFD700;">${player.rank}</span>
               </div>
             </td>
             <td class="text-center">${changeHtml}</td>
