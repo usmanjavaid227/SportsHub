@@ -477,12 +477,27 @@ def admin_select_winner(request, challenge_id):
     """Admin view to manually select winner"""
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
+    # Check if challenge is in the right status
+    if challenge.status not in ['ACCEPTED', 'COMPLETED']:
+        messages.error(request, "Can only select winner for accepted or completed challenges.")
+        return redirect('challenge_detail', challenge_id=challenge_id)
+    
+    # Check if match results exist, if not redirect to update results first
+    try:
+        match_result = MatchResult.objects.get(challenge=challenge)
+    except MatchResult.DoesNotExist:
+        messages.warning(request, "Please update match results first before selecting a winner.")
+        return redirect('admin_update_match_result', challenge_id=challenge_id)
+    
     if request.method == 'POST':
         winner_id = request.POST.get('winner')
         if winner_id:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
             winner = get_object_or_404(User, id=winner_id)
             challenge.winner = winner
             challenge.status = 'COMPLETED'
+            challenge.completed_at = timezone.now()
             challenge.save()
             messages.success(request, f'Winner set to {winner.username}')
         else:
@@ -497,5 +512,6 @@ def admin_select_winner(request, challenge_id):
     
     return render(request, 'challenges/admin_select_winner.html', {
         'challenge': challenge,
-        'possible_winners': possible_winners
+        'possible_winners': possible_winners,
+        'match_result': match_result
     })
