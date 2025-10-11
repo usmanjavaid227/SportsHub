@@ -10,4 +10,6 @@ channels
 channels-redis
 numpy==1.22.4
 pytz==2022.1
+whitenoise
+gunicorn
 
