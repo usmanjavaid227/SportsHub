@@ -8,6 +8,6 @@ djangorestframework-simplejwt
 django-cors-headers
 channels
 channels-redis
-numpy==1.22.4
-pytz==2022.1
+# numpy==1.22.4
+# pytz==2022.1
 
