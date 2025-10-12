@@ -6,12 +6,28 @@ from django.utils.text import slugify
 User = get_user_model()
 
 
+class NewsCategory(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True)
+    description = models.TextField(blank=True)
+    color = models.CharField(max_length=7, default='#FF9900', help_text="Hex color code for category")
+    
+    class Meta:
+        verbose_name = 'News Category'
+        verbose_name_plural = 'News Categories'
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+
+
 class News(models.Model):
     title = models.CharField(max_length=200, help_text="News article title")
     slug = models.SlugField(max_length=200, unique=True, blank=True, help_text="URL-friendly version of the title")
     content = models.TextField(help_text="Full article content")
     excerpt = models.TextField(max_length=500, blank=True, help_text="Short summary for preview")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='news_articles')
+    category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='news_articles')
     featured_image = models.ImageField(upload_to='news/images/', blank=True, null=True, help_text="Featured image for the article")
     published = models.BooleanField(default=False, help_text="Publish this article")
     published_at = models.DateTimeField(null=True, blank=True, help_text="When this article was published")

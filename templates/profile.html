@@ -18,6 +18,16 @@
         {% endif %}
         <h5 class="card-title" style="color: var(--sh-white);">{{ user.get_full_name|default:user.username }}</h5>
         <p class="text-muted">{{ user.city }}</p>
+        
+        <!-- Rank Display -->
+        <div class="mb-3">
+          <div class="rank-display" style="background: var(--sh-orange); padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);">
+            <span style="color: #000; font-weight: bold; font-size: 1.1rem;">
+              <i class="fa-solid fa-trophy me-1"></i>Rank #{{ user_rank }}
+            </span>
+          </div>
+        </div>
+        
         <div class="mb-3">
           <span class="badge" style="background: var(--sh-orange); color: #000;">{{ user.get_role_display }}</span>
           <span class="badge" style="background: rgba(255,153,0,0.2); color: var(--sh-orange); border: 1px solid var(--sh-orange);">{{ user.get_experience_level_display }}</span>
@@ -42,7 +52,12 @@
           {% endif %}
         </div>
         
-        <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc btn-sm">Edit Profile</a>
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc btn-sm">Edit Profile</a>
+          <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">
+            <i class="fa-solid fa-trash me-1"></i>Delete Profile
+          </a>
+        </div>
       </div>
     </div>
 

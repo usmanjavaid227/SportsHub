@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% block title %}{{ player.username }} Analysis • ChallengeHub{% endblock %}
+{% block content %}
+
+<style>
+    .analysis-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    .analysis-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
+        border-color: var(--sh-orange) !important;
+    }
+    .analysis-header {
+        background: rgba(255,153,0,0.1) !important;
+        border-bottom: 1px solid var(--sh-orange) !important;
+    }
+    .stat-highlight {
+        background: var(--sh-orange);
+        color: #000;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .stat-label {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    .performance-item {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .performance-item:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .match-date {
+        color: var(--sh-gray);
+        font-size: 0.8rem;
+    }
+    .match-stats {
+        color: var(--sh-orange);
+        font-weight: 600;
+    }
+    .ground-name {
+        color: var(--sh-white);
+        font-weight: 600;
+    }
+    .opponent-name {
+        color: var(--sh-white);
+        font-weight: 600;
+    }
+    .filter-section {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .filter-section h6 {
+        color: var(--sh-orange);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .filter-section .form-control {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.3);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control:focus {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control::placeholder {
+        color: var(--sh-gray);
+    }
+    .filter-section .btn {
+        background: var(--sh-orange);
+        border: none;
+        color: #000;
+        font-weight: 600;
+    }
+    .filter-section .btn:hover {
+        background: var(--sh-orange-dark);
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1">
+                        <i class="fa-solid fa-user-chart me-2" style="color: var(--sh-orange);"></i>
+                        {{ player.username }} Analysis
+                    </h2>
+                    <p class="text-muted mb-0">Detailed performance analysis and statistics</p>
+                </div>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fa-solid fa-home me-1"></i>User Site
+                    </a>
+                    <a href="/admin/" class="btn btn-outline-warning btn-sm me-2">
+                        <i class="fa-solid fa-cog me-1"></i>Admin Panel
+                    </a>
+                    <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card analysis-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_matches }}</div>
+                    <div class="stat-label">Total Matches</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analysis-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_runs }}</div>
+                    <div class="stat-label">Total Runs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analysis-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_wickets }}</div>
+                    <div class="stat-label">Total Wickets</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analysis-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ batting_average }}</div>
+                    <div class="stat-label">Batting Average</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <h6><i class="fa-solid fa-filter me-2"></i>Filter Analysis</h6>
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label text-white">Date From</label>
+                <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-white">Date To</label>
+                <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-white">Ground</label>
+                <select class="form-control" name="ground">
+                    <option value="">All Grounds</option>
+                    {% for ground in grounds %}
+                    <option value="{{ ground.id }}" {% if selected_ground == ground.id|stringformat:"s" %}selected{% endif %}>
+                        {{ ground.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn">
+                    <i class="fa-solid fa-search me-1"></i>Apply Filters
+                </button>
+                <a href="{% url 'admin_stats:player_analysis' player.id %}" class="btn btn-outline-secondary ms-2">
+                    <i class="fa-solid fa-times me-1"></i>Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <!-- Performance by Ground -->
+        <div class="col-md-6 mb-4">
+            <div class="card analysis-card">
+                <div class="card-header analysis-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange);"></i>
+                        Performance by Ground
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for ground in ground_performance %}
+                    <div class="performance-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="ground-name">{{ ground.ground__name|default:"Unknown Ground" }}</div>
+                                <div class="match-stats">
+                                    {{ ground.matches }} matches • {{ ground.runs }} runs • {{ ground.wickets }} wickets
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-white">Avg: {{ ground.avg_runs|floatformat:1 }}</div>
+                                <div class="text-muted">Wickets: {{ ground.avg_wickets|floatformat:1 }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-map-marker-alt fa-2x mb-2"></i>
+                        <p>No ground performance data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Opponent Analysis -->
+        <div class="col-md-6 mb-4">
+            <div class="card analysis-card">
+                <div class="card-header analysis-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-users me-2" style="color: var(--sh-orange);"></i>
+                        Opponent Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for opponent in opponent_analysis %}
+                    <div class="performance-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="opponent-name">{{ opponent.opponent__username|default:"Unknown Opponent" }}</div>
+                                <div class="match-stats">
+                                    {{ opponent.matches }} matches • {{ opponent.runs }} runs • {{ opponent.wickets }} wickets
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-white">Wins: {{ opponent.wins }}</div>
+                                <div class="text-muted">Win Rate: {{ opponent.wins|floatformat:0 }}/{{ opponent.matches }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-users fa-2x mb-2"></i>
+                        <p>No opponent data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Performance -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card analysis-card">
+                <div class="card-header analysis-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>
+                        Recent Performance (Last 10 Matches)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for match in recent_performance %}
+                    <div class="performance-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="match-date">{{ match.match_date|date:"M d, Y" }}</div>
+                                <div class="match-stats">
+                                    {% if match.runs_scored > 0 %}
+                                        {{ match.runs_scored }} runs
+                                    {% endif %}
+                                    {% if match.wickets_taken > 0 %}
+                                        {% if match.runs_scored > 0 %} • {% endif %}{{ match.wickets_taken }} wickets
+                                    {% endif %}
+                                </div>
+                                <div class="text-muted">
+                                    vs {{ match.opponent.username|default:"Unknown" }} at {{ match.ground.name|default:"Unknown Ground" }}
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" style="background: var(--sh-orange); color: #000;">
+                                    {{ match.result }}
+                                </span>
+                                <div class="text-muted mt-1">
+                                    Rating: {{ match.performance_rating|floatformat:1 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-chart-line fa-2x mb-2"></i>
+                        <p>No recent performance data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card analysis-card">
+                <div class="card-header analysis-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bolt me-2" style="color: var(--sh-orange);"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center" style="padding-top: 20px;">
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:player_comparison' %}?players={{ player.id }}" class="btn btn-outline-primary w-100">
+                                <i class="fa-solid fa-balance-scale me-2"></i>Compare with Others
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:statistics_api' %}?type=player_performance&player_id={{ player.id }}" class="btn btn-outline-info w-100">
+                                <i class="fa-solid fa-chart-bar me-2"></i>View Performance Chart
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

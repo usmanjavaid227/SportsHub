@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'tampere_cricket.grounds',
     'tampere_cricket.news',
     'tampere_cricket.notifications',
+    'tampere_cricket.admin_stats',
 ]
 
 MIDDLEWARE = [

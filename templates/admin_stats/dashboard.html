@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard • ChallengeHub{% endblock %}
+{% block content %}
+
+<style>
+    .admin-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    .admin-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
+        border-color: var(--sh-orange) !important;
+    }
+    .admin-header {
+        background: rgba(255,153,0,0.1) !important;
+        border-bottom: 1px solid var(--sh-orange) !important;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--sh-orange);
+    }
+    .stat-label {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+    }
+    .filter-section {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .filter-section h6 {
+        color: var(--sh-orange);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .filter-section .form-control {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.3);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control:focus {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control::placeholder {
+        color: var(--sh-gray);
+    }
+    .filter-section .btn {
+        background: var(--sh-orange);
+        border: none;
+        color: #000;
+        font-weight: 600;
+    }
+    .filter-section .btn:hover {
+        background: var(--sh-orange-dark);
+        transform: translateY(-1px);
+    }
+    
+    /* Filter dropdown styling to match template theme */
+    .filter-section select option {
+        background: #000000 !important;
+        color: var(--sh-white) !important;
+        padding: 8px 12px !important;
+    }
+    
+    .filter-section select:focus {
+        background: #000000 !important;
+        border-color: var(--sh-orange) !important;
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25) !important;
+        color: var(--sh-white) !important;
+    }
+    
+    .filter-section select:hover {
+        background: #000000 !important;
+        border-color: var(--sh-orange) !important;
+    }
+    .top-performer {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .top-performer:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .performer-rank {
+        background: var(--sh-orange);
+        color: #000;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .performer-name {
+        color: var(--sh-white);
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .performer-stats {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+    }
+    .recent-match {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .recent-match:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .match-date {
+        color: var(--sh-gray);
+        font-size: 0.8rem;
+    }
+    .match-player {
+        color: var(--sh-white);
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .match-stats {
+        color: var(--sh-orange);
+        font-size: 0.9rem;
+    }
+    .chart-container {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-white mb-0">
+                    <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>
+                    Admin Dashboard
+                </h2>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-muted">
+                        <i class="fa-solid fa-calendar me-1"></i>
+                        {{ "now"|date:"F d, Y" }}
+                    </div>
+                    <div>
+                        <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm">
+                            <i class="fa-solid fa-home me-1"></i>User Site
+                        </a>
+                        <a href="/admin/" class="btn btn-outline-warning btn-sm">
+                            <i class="fa-solid fa-cog me-1"></i>Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filter-section">
+        <h6><i class="fa-solid fa-filter me-2"></i>Filter Statistics</h6>
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label text-white">Date From</label>
+                <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white">Date To</label>
+                <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white">Ground</label>
+                <select class="form-control" name="ground" style="background: #000000 !important; border: 1px solid rgba(255,153,0,0.3) !important; color: var(--sh-white) !important;">
+                    <option value="">All Grounds</option>
+                    {% for ground in grounds %}
+                    <option value="{{ ground.id }}" {% if selected_ground == ground.id|stringformat:"s" %}selected{% endif %}>
+                        {{ ground.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-white">Player</label>
+                <select class="form-control" name="player" style="background: #000000 !important; border: 1px solid rgba(255,153,0,0.3) !important; color: var(--sh-white) !important;">
+                    <option value="">All Players</option>
+                    {% for player in players %}
+                    <option value="{{ player.id }}" {% if selected_player == player.id|stringformat:"s" %}selected{% endif %}>
+                        {{ player.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn">
+                    <i class="fa-solid fa-search me-1"></i>Apply Filters
+                </button>
+                <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary ms-2">
+                    <i class="fa-solid fa-times me-1"></i>Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Overview Statistics -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-4">
+            <div class="card admin-card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-number">{{ total_matches }}</div>
+                    <div class="stat-label">Total Matches</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card admin-card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-number">{{ total_players }}</div>
+                    <div class="stat-label">Active Players</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card admin-card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-number">{{ total_runs }}</div>
+                    <div class="stat-label">Total Runs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card admin-card h-100">
+                <div class="card-body text-center">
+                    <div class="stat-number">{{ total_wickets }}</div>
+                    <div class="stat-label">Total Wickets</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Performers -->
+        <div class="col-md-6 mb-4">
+            <div class="card admin-card">
+                <div class="card-header admin-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>
+                        Top Batsmen
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for batsman in top_batsmen %}
+                    <div class="top-performer">
+                        <div class="d-flex align-items-center">
+                            <div class="performer-rank">{{ forloop.counter }}</div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="performer-name">{{ batsman.user__username }}</div>
+                                <div class="performer-stats">
+                                    {{ batsman.total_runs }} runs in {{ batsman.matches }} matches
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-chart-line fa-2x mb-2"></i>
+                        <p>No batting data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Bowlers -->
+        <div class="col-md-6 mb-4">
+            <div class="card admin-card">
+                <div class="card-header admin-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bowling-ball me-2" style="color: var(--sh-orange);"></i>
+                        Top Bowlers
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for bowler in top_bowlers %}
+                    <div class="top-performer">
+                        <div class="d-flex align-items-center">
+                            <div class="performer-rank">{{ forloop.counter }}</div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="performer-name">{{ bowler.user__username }}</div>
+                                <div class="performer-stats">
+                                    {{ bowler.total_wickets }} wickets in {{ bowler.matches }} matches
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-bowling-ball fa-2x mb-2"></i>
+                        <p>No bowling data available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Matches -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card admin-card">
+                <div class="card-header admin-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>
+                        Recent Matches
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for match in recent_matches %}
+                    <div class="recent-match">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="match-player">{{ match.user.username }}</div>
+                                <div class="match-stats">
+                                    {% if match.runs_scored > 0 %}
+                                        {{ match.runs_scored }} runs
+                                    {% endif %}
+                                    {% if match.wickets_taken > 0 %}
+                                        {% if match.runs_scored > 0 %} • {% endif %}{{ match.wickets_taken }} wickets
+                                    {% endif %}
+                                </div>
+                                <div class="match-date">
+                                    {{ match.match_date|date:"M d, Y" }} at {{ match.ground.name|default:"Unknown Ground" }}
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" style="background: var(--sh-orange); color: #000;">
+                                    {{ match.result }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-calendar fa-2x mb-2"></i>
+                        <p>No recent matches found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card admin-card">
+                <div class="card-header admin-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bolt me-2" style="color: var(--sh-orange);"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center" style="padding-top: 20px;">
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:player_comparison' %}" class="btn btn-outline-primary w-100">
+                                <i class="fa-solid fa-users me-2"></i>Compare Players
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:records' %}" class="btn btn-outline-success w-100">
+                                <i class="fa-solid fa-trophy me-2"></i>View Records
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="/admin/" class="btn btn-outline-warning w-100">
+                                <i class="fa-solid fa-cog me-2"></i>Admin Panel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

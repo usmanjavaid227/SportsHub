@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Contact • SportsHub{% endblock %}
+{% block title %}Contact • ChallengeHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -178,10 +178,59 @@
                         </div>
                     </div>
 
+                    <!-- Social Media Section -->
+                    <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="text-center">
+                            <div class="section-heading justify-content-center mb-4">
+                                <div class="bar"></div>
+                                <h5 class="h5 m-0">Follow Us</h5>
+                            </div>
+                            <p class="text-secondary mb-4">Stay connected with ChallengeHub on social media</p>
+                            
+                            <div class="social-media-links d-flex justify-content-center gap-5">
+                                <a href="#" class="social-link" title="Facebook" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="social-link" title="Twitter" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="social-link" title="Instagram" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-link" title="LinkedIn" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-link" title="YouTube" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.social-link {
+    display: inline-block;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+}
+
+.social-link:hover {
+    color: var(--sh-orange-dark) !important;
+    transform: translateY(-3px);
+    text-shadow: 0 4px 8px rgba(255, 153, 0, 0.3);
+    background: none !important;
+    border: none !important;
+}
+</style>
 {% endblock %}

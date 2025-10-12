@@ -85,9 +85,16 @@ urlpatterns = [
     # Profile URLs
     path('profile/', profile, name='profile'),
     path('profile/<int:user_id>/', public_profile_view, name='public_profile'),
+    path('delete-profile/', pages.delete_profile, name='delete_profile'),
     
     # Admin
     path('admin-moderation/', project_admin.admin_moderation, name='admin_moderation'),
+    path('admin-stats/', include('tampere_cricket.admin_stats.urls')),
+    
+    # Legal pages
+    path('privacy-policy/', pages.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', pages.terms_of_service, name='terms_of_service'),
+    path('challenge-rules/', pages.challenge_rules, name='challenge_rules'),
 ]
 
 # Serve media files in development

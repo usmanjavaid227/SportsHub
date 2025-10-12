@@ -1,0 +1,570 @@
+{% extends 'base.html' %}
+{% block title %}Player Comparison • ChallengeHub{% endblock %}
+{% block content %}
+
+<style>
+    /* Ensure navbar maintains its original styling */
+    .navbar {
+        backdrop-filter: blur(6px) !important;
+        background: #000000 !important;
+        border-bottom: 1px solid #333 !important;
+    }
+    .navbar-brand {
+        font-weight: 900 !important;
+        letter-spacing: .5px !important;
+    }
+    .navbar-nav .nav-link {
+        color: var(--sh-white) !important;
+    }
+    .navbar-nav .nav-link:hover {
+        color: var(--sh-orange) !important;
+    }
+    
+    /* Scoped styles for player comparison page only */
+    .player-comparison-page .comparison-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    .comparison-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
+        border-color: var(--sh-orange) !important;
+    }
+    .comparison-header {
+        background: rgba(255,153,0,0.1) !important;
+        border-bottom: 1px solid var(--sh-orange) !important;
+    }
+    .player-card {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .player-card:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .player-name {
+        color: var(--sh-white);
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255,153,0,0.1);
+    }
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    .stat-label {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+    }
+    .stat-value {
+        color: var(--sh-orange);
+        font-weight: 600;
+    }
+    .comparison-table {
+        background: #0A0A0A !important;
+        border: 1px solid rgba(255,255,255,.10) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+    }
+    .comparison-table table {
+        width: 100% !important;
+        background: #0A0A0A !important;
+        color: var(--sh-white) !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+    }
+    .comparison-table thead {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+    }
+    .comparison-table th {
+        color: var(--sh-white) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        padding: 16px 12px !important;
+        border: none !important;
+        font-size: 12px !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    .comparison-table tbody tr {
+        background: #0A0A0A !important;
+        border-bottom: 1px solid rgba(255,153,0,.2) !important;
+        transition: all 0.3s ease !important;
+    }
+    .comparison-table tbody tr:hover {
+        background: linear-gradient(90deg, rgba(255,153,0,.08), rgba(255,153,0,.03)) !important;
+        transform: translateX(4px) !important;
+        box-shadow: 0 4px 12px rgba(255,153,0,.1) !important;
+    }
+    .comparison-table td {
+        padding: 16px 12px !important;
+        border: none !important;
+        color: var(--sh-white) !important;
+        vertical-align: middle !important;
+    }
+    .filter-section {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    .filter-section h6 {
+        color: var(--sh-orange);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    .filter-section .form-control {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.3);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control:focus {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25);
+        color: var(--sh-white);
+    }
+    .filter-section .form-control::placeholder {
+        color: var(--sh-gray);
+    }
+    .filter-section .btn {
+        background: var(--sh-orange);
+        border: none;
+        color: #000;
+        font-weight: 600;
+    }
+    .filter-section .btn:hover {
+        background: var(--sh-orange-dark);
+        transform: translateY(-1px);
+    }
+    .player-selector {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .player-selector h6 {
+        color: var(--sh-orange);
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    .player-selector .form-check {
+        margin-bottom: 8px;
+    }
+    .player-selector .form-check-input {
+        background-color: #000000 !important;
+        border: 2px solid var(--sh-orange) !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .player-selector .form-check-input:checked {
+        background-color: var(--sh-orange) !important;
+        border-color: var(--sh-orange) !important;
+    }
+    .player-selector .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25) !important;
+    }
+    .player-selector .form-check-label {
+        color: var(--sh-white);
+        font-weight: 500;
+    }
+    
+    /* Radio button styling for comparison type */
+    .player-selector input[type="radio"] {
+        background-color: #000000 !important;
+        border: 2px solid var(--sh-orange) !important;
+        width: 18px !important;
+        height: 18px !important;
+    }
+    .player-selector input[type="radio"]:checked {
+        background-color: var(--sh-orange) !important;
+        border-color: var(--sh-orange) !important;
+    }
+    .player-selector input[type="radio"]:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25) !important;
+    }
+    
+    /* Form submission feedback */
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    .loading {
+        position: relative;
+    }
+    
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid #fff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const checkboxes = document.querySelectorAll('input[name="players"]');
+    
+    // Add change event listeners to checkboxes
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSubmitButton();
+        });
+    });
+    
+    function updateSubmitButton() {
+        const checkedBoxes = document.querySelectorAll('input[name="players"]:checked');
+        if (checkedBoxes.length === 0) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Select at least one player';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-search me-1"></i>Compare Players';
+        }
+    }
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        const checkedBoxes = document.querySelectorAll('input[name="players"]:checked');
+        if (checkedBoxes.length === 0) {
+            e.preventDefault();
+            alert('Please select at least one player to compare.');
+            return false;
+        }
+        
+        // Add loading state
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Comparing...';
+    });
+    
+    // Initialize button state
+    updateSubmitButton();
+});
+</script>
+
+<div class="container py-5 player-comparison-page">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1">
+                        <i class="fa-solid fa-balance-scale me-2" style="color: var(--sh-orange);"></i>
+                        Player Comparison
+                    </h2>
+                    <p class="text-muted mb-0">Compare player statistics and performance</p>
+                </div>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fa-solid fa-home me-1"></i>User Site
+                    </a>
+                    <a href="/admin/" class="btn btn-outline-warning btn-sm me-2">
+                        <i class="fa-solid fa-cog me-1"></i>Admin Panel
+                    </a>
+                    <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Selection -->
+    <div class="filter-section">
+        <h6><i class="fa-solid fa-users me-2"></i>Select Players to Compare</h6>
+        <form method="GET" class="row g-3">
+            <div class="col-md-8">
+                <div class="player-selector">
+                    <h6>Available Players</h6>
+                    <div class="row">
+                        {% for player in all_players %}
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="players" value="{{ player.id }}" 
+                                       id="player_{{ player.id }}" 
+                                       {% if player.id|stringformat:"s" in selected_players %}checked{% endif %}>
+                                <label class="form-check-label" for="player_{{ player.id }}">
+                                    {{ player.username }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="player-selector">
+                    <h6>Comparison Type</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" value="batting" id="type_batting" 
+                               {% if comparison_type == 'batting' %}checked{% endif %}>
+                        <label class="form-check-label" for="type_batting">
+                            Batting Performance
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" value="bowling" id="type_bowling" 
+                               {% if comparison_type == 'bowling' %}checked{% endif %}>
+                        <label class="form-check-label" for="type_bowling">
+                            Bowling Performance
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="type" value="all_round" id="type_all_round" 
+                               {% if comparison_type == 'all_round' %}checked{% endif %}>
+                        <label class="form-check-label" for="type_all_round">
+                            All-Round Performance
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn">
+                    <i class="fa-solid fa-search me-1"></i>Compare Players
+                </button>
+                <a href="{% url 'admin_stats:player_comparison' %}" class="btn btn-outline-secondary ms-2">
+                    <i class="fa-solid fa-times me-1"></i>Clear Selection
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if comparison_data %}
+    <!-- Comparison Results -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card comparison-card">
+                <div class="card-header comparison-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-chart-bar me-2" style="color: var(--sh-orange);"></i>
+                        Comparison Results
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if comparison_type == 'batting' %}
+                    <!-- Batting Comparison -->
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Matches</th>
+                                    <th>Runs</th>
+                                    <th>Balls Faced</th>
+                                    <th>Average</th>
+                                    <th>Strike Rate</th>
+                                    <th>Highest Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in comparison_data %}
+                                <tr>
+                                    <td class="fw-bold">{{ data.player.username }}</td>
+                                    <td>{{ data.matches }}</td>
+                                    <td class="text-warning fw-bold">{{ data.runs }}</td>
+                                    <td>{{ data.balls }}</td>
+                                    <td class="text-warning fw-bold">{{ data.average }}</td>
+                                    <td class="text-warning fw-bold">{{ data.strike_rate }}</td>
+                                    <td class="text-warning fw-bold">{{ data.highest }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% elif comparison_type == 'bowling' %}
+                    <!-- Bowling Comparison -->
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Matches</th>
+                                    <th>Wickets</th>
+                                    <th>Overs</th>
+                                    <th>Average</th>
+                                    <th>Economy</th>
+                                    <th>Best Figures</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in comparison_data %}
+                                <tr>
+                                    <td class="fw-bold">{{ data.player.username }}</td>
+                                    <td>{{ data.matches }}</td>
+                                    <td class="text-warning fw-bold">{{ data.wickets }}</td>
+                                    <td>{{ data.overs }}</td>
+                                    <td class="text-warning fw-bold">{{ data.average }}</td>
+                                    <td class="text-warning fw-bold">{{ data.economy }}</td>
+                                    <td class="text-warning fw-bold">{{ data.best }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <!-- All-Round Comparison -->
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Matches</th>
+                                    <th>Runs</th>
+                                    <th>Wickets</th>
+                                    <th>Batting Avg</th>
+                                    <th>Bowling Avg</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in comparison_data %}
+                                <tr>
+                                    <td class="fw-bold">{{ data.player.username }}</td>
+                                    <td>{{ data.matches }}</td>
+                                    <td class="text-warning fw-bold">{{ data.runs }}</td>
+                                    <td class="text-warning fw-bold">{{ data.wickets }}</td>
+                                    <td class="text-warning fw-bold">{{ data.batting_avg }}</td>
+                                    <td class="text-warning fw-bold">{{ data.bowling_avg }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual Player Cards -->
+    <div class="row mt-4">
+        {% for data in comparison_data %}
+        <div class="col-md-6 mb-4">
+            <div class="player-card">
+                <div class="player-name">
+                    <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
+                    {{ data.player.username }}
+                </div>
+                {% if comparison_type == 'batting' %}
+                <div class="stat-item">
+                    <span class="stat-label">Matches Played</span>
+                    <span class="stat-value">{{ data.matches }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Runs</span>
+                    <span class="stat-value">{{ data.runs }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Balls Faced</span>
+                    <span class="stat-value">{{ data.balls }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Batting Average</span>
+                    <span class="stat-value">{{ data.average }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Strike Rate</span>
+                    <span class="stat-value">{{ data.strike_rate }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Highest Score</span>
+                    <span class="stat-value">{{ data.highest }}</span>
+                </div>
+                {% elif comparison_type == 'bowling' %}
+                <div class="stat-item">
+                    <span class="stat-label">Matches Played</span>
+                    <span class="stat-value">{{ data.matches }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Wickets</span>
+                    <span class="stat-value">{{ data.wickets }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Overs Bowled</span>
+                    <span class="stat-value">{{ data.overs }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Bowling Average</span>
+                    <span class="stat-value">{{ data.average }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Economy Rate</span>
+                    <span class="stat-value">{{ data.economy }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Best Figures</span>
+                    <span class="stat-value">{{ data.best }}</span>
+                </div>
+                {% else %}
+                <div class="stat-item">
+                    <span class="stat-label">Matches Played</span>
+                    <span class="stat-value">{{ data.matches }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Runs</span>
+                    <span class="stat-value">{{ data.runs }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Total Wickets</span>
+                    <span class="stat-value">{{ data.wickets }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Batting Average</span>
+                    <span class="stat-value">{{ data.batting_avg }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Bowling Average</span>
+                    <span class="stat-value">{{ data.bowling_avg }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- No Comparison Data -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card comparison-card">
+                <div class="card-body text-center py-5">
+                    <i class="fa-solid fa-balance-scale fa-3x text-muted mb-3"></i>
+                    <h5 class="text-white mb-3">No Players Selected</h5>
+                    <p class="text-muted">Please select at least two players to compare their statistics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

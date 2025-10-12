@@ -166,6 +166,12 @@ def challenge_accept(request, challenge_id):
             return redirect('challenge_detail', challenge_id=challenge_id)
         
         if request.method == 'POST':
+            challenge_rules = request.POST.get('challenge_rules')
+            
+            if not challenge_rules:
+                messages.error(request, 'You must agree to the Challenge Rules & Guidelines to accept this challenge.')
+                return render(request, 'challenges/accept_confirm.html', {'challenge': challenge})
+            
             # Mark the specific participant as accepted
             if challenge.team1_batter == request.user:
                 challenge.team1_batter_accepted = True
@@ -203,6 +209,12 @@ def challenge_accept(request, challenge_id):
             return redirect('challenge_detail', challenge_id=challenge_id)
         
         if request.method == 'POST':
+            challenge_rules = request.POST.get('challenge_rules')
+            
+            if not challenge_rules:
+                messages.error(request, 'You must agree to the Challenge Rules & Guidelines to accept this challenge.')
+                return render(request, 'challenges/accept_confirm.html', {'challenge': challenge})
+            
             challenge.opponent = request.user
             challenge.status = 'ACCEPTED'
             challenge.accepted_at = timezone.now()

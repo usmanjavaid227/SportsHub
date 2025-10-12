@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Grounds & Venues{% endblock %}
+{% block title %}Grounds & Venues • ChallengeHub{% endblock %}
 {% block content %}
 {% load static %}
 
@@ -7,28 +7,16 @@
     .ground-item {
         background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
         border: 1px solid rgba(255,153,0,0.2) !important;
-        transition: all 0.3s ease;
-    }
-    .ground-item:hover {
-        background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, rgba(255,153,0,0.08) 100%) !important;
-        border-color: var(--sh-orange) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255,153,0,0.2);
+        color: var(--sh-white) !important;
     }
     .ground-item.active {
-        background: linear-gradient(135deg, rgba(255,153,0,0.2) 0%, rgba(255,153,0,0.1) 100%) !important;
+        background: linear-gradient(135deg, rgba(255,153,0,0.1) 0%, rgba(255,153,0,0.05) 100%) !important;
         border-color: var(--sh-orange) !important;
-        box-shadow: 0 4px 12px rgba(255,153,0,0.3);
     }
     .ground-card {
         background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
         border: 1px solid rgba(255,153,0,0.2) !important;
-        transition: all 0.3s ease;
-    }
-    .ground-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
-        border-color: var(--sh-orange) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     .ground-header {
         background: rgba(255,153,0,0.1) !important;
@@ -36,6 +24,35 @@
     }
     .ground-icon {
         color: var(--sh-orange) !important;
+    }
+    .ground-item h6 {
+        color: var(--sh-orange) !important;
+        font-weight: 600;
+    }
+    .ground-item p {
+        color: var(--sh-gray) !important;
+    }
+    .ground-item small {
+        color: var(--sh-gray) !important;
+    }
+    .ground-item i {
+        color: var(--sh-orange) !important;
+    }
+    .text-tcc {
+        color: var(--sh-orange) !important;
+    }
+    .ground-card .card-body {
+        background: transparent !important;
+        color: var(--sh-white) !important;
+    }
+    .ground-card .card-body * {
+        color: inherit;
+    }
+    .ground-card .text-muted {
+        color: var(--sh-gray) !important;
+    }
+    .ground-card .text-secondary {
+        color: var(--sh-gray) !important;
     }
 </style>
 
@@ -213,34 +230,34 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!detailsCard || !detailsContent) return;
         
         detailsContent.innerHTML = `
-            <h6 class="text-tcc mb-3">${name}</h6>
+            <h6 class="text-tcc mb-3" style="color: var(--sh-orange) !important; font-weight: 600;">${name}</h6>
             <div class="mb-3">
                 <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-map-marker-alt text-tcc me-2"></i>
-                    <strong>Address:</strong>
+                    <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange) !important;"></i>
+                    <strong style="color: var(--sh-white) !important;">Address:</strong>
                 </div>
-                <p class="text-muted ms-4">${address || 'Address not provided'}</p>
+                <p class="ms-4" style="color: var(--sh-gray) !important;">${address || 'Address not provided'}</p>
             </div>
             <div class="mb-3">
                 <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-map-pin text-tcc me-2"></i>
-                    <strong>Coordinates:</strong>
+                    <i class="fa-solid fa-map-pin me-2" style="color: var(--sh-orange) !important;"></i>
+                    <strong style="color: var(--sh-white) !important;">Coordinates:</strong>
                 </div>
-                <p class="text-muted ms-4">${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
+                <p class="ms-4" style="color: var(--sh-gray) !important;">${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
             </div>
             <div class="mb-3">
                 <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-clock text-tcc me-2"></i>
-                    <strong>Availability:</strong>
+                    <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange) !important;"></i>
+                    <strong style="color: var(--sh-white) !important;">Availability:</strong>
                 </div>
-                <p class="text-muted ms-4">24/7 Access</p>
+                <p class="ms-4" style="color: var(--sh-gray) !important;">24/7 Access</p>
             </div>
             <div class="mb-0">
                 <div class="d-flex align-items-center mb-2">
-                    <i class="fa-solid fa-dollar-sign text-tcc me-2"></i>
-                    <strong>Cost:</strong>
+                    <i class="fa-solid fa-dollar-sign me-2" style="color: var(--sh-orange) !important;"></i>
+                    <strong style="color: var(--sh-white) !important;">Cost:</strong>
                 </div>
-                <p class="text-muted ms-4">Free to use</p>
+                <p class="ms-4" style="color: var(--sh-gray) !important;">Free to use</p>
             </div>
         `;
         

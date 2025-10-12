@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+{% block title %}{{ ground.name }} Analysis • ChallengeHub{% endblock %}
+{% block content %}
+
+<style>
+    .ground-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+    .ground-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255,153,0,0.15);
+        border-color: var(--sh-orange) !important;
+    }
+    .ground-header {
+        background: rgba(255,153,0,0.1) !important;
+        border-bottom: 1px solid var(--sh-orange) !important;
+    }
+    .stat-highlight {
+        background: var(--sh-orange);
+        color: #000;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .stat-label {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    .performer-item {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .performer-item:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .performer-rank {
+        background: var(--sh-orange);
+        color: #000;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .performer-name {
+        color: var(--sh-white);
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .performer-stats {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+    }
+    .match-item {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .match-item:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .match-date {
+        color: var(--sh-gray);
+        font-size: 0.8rem;
+    }
+    .match-player {
+        color: var(--sh-white);
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .match-stats {
+        color: var(--sh-orange);
+        font-size: 0.9rem;
+    }
+    .monthly-chart {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1">
+                        <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange);"></i>
+                        {{ ground.name }} Analysis
+                    </h2>
+                    <p class="text-muted mb-0">Ground performance statistics and trends</p>
+                </div>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fa-solid fa-home me-1"></i>User Site
+                    </a>
+                    <a href="/admin/" class="btn btn-outline-warning btn-sm me-2">
+                        <i class="fa-solid fa-cog me-1"></i>Admin Panel
+                    </a>
+                    <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ground Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card ground-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_matches }}</div>
+                    <div class="stat-label">Total Matches</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card ground-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_runs }}</div>
+                    <div class="stat-label">Total Runs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card ground-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ total_wickets }}</div>
+                    <div class="stat-label">Total Wickets</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card ground-card">
+                <div class="card-body text-center">
+                    <div class="stat-highlight">{{ average_score }}</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Batsmen at this Ground -->
+        <div class="col-md-6 mb-4">
+            <div class="card ground-card">
+                <div class="card-header ground-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bat me-2" style="color: var(--sh-orange);"></i>
+                        Top Batsmen at {{ ground.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for batsman in top_batsmen %}
+                    <div class="performer-item">
+                        <div class="d-flex align-items-center">
+                            <div class="performer-rank">{{ forloop.counter }}</div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="performer-name">{{ batsman.user__username }}</div>
+                                <div class="performer-stats">
+                                    {{ batsman.runs }} runs in {{ batsman.matches }} matches
+                                </div>
+                                <div class="performer-stats">
+                                    Average: {{ batsman.average|floatformat:1 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-bat fa-2x mb-2"></i>
+                        <p>No batting data available for this ground</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Bowlers at this Ground -->
+        <div class="col-md-6 mb-4">
+            <div class="card ground-card">
+                <div class="card-header ground-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bowling-ball me-2" style="color: var(--sh-orange);"></i>
+                        Top Bowlers at {{ ground.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for bowler in top_bowlers %}
+                    <div class="performer-item">
+                        <div class="d-flex align-items-center">
+                            <div class="performer-rank">{{ forloop.counter }}</div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="performer-name">{{ bowler.user__username }}</div>
+                                <div class="performer-stats">
+                                    {{ bowler.wickets }} wickets in {{ bowler.matches }} matches
+                                </div>
+                                <div class="performer-stats">
+                                    Average: {{ bowler.average|floatformat:1 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fa-solid fa-bowling-ball fa-2x mb-2"></i>
+                        <p>No bowling data available for this ground</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Statistics -->
+    {% if monthly_stats %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card ground-card">
+                <div class="card-header ground-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>
+                        Monthly Performance Trends
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="monthly-chart">
+                        <div class="row">
+                            {% for month in monthly_stats %}
+                            <div class="col-md-4 mb-3">
+                                <div class="performer-item">
+                                    <div class="performer-name">Month {{ month.month }}</div>
+                                    <div class="performer-stats">
+                                        {{ month.matches }} matches • {{ month.runs }} runs • {{ month.wickets }} wickets
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Matches -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card ground-card">
+                <div class="card-header ground-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>
+                        Recent Matches at {{ ground.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for match in match_stats %}
+                    <div class="match-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="match-player">{{ match.user.username }}</div>
+                                <div class="match-stats">
+                                    {% if match.runs_scored > 0 %}
+                                        {{ match.runs_scored }} runs
+                                    {% endif %}
+                                    {% if match.wickets_taken > 0 %}
+                                        {% if match.runs_scored > 0 %} • {% endif %}{{ match.wickets_taken }} wickets
+                                    {% endif %}
+                                </div>
+                                <div class="match-date">
+                                    {{ match.match_date|date:"M d, Y" }} vs {{ match.opponent.username|default:"Unknown" }}
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" style="background: var(--sh-orange); color: #000;">
+                                    {{ match.result }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-calendar fa-2x mb-2"></i>
+                        <p>No recent matches found at this ground</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card ground-card">
+                <div class="card-header ground-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bolt me-2" style="color: var(--sh-orange);"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center" style="padding-top: 20px;">
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:player_comparison' %}" class="btn btn-outline-primary w-100">
+                                <i class="fa-solid fa-balance-scale me-2"></i>Compare Players
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:records' %}" class="btn btn-outline-success w-100">
+                                <i class="fa-solid fa-trophy me-2"></i>View Records
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fa-solid fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

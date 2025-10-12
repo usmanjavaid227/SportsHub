@@ -37,6 +37,16 @@
         {% endif %}
         <h5 class="card-title" style="color: var(--sh-white);">{{ profile_user.get_full_name|default:profile_user.username }}</h5>
         <p class="text-muted">{{ profile_user.city|default:"Location not specified" }}</p>
+        
+        <!-- Rank Display -->
+        <div class="mb-3">
+          <div class="rank-display" style="background: var(--sh-orange); padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);">
+            <span style="color: #000; font-weight: bold; font-size: 1.1rem;">
+              <i class="fa-solid fa-trophy me-1"></i>Rank #{{ user_rank }}
+            </span>
+          </div>
+        </div>
+        
         <div class="mb-3">
           <span class="badge" style="background: var(--sh-orange); color: #000;">{{ profile_user.get_role_display|default:"Role not specified" }}</span>
           <span class="badge" style="background: rgba(255,153,0,0.2); color: var(--sh-orange); border: 1px solid var(--sh-orange);">{{ profile_user.get_experience_level_display|default:"Experience not specified" }}</span>
@@ -46,7 +56,8 @@
         {% endif %}
         
         <!-- Contact Information -->
-        {% if user.is_authenticated %}
+        {% if is_own_profile %}
+        <!-- Show full contact info only for own profile -->
         <div class="mt-3">
           {% if profile_user.email %}
           <p class="small text-muted mb-1">
@@ -62,10 +73,11 @@
           {% endif %}
         </div>
         {% else %}
+        <!-- Hide contact info for other users -->
         <div class="mt-3">
           <div class="alert py-2" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-gray);">
             <i class="fa-solid fa-lock me-1" style="color: var(--sh-orange);"></i>
-            <small>Contact information hidden. <a href="{% url 'login' %}" class="text-decoration-none" style="color: var(--sh-orange);">Login</a> to view contact details.</small>
+            <small>Contact information is private. Only the user can see their personal details.</small>
           </div>
         </div>
         {% endif %}
@@ -103,7 +115,8 @@
       </div>
     </div>
 
-    <!-- Recent Activity -->
+    <!-- Recent Activity - Only visible to own profile -->
+    {% if is_own_profile %}
     <div class="card mt-3">
       <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
         <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>Recent Activity</h6>
@@ -121,12 +134,26 @@
         {% endif %}
       </div>
     </div>
+    {% else %}
+    <!-- Privacy notice for other users -->
+    <div class="card mt-3">
+      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-shield-alt me-2" style="color: var(--sh-orange);"></i>Activity Information</h6>
+      </div>
+      <div class="card-body">
+        <div class="alert py-2" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-gray);">
+          <i class="fa-solid fa-lock me-1" style="color: var(--sh-orange);"></i>
+          <small>Activity information is private. Only the user can see their join date and last seen status.</small>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Stats and Charts -->
   <div class="col-12 col-lg-8">
-    {% if user.is_authenticated %}
-    <!-- Full Statistics for Authenticated Users -->
+    {% if is_own_profile %}
+    <!-- Full Statistics for Own Profile -->
     <!-- Basic Stats -->
     <div class="card mb-4">
       <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
@@ -172,10 +199,10 @@
       </div>
     </div>
     {% else %}
-    <!-- Limited Preview for Non-Authenticated Users -->
+    <!-- Limited Statistics for Other Users -->
     <div class="card mb-4">
       <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-bar me-2" style="color: var(--sh-orange);"></i>Match Statistics Preview</h6>
+        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-bar me-2" style="color: var(--sh-orange);"></i>Public Statistics</h6>
       </div>
       <div class="card-body">
         <div class="row text-center">
@@ -198,14 +225,14 @@
         </div>
         <div class="alert text-center mt-3" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-gray);">
           <i class="fa-solid fa-lock me-2" style="color: var(--sh-orange);"></i>
-          <strong>Login to view detailed ratings and performance data</strong>
+          <strong>Detailed ratings and personal statistics are private</strong>
         </div>
       </div>
     </div>
     {% endif %}
 
-    {% if user.is_authenticated %}
-    <!-- Full Statistics for Authenticated Users -->
+    {% if is_own_profile %}
+    <!-- Full Statistics for Own Profile -->
     <!-- Win/Loss Chart -->
     <div class="card mb-4">
       <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
@@ -388,15 +415,16 @@
       </div>
     </div>
     {% else %}
-    <!-- Limited Preview for Non-Authenticated Users -->
+    <!-- Limited Preview for Other Users -->
     <div class="card mb-4">
       <div class="card-body text-center py-5">
-        <i class="fa-solid fa-chart-line fa-3x mb-3" style="color: var(--sh-orange);"></i>
-        <h5 style="color: var(--sh-white);">Detailed Statistics Hidden</h5>
-        <p class="text-muted">Login to view performance charts, match history, and detailed statistics.</p>
-        <a href="{% url 'login' %}" class="btn btn-tcc">
-          <i class="fa-solid fa-sign-in-alt me-1"></i>Login to View Full Profile
-        </a>
+        <i class="fa-solid fa-lock fa-3x mb-3" style="color: var(--sh-orange);"></i>
+        <h5 style="color: var(--sh-white);">Detailed Information is Private</h5>
+        <p class="text-muted">Only basic statistics are visible. Detailed performance data, charts, and match history are private.</p>
+        <div class="alert text-center mt-3" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-gray);">
+          <i class="fa-solid fa-shield-alt me-2" style="color: var(--sh-orange);"></i>
+          <strong>Privacy Protected: Only the user can view their detailed statistics</strong>
+        </div>
       </div>
     </div>
     {% endif %}
@@ -404,7 +432,7 @@
 </div>
 </div>
 
-{% if user.is_authenticated %}
+{% if is_own_profile %}
 <!-- Chart.js for visualizations -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

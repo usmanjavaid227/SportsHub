@@ -1,40 +1,152 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}News • SportsHub{% endblock %}
+{% block title %}News • ChallengeHub{% endblock %}
 {% block content %}
   <div class="container py-5">
     <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">News & Updates</h2></div>
 
-    <div class="row g-4">
-      <div class="col-12 col-md-6 col-xl-4">
-        <div class="card h-100">
-          <img src="{% static 'img/news1.jpg' %}" class="card-img-top" alt="Cricket">
+    <!-- Filter Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
           <div class="card-body">
-            <h5 class="card-title">New Season of Single Wicket Cricket in Tampere Starts Soon!</h5>
-            <p class="card-text text-secondary">Get ready for fresh challenges, improved ratings, and more grounds.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-6 col-xl-4">
-        <div class="card h-100">
-          <img src="{% static 'img/ground2.jpg' %}" class="card-img-top" alt="Grounds">
-          <div class="card-body">
-            <h5 class="card-title">More Grounds Added</h5>
-            <p class="card-text text-secondary">We are expanding available venues to make matches easier to arrange.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-md-6 col-xl-4">
-        <div class="card h-100">
-          <img src="{% static 'img/hero.jpg' %}" class="card-img-top" alt="Community">
-          <div class="card-body">
-            <h5 class="card-title">Community Spotlight</h5>
-            <p class="card-text text-secondary">Meet top performers and contributors from the Tampere cricket scene.</p>
+            <form method="GET" class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label for="search" class="form-label" style="color: var(--sh-white); font-weight: 600;">Search News</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search news articles...">
+              </div>
+              <div class="col-md-4">
+                <label for="category" class="form-label" style="color: var(--sh-white); font-weight: 600;">Category</label>
+                <select class="form-select" id="category" name="category">
+                  <option value="">All Categories</option>
+                  {% for category in categories %}
+                    <option value="{{ category.slug }}" {% if current_category and current_category.slug == category.slug %}selected{% endif %}>
+                      {{ category.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <button type="submit" class="btn btn-tcc w-100">
+                  <i class="fa-solid fa-filter me-1"></i>Filter News
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Category Filter Pills -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'news' %}" class="btn {% if not current_category %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm">
+            <i class="fa-solid fa-newspaper me-1"></i>All News
+          </a>
+          {% for category in categories %}
+            <a href="{% url 'news' %}?category={{ category.slug }}" 
+               class="btn {% if current_category and current_category.slug == category.slug %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm"
+               style="{% if current_category and current_category.slug == category.slug %}background-color: {{ category.color }}; border-color: {{ category.color }};{% endif %}">
+              <i class="fa-solid fa-tag me-1"></i>{{ category.name }}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Info -->
+    {% if current_category or search_query %}
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="alert" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+          <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
+          {% if current_category and search_query %}
+            Showing {{ news|length }} results for "{{ search_query }}" in {{ current_category.name }} category
+          {% elif current_category %}
+            Showing {{ news|length }} articles in {{ current_category.name }} category
+          {% elif search_query %}
+            Showing {{ news|length }} results for "{{ search_query }}"
+          {% endif %}
+          <a href="{% url 'news' %}" class="btn btn-sm btn-outline-tcc ms-2">Clear Filters</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- News Articles -->
+    {% if news %}
+    <div class="row g-4">
+      {% for article in news %}
+      <div class="col-12 col-md-6 col-xl-4">
+        <div class="card h-100 news-card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2); transition: all 0.3s ease;">
+          {% if article.featured_image %}
+            <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+          {% else %}
+            <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, var(--sh-orange), var(--sh-orange-dark));">
+              <i class="fa-solid fa-newspaper fa-3x" style="color: #000;"></i>
+            </div>
+          {% endif %}
+          
+          <div class="card-body d-flex flex-column" style="background: transparent;">
+            <!-- Category Badge -->
+            {% if article.category %}
+            <div class="mb-2">
+              <span class="badge" style="background-color: var(--sh-orange); color: #000; border: 1px solid var(--sh-orange);">
+                <i class="fa-solid fa-tag me-1"></i>{{ article.category.name }}
+              </span>
+            </div>
+            {% endif %}
+            
+            <h5 class="card-title" style="color: var(--sh-white); font-weight: 600;">{{ article.title }}</h5>
+            
+            {% if article.excerpt %}
+              <p class="card-text flex-grow-1" style="color: var(--sh-gray); line-height: 1.5;">{{ article.excerpt|truncatewords:20 }}</p>
+            {% else %}
+              <p class="card-text flex-grow-1" style="color: var(--sh-gray); line-height: 1.5;">{{ article.content|truncatewords:20 }}</p>
+            {% endif %}
+            
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center">
+                <small style="color: var(--sh-gray);">
+                  <i class="fa-solid fa-calendar me-1" style="color: var(--sh-orange);"></i>
+                  {{ article.published_at|date:"M d, Y" }}
+                </small>
+                <small style="color: var(--sh-gray);">
+                  <i class="fa-solid fa-user me-1" style="color: var(--sh-orange);"></i>
+                  {{ article.author.get_full_name|default:article.author.username }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- No Results -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card text-center py-5" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+          <div class="card-body">
+            <i class="fa-solid fa-newspaper fa-3x mb-3" style="color: var(--sh-orange);"></i>
+            <h5 style="color: var(--sh-white);">No News Found</h5>
+            <p class="text-muted">
+              {% if current_category or search_query %}
+                No articles match your current filters. Try adjusting your search criteria.
+              {% else %}
+                No news articles are available at the moment. Check back later for updates!
+              {% endif %}
+            </p>
+            {% if current_category or search_query %}
+              <a href="{% url 'news' %}" class="btn btn-tcc">
+                <i class="fa-solid fa-refresh me-1"></i>View All News
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 {% endblock %}

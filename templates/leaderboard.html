@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Leaderboard{% endblock %}
+{% block title %}Leaderboard • ChallengeHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -80,8 +80,8 @@
                         <div class="col-md-3 col-4 text-center mb-3">
                             <div class="podium-item position-3">
                                 <div class="podium-rank mb-3">
-                                    <i class="fa-solid fa-medal fa-3x" style="color: #CD7F32;"></i>
-                                    <div class="badge fs-6 mt-2" style="background-color: transparent !important; color: #CD7F32 !important; border: 2px solid #CD7F32 !important;">3rd</div>
+                                    <i class="fa-solid fa-medal fa-3x" style="color: #8B4513;"></i>
+                                    <div class="badge fs-6 mt-2" style="background-color: transparent !important; color: #8B4513 !important; border: 2px solid #8B4513 !important;">3rd</div>
                                 </div>
                                 <div class="podium-player">
                                     <div class="player-avatar mb-3">
@@ -113,6 +113,35 @@
         <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Complete Leaderboard</h2></div>
     </div>
     
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" class="d-flex">
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           name="search" 
+                           placeholder="Search players by username..." 
+                           value="{{ search_query }}"
+                           style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                    <button class="btn btn-outline-tcc" type="submit">
+                        <i class="fa-solid fa-search"></i>
+                    </button>
+                    {% if search_query %}
+                    <a href="{% url 'leaderboard' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-times"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-end">
+            <small class="text-muted">
+                Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ paginator.count }} players
+            </small>
+        </div>
+    </div>
+    
     <!-- Ranking Filter Buttons -->
     <div class="mb-4">
         <div class="btn-group w-100" role="group" aria-label="Ranking filters">
@@ -128,7 +157,7 @@
             
             <input type="radio" class="btn-check" name="rankingFilter" id="allrounderRanking" autocomplete="off" checked>
             <label class="btn btn-outline-tcc filter-btn active" for="allrounderRanking">
-                <i class="fa-solid fa-star me-2"></i>All-rounder
+                <i class="fa-solid fa-star me-2"></i> Overall
             </label>
         </div>
     </div>
@@ -156,6 +185,64 @@
             </div>
         </div>
     </div>
+    
+    <!-- Pagination Controls -->
+    {% if paginator.num_pages > 1 %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Leaderboard pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" 
+                               style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                                <i class="fa-solid fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                               style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                                <i class="fa-solid fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link" style="background: var(--sh-orange); border: 1px solid var(--sh-orange); color: #000;">
+                                    {{ num }}
+                                </span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                   style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                                    {{ num }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                               style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                                <i class="fa-solid fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                               style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                                <i class="fa-solid fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <style>
@@ -328,19 +415,44 @@
     background: #0A0A0A !important;
     color: var(--sh-white) !important;
 }
+
+/* Search Input Styling */
+.form-control:focus {
+    background: #0A0A0A !important;
+    border-color: var(--sh-orange) !important;
+    color: var(--sh-white) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Pagination Styling */
+.page-link:hover {
+    background: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+.page-item.active .page-link {
+    background: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
 </style>
 
 <!-- JavaScript for Ranking Filters -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Actual data from Django backend with category-specific ratings
-    const rankingData = {
+    // Current page data from Django backend with category-specific ratings
+    const currentPageData = {
         batting: [
             {% for player in players %}
             {
                 id: {{ player.id }},
                 username: "{{ player.username }}",
-                rank: {{ forloop.counter }},
+                rank: {{ forloop.counter|add:page_obj.start_index|add:"-1" }},
                 ranking_change: {{ player.ranking_change|default:0 }},
                 total_matches: {{ player.total_matches }},
                 total_wins: {{ player.total_wins }},
@@ -362,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 id: {{ player.id }},
                 username: "{{ player.username }}",
-                rank: {{ forloop.counter }},
+                rank: {{ forloop.counter|add:page_obj.start_index|add:"-1" }},
                 ranking_change: {{ player.ranking_change|default:0 }},
                 total_matches: {{ player.total_matches }},
                 total_wins: {{ player.total_wins }},
@@ -384,7 +496,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 id: {{ player.id }},
                 username: "{{ player.username }}",
-                rank: {{ forloop.counter }},
+                rank: {{ forloop.counter|add:page_obj.start_index|add:"-1" }},
                 ranking_change: {{ player.ranking_change|default:0 }},
                 total_matches: {{ player.total_matches }},
                 total_wins: {{ player.total_wins }},
@@ -496,27 +608,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Sort each category by their respective ratings
-    rankingData.batting.sort((a, b) => b.rating - a.rating);
-    rankingData.bowling.sort((a, b) => b.rating - a.rating);
-    rankingData.allrounder.sort((a, b) => b.rating - a.rating);
-    
-    // Update rank numbers after sorting
-    rankingData.batting.forEach((player, index) => {
-        player.rank = index + 1;
-    });
-    rankingData.bowling.forEach((player, index) => {
-        player.rank = index + 1;
-    });
-    rankingData.allrounder.forEach((player, index) => {
-        player.rank = index + 1;
-    });
-
     // Debug: Log available data
-    console.log('Available ranking data:', rankingData);
-    console.log('Batting data length:', rankingData.batting.length);
-    console.log('Bowling data length:', rankingData.bowling.length);
-    console.log('Allrounder data length:', rankingData.allrounder.length);
+    console.log('Available ranking data:', currentPageData);
+    console.log('Batting data length:', currentPageData.batting.length);
+    console.log('Bowling data length:', currentPageData.bowling.length);
+    console.log('Allrounder data length:', currentPageData.allrounder.length);
 
     // Filter button event listeners
     document.querySelectorAll('input[name="rankingFilter"]').forEach(radio => {
@@ -524,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.checked) {
                 const filterType = this.id.replace('Ranking', '');
                 console.log('Filter changed to:', filterType);
-                const data = rankingData[filterType] || [];
+                const data = currentPageData[filterType] || [];
                 console.log('Data for', filterType, ':', data);
                 renderTable(data);
                 
@@ -538,8 +634,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize with allrounder data (default)
-    console.log('Initializing with allrounder data:', rankingData.allrounder);
-    renderTable(rankingData.allrounder);
+    console.log('Initializing with allrounder data:', currentPageData.allrounder);
+    renderTable(currentPageData.allrounder);
 });
 </script>
 {% endblock %}

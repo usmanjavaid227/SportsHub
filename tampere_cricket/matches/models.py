@@ -22,15 +22,15 @@ class Challenge(models.Model):
         ("BOWLING", "Bowling Challenge"),
     ]
     
-    challenger = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_made')
-    opponent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_received', null=True, blank=True)
-    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='challenges_won', null=True, blank=True)
+    challenger = models.ForeignKey(User, on_delete=models.PROTECT, related_name='challenges_made')
+    opponent = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='challenges_received', null=True, blank=True)
+    winner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='challenges_won', null=True, blank=True)
     
     # Single Wicket Challenge participants
-    team1_batter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team1_batter_challenges', null=True, blank=True)
-    team1_bowler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team1_bowler_challenges', null=True, blank=True)
-    team2_batter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team2_batter_challenges', null=True, blank=True)
-    team2_bowler = models.ForeignKey(User, on_delete=models.CASCADE, related_name='team2_bowler_challenges', null=True, blank=True)
+    team1_batter = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='team1_batter_challenges', null=True, blank=True)
+    team1_bowler = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='team1_bowler_challenges', null=True, blank=True)
+    team2_batter = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='team2_batter_challenges', null=True, blank=True)
+    team2_bowler = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='team2_bowler_challenges', null=True, blank=True)
     
     # Single Wicket Challenge acceptance tracking
     team1_batter_accepted = models.BooleanField(default=False)
@@ -185,6 +185,37 @@ class Challenge(models.Model):
             # Allow participants to be the same person - no validation needed
             # This allows flexibility for players to take multiple roles
             pass
+    
+    def get_display_name_for_user(self, user):
+        """Get display name for a user, handling soft-deleted users"""
+        if user and not user.is_deleted:
+            return user.username
+        elif user and user.is_deleted:
+            return f"[Deleted User]"
+        else:
+            return "Unknown"
+    
+    def get_challenger_display_name(self):
+        """Get challenger display name, handling soft-deleted users"""
+        return self.get_display_name_for_user(self.challenger)
+    
+    def get_opponent_display_name(self):
+        """Get opponent display name, handling soft-deleted users"""
+        return self.get_display_name_for_user(self.opponent)
+    
+    def get_winner_display_name(self):
+        """Get winner display name, handling soft-deleted users"""
+        return self.get_display_name_for_user(self.winner)
+    
+    def has_deleted_participants(self):
+        """Check if any participants are soft-deleted"""
+        participants = self.get_participants()
+        return any(user.is_deleted for user in participants if user)
+    
+    def get_active_participants(self):
+        """Get only active (non-deleted) participants"""
+        participants = self.get_participants()
+        return [user for user in participants if user and not user.is_deleted]
 
 
 class TimeSlot(models.Model):
@@ -226,7 +257,7 @@ class MatchResult(models.Model):
     pitch_conditions = models.CharField(max_length=100, blank=True, help_text="Pitch conditions")
     
     # Admin Fields
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='match_results_created')
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='match_results_created')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -191,6 +191,7 @@ class ChallengeForm(forms.ModelForm):
         date = cleaned_data.get('date')
         time = cleaned_data.get('time')
         duration = cleaned_data.get('duration')
+        challenge_type = cleaned_data.get('challenge_type')
         
         # Set scheduled_at if both date and time are provided
         if date and time:
@@ -202,6 +203,26 @@ class ChallengeForm(forms.ModelForm):
         # Set default duration if not provided
         if not duration:
             cleaned_data['duration'] = 15  # Default 15 minutes
+        
+        # Validate Single Wicket team selections
+        if challenge_type == 'SINGLE_WICKET':
+            team1_batter = cleaned_data.get('team1_batter')
+            team1_bowler = cleaned_data.get('team1_bowler')
+            team2_batter = cleaned_data.get('team2_batter')
+            team2_bowler = cleaned_data.get('team2_bowler')
+            
+            # Check if any player is selected in both teams
+            if team1_batter and team1_batter == team2_batter:
+                raise forms.ValidationError('Team 1 Batter cannot be the same as Team 2 Batter')
+            
+            if team1_batter and team1_batter == team2_bowler:
+                raise forms.ValidationError('Team 1 Batter cannot be the same as Team 2 Bowler')
+            
+            if team1_bowler and team1_bowler == team2_batter:
+                raise forms.ValidationError('Team 1 Bowler cannot be the same as Team 2 Batter')
+            
+            if team1_bowler and team1_bowler == team2_bowler:
+                raise forms.ValidationError('Team 1 Bowler cannot be the same as Team 2 Bowler')
         
         return cleaned_data
 

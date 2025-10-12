@@ -13,6 +13,12 @@ def signup(request):
     """User registration view"""
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
+        privacy_policy = request.POST.get('privacy_policy')
+        
+        if not privacy_policy:
+            messages.error(request, 'You must agree to the Privacy Policy and Terms of Service to create an account.')
+            return render(request, 'auth/register.html', {'form': form})
+        
         if form.is_valid():
             user = form.save()
             # Auto-create Profile for new user with default values
@@ -72,16 +78,23 @@ def profile(request):
     # Get recent matches for the user
     recent_matches = profile.get_recent_matches(limit=10)
     
+    # Get user's current rank
+    user_rank = profile.get_rank()
+    
     return render(request, 'profile.html', {
         'user': request.user,
         'profile': profile,
-        'recent_matches': recent_matches
+        'recent_matches': recent_matches,
+        'user_rank': user_rank
     })
 
 
 def public_profile_view(request, user_id):
-    """Public profile view for other users"""
+    """Public profile view for other users - shows limited information"""
     user = get_object_or_404(User, id=user_id)
+    
+    # Check if user is viewing their own profile
+    is_own_profile = request.user.is_authenticated and request.user.id == user.id
     
     # Get or create profile for the user
     from tampere_cricket.accounts.models import Profile
@@ -119,6 +132,9 @@ def public_profile_view(request, user_id):
         }
     }
     
+    # Get user's current rank
+    user_rank = profile.get_rank()
+    
     return render(request, 'profiles/public_profile.html', {
         'profile_user': user,
         'profile': profile,
@@ -127,7 +143,9 @@ def public_profile_view(request, user_id):
         'performance_trend': performance_trend,
         'chart_data': chart_data,
         'avg_runs_per_match': avg_runs_per_match,
-        'avg_wickets_per_match': avg_wickets_per_match
+        'avg_wickets_per_match': avg_wickets_per_match,
+        'is_own_profile': is_own_profile,  # Pass flag to template
+        'user_rank': user_rank
     })
 
 

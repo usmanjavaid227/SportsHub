@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Challenge Rules • ChallengeHub{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1">
+                        <i class="fa-solid fa-gavel me-2" style="color: var(--sh-orange);"></i>
+                        Challenge Rules & Guidelines
+                    </h2>
+                    <p class="text-muted mb-0">Please read and understand these rules before creating or accepting challenges</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div class="card-body p-4">
+                    <div class="rules-content">
+                        <h4 class="text-white mb-3">1. General Challenge Rules</h4>
+                        <p class="text-muted mb-3">
+                            All challenges on ChallengeHub must follow these fundamental rules:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Challenges must be sports-related and conducted in a fair, competitive manner</li>
+                            <li>All participants must be registered users of ChallengeHub</li>
+                            <li>Challenges must be created with clear, specific terms and conditions</li>
+                            <li>Participants must agree to the challenge terms before accepting</li>
+                            <li>All matches must be conducted at approved sports grounds</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">2. Challenge Creation Guidelines</h4>
+                        <p class="text-muted mb-3">
+                            When creating a challenge, you must:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Provide clear description of the challenge format and rules</li>
+                            <li>Specify the date, time, and location of the challenge</li>
+                            <li>Set appropriate skill level requirements</li>
+                            <li>Define scoring system and winning conditions</li>
+                            <li>Include any special equipment or requirements</li>
+                            <li>Set reasonable time limits for challenge completion</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">3. Fair Play & Sportsmanship</h4>
+                        <p class="text-muted mb-3">
+                            All participants must maintain the highest standards of sportsmanship:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Respect all opponents and officials</li>
+                            <li>Follow the rules of the specific sport</li>
+                            <li>Accept decisions made by officials or moderators</li>
+                            <li>Report any violations or disputes immediately</li>
+                            <li>Maintain a positive attitude throughout the challenge</li>
+                            <li>Help create a welcoming environment for all participants</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">4. Prohibited Activities</h4>
+                        <p class="text-muted mb-3">
+                            The following activities are strictly prohibited:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Cheating, match-fixing, or manipulating results</li>
+                            <li>Using performance-enhancing substances</li>
+                            <li>Harassment, intimidation, or unsportsmanlike conduct</li>
+                            <li>Creating fake accounts or impersonating others</li>
+                            <li>Sharing account credentials with other users</li>
+                            <li>Exploiting technical glitches or system vulnerabilities</li>
+                            <li>Spamming or sending unsolicited messages</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">5. Challenge Acceptance & Participation</h4>
+                        <p class="text-muted mb-3">
+                            When accepting a challenge, you agree to:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Participate in good faith and follow all stated rules</li>
+                            <li>Arrive on time and be prepared for the challenge</li>
+                            <li>Bring any required equipment or materials</li>
+                            <li>Respect the challenge format and scoring system</li>
+                            <li>Accept the final results as determined by officials</li>
+                            <li>Report any rule violations or disputes promptly</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">6. Dispute Resolution</h4>
+                        <p class="text-muted mb-3">
+                            In case of disputes or rule violations:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Report issues immediately to ChallengeHub moderators</li>
+                            <li>Provide evidence and documentation when possible</li>
+                            <li>Cooperate with any investigation process</li>
+                            <li>Accept the final decision of ChallengeHub administrators</li>
+                            <li>Appeal decisions through proper channels if necessary</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">7. Safety & Health Guidelines</h4>
+                        <p class="text-muted mb-3">
+                            All participants must prioritize safety:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Ensure you are physically fit to participate</li>
+                            <li>Use appropriate safety equipment as required</li>
+                            <li>Follow all safety protocols at sports grounds</li>
+                            <li>Report any injuries or safety concerns immediately</li>
+                            <li>Respect weather conditions and ground conditions</li>
+                            <li>Follow COVID-19 and health guidelines as applicable</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">8. Scoring & Results</h4>
+                        <p class="text-muted mb-3">
+                            Challenge results and scoring:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>All scores must be verified by officials or witnesses</li>
+                            <li>Results are final once officially recorded</li>
+                            <li>Disputes must be raised within 24 hours of completion</li>
+                            <li>ChallengeHub reserves the right to review and adjust results</li>
+                            <li>Performance statistics will be updated based on verified results</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">9. Penalties & Consequences</h4>
+                        <p class="text-muted mb-3">
+                            Violations of these rules may result in:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Warning or temporary suspension from challenges</li>
+                            <li>Loss of points or ranking adjustments</li>
+                            <li>Temporary or permanent account suspension</li>
+                            <li>Ban from specific sports or challenge types</li>
+                            <li>Legal action for serious violations</li>
+                        </ul>
+
+                        <h4 class="text-white mb-3">10. Updates to Rules</h4>
+                        <p class="text-muted mb-3">
+                            ChallengeHub reserves the right to update these rules at any time. 
+                            Users will be notified of significant changes, and continued use of 
+                            the platform constitutes acceptance of updated rules.
+                        </p>
+
+                        <div class="alert alert-warning mt-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                            <h5 class="text-white mb-2">
+                                <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                                Important Notice
+                            </h5>
+                            <p class="mb-0">
+                                By creating or accepting any challenge on ChallengeHub, you acknowledge that you have 
+                                read, understood, and agree to abide by these rules. Failure to comply may result 
+                                in penalties or account suspension.
+                            </p>
+                        </div>
+
+                        <div class="contact-info mt-4" style="background: rgba(255,153,0,0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(255,153,0,0.2);">
+                            <h5 class="text-white mb-3">Questions About Rules?</h5>
+                            <p class="text-muted mb-2">
+                                If you have any questions about these rules or need clarification on any point, 
+                                please contact our support team:
+                            </p>
+                            <p class="text-muted mb-1">Email: support@challengehub.com</p>
+                            <p class="text-muted mb-0">Phone: +1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -18,7 +18,7 @@ def home(request):
     from tampere_cricket.accounts.models import Profile
     
     all_players = []
-    for user in User.objects.all():
+    for user in User.active_objects():
         try:
             profile = Profile.objects.get(user=user)
             stats = profile.update_statistics()
@@ -75,13 +75,19 @@ def home(request):
 
 
 def leaderboard(request):
-    """Leaderboard page view"""
+    """Leaderboard page view with pagination and search"""
     from django.db.models import Count, Q, F
+    from django.core.paginator import Paginator
     from tampere_cricket.accounts.models import Profile
     
-    # Get all users with their profile statistics
-    players = []
-    for user in User.objects.all():
+    # Get search query and page number
+    search_query = request.GET.get('search', '').strip()
+    page_number = request.GET.get('page', 1)
+    players_per_page = 20
+    
+    # Get all active users with their profile statistics
+    all_players = []
+    for user in User.active_objects():
         try:
             profile = Profile.objects.get(user=user)
             # Update statistics to ensure they're current
@@ -97,7 +103,7 @@ def leaderboard(request):
             
             # Only include players with matches
             if player.total_matches > 0:
-                players.append(player)
+                all_players.append(player)
         except Profile.DoesNotExist:
             # Create profile if it doesn't exist
             profile = Profile.objects.create(user=user)
@@ -111,13 +117,24 @@ def leaderboard(request):
             player.rating = profile.rating
             
             if player.total_matches > 0:
-                players.append(player)
+                all_players.append(player)
+    
+    # Apply search filter if provided
+    if search_query:
+        all_players = [player for player in all_players if search_query.lower() in player.username.lower()]
     
     # Sort by rating (descending), then by total_matches (descending), then by total_wins (descending)
-    players = sorted(players, key=lambda x: (x.rating, x.total_matches, x.total_wins), reverse=True)
+    all_players = sorted(all_players, key=lambda x: (x.rating, x.total_matches, x.total_wins), reverse=True)
+    
+    # Create paginator
+    paginator = Paginator(all_players, players_per_page)
+    page_obj = paginator.get_page(page_number)
     
     context = {
-        'players': players,
+        'players': page_obj,
+        'search_query': search_query,
+        'page_obj': page_obj,
+        'paginator': paginator,
     }
     return render(request, 'leaderboard.html', context)
 
@@ -125,6 +142,20 @@ def leaderboard(request):
 def grounds(request):
     """Grounds page view"""
     return render(request, 'grounds.html')
+
+
+def delete_profile(request):
+    """Soft delete user profile"""
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        reason = request.POST.get('reason', '')
+        request.user.soft_delete(reason)
+        messages.success(request, 'Your profile has been deleted successfully.')
+        return redirect('home')
+    
+    return render(request, 'delete_profile.html')
 
 
 def news(request):
@@ -189,6 +220,12 @@ def challenge_create_view(request):
     if request.method == 'POST':
         from matches.forms import ChallengeForm
         form = ChallengeForm(request.POST, user=request.user)
+        challenge_rules = request.POST.get('challenge_rules')
+        
+        if not challenge_rules:
+            messages.error(request, 'You must agree to the Challenge Rules & Guidelines to create a challenge.')
+            return render(request, 'challenges/create.html', {"form": form})
+        
         if form.is_valid():
             try:
                 challenge = form.save(commit=False)
@@ -205,3 +242,18 @@ def challenge_create_view(request):
         form = ChallengeForm(user=request.user)
 
     return render(request, 'challenges/create.html', {"form": form})
+
+
+def privacy_policy(request):
+    """Privacy Policy page"""
+    return render(request, 'privacy_policy.html')
+
+
+def terms_of_service(request):
+    """Terms of Service page"""
+    return render(request, 'terms_of_service.html')
+
+
+def challenge_rules(request):
+    """Challenge Rules page"""
+    return render(request, 'challenge_rules.html')

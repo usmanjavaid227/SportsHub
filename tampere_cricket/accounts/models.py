@@ -52,6 +52,44 @@ class User(AbstractUser):
         default=0,
         help_text="Years of cricket experience"
     )
+    
+    # Soft delete fields
+    is_deleted = models.BooleanField(default=False, help_text="Soft delete flag")
+    deleted_at = models.DateTimeField(null=True, blank=True, help_text="When the user was soft deleted")
+    deleted_reason = models.TextField(blank=True, help_text="Reason for deletion")
+    
+    def soft_delete(self, reason=""):
+        """Soft delete the user instead of hard delete"""
+        from django.utils import timezone
+        
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.deleted_reason = reason
+        self.is_active = False  # Also deactivate the account
+        self.save()
+        
+        # Update username to avoid conflicts if user tries to re-register
+        self.username = f"deleted_{self.id}_{self.username}"
+        self.email = f"deleted_{self.id}_{self.email}"
+        self.save()
+    
+    def restore(self):
+        """Restore a soft-deleted user"""
+        self.is_deleted = False
+        self.deleted_at = None
+        self.deleted_reason = ""
+        self.is_active = True
+        self.save()
+    
+    @classmethod
+    def active_objects(cls):
+        """Manager for active (non-deleted) users"""
+        return cls.objects.filter(is_deleted=False)
+    
+    @classmethod
+    def deleted_objects(cls):
+        """Manager for soft-deleted users"""
+        return cls.objects.filter(is_deleted=True)
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -198,6 +236,25 @@ class Profile(models.Model):
         if self.matches_played == 0:
             return 0.0
         return round(self.wickets / self.matches_played, 2)
+    
+    def get_rank(self):
+        """Get the user's current rank based on rating"""
+        from django.db.models import F
+        
+        # Get all active users with profiles, sorted by rating
+        all_profiles = Profile.objects.filter(
+            user__is_deleted=False,
+            matches_played__gt=0
+        ).order_by('-rating', '-matches_played', '-wins')
+        
+        # Find the rank of this profile
+        rank = 1
+        for profile in all_profiles:
+            if profile.id == self.id:
+                return rank
+            rank += 1
+        
+        return rank
     
     def get_recent_matches(self, limit=5):
         """Get recent completed matches"""

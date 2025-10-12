@@ -1,0 +1,452 @@
+{% extends 'base.html' %}
+{% block title %}Cricket Records • ChallengeHub{% endblock %}
+{% block content %}
+
+<style>
+    /* Leaderboard-style card and table styling */
+    .custom-leaderboard-card {
+        background: #0A0A0A !important;
+        border: 1px solid rgba(255,255,255,.10) !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+
+    .custom-podium-header {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+    }
+
+    .custom-leaderboard-table {
+        width: 100% !important;
+        background: #0A0A0A !important;
+        color: var(--sh-white) !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+    }
+
+    .custom-leaderboard-table thead {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+    }
+
+    .custom-leaderboard-table thead th {
+        color: var(--sh-white) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        padding: 16px 12px !important;
+        border: none !important;
+        font-size: 12px !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+    }
+
+    .custom-leaderboard-table tbody tr {
+        background: #0A0A0A !important;
+        border-bottom: 1px solid rgba(255,153,0,.2) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .custom-leaderboard-table tbody tr:hover {
+        background: linear-gradient(90deg, rgba(255,153,0,.08), rgba(255,153,0,.03)) !important;
+        transform: translateX(4px) !important;
+        box-shadow: 0 4px 12px rgba(255,153,0,.1) !important;
+    }
+
+    .custom-leaderboard-table tbody td {
+        padding: 16px 12px !important;
+        border: none !important;
+        color: var(--sh-white) !important;
+        vertical-align: middle !important;
+    }
+
+    .rank-badge {
+        background: var(--sh-orange) !important;
+        color: #000 !important;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 8px rgba(255,153,0,0.3);
+        transition: all 0.3s ease;
+    }
+    .rank-badge:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 12px rgba(255,153,0,0.4);
+    }
+
+    /* Record item styling to match leaderboard theme */
+    .record-item {
+        background: rgba(255,153,0,0.05);
+        border: 1px solid rgba(255,153,0,0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+    .record-item:hover {
+        background: rgba(255,153,0,0.1);
+        border-color: var(--sh-orange);
+    }
+    .record-value {
+        color: var(--sh-orange);
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .record-label {
+        color: var(--sh-gray);
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    .record-holder {
+        color: var(--sh-white);
+        font-weight: 600;
+    }
+    .record-details {
+        color: var(--sh-gray);
+        font-size: 0.8rem;
+    }
+
+    /* Filter dropdown styling to match template theme */
+    .filter-section select option {
+        background: #000000 !important;
+        color: var(--sh-white) !important;
+        padding: 8px 12px !important;
+    }
+    
+    .filter-section select:focus {
+        background: #000000 !important;
+        border-color: var(--sh-orange) !important;
+        box-shadow: 0 0 0 0.2rem rgba(255,153,0,0.25) !important;
+        color: var(--sh-white) !important;
+    }
+    
+    .filter-section select:hover {
+        background: #000000 !important;
+        border-color: var(--sh-orange) !important;
+    }
+</style>
+
+<div class="container py-5 records-page">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="text-white mb-1">
+                        <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>
+                        Cricket Records
+                    </h2>
+                    <p class="text-muted mb-0">All-time records and achievements</p>
+                </div>
+                <div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-info btn-sm me-2">
+                        <i class="fa-solid fa-home me-1"></i>User Site
+                    </a>
+                    <a href="/admin/" class="btn btn-outline-warning btn-sm me-2">
+                        <i class="fa-solid fa-cog me-1"></i>Admin Panel
+                    </a>
+                    <a href="{% url 'admin_stats:dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section" style="background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2); border-radius: 10px; padding: 20px; margin-bottom: 30px;">
+        <h6 style="color: var(--sh-orange); font-weight: 600; margin-bottom: 15px;">
+            <i class="fa-solid fa-filter me-2"></i>Filter Records
+        </h6>
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label text-white">Record Type</label>
+                 <select class="form-control" name="record_type" style="background: #000000 !important; border: 1px solid rgba(255,153,0,0.3) !important; color: var(--sh-white) !important;">
+                    <option value="">All Records</option>
+                    <option value="batting">Batting Records</option>
+                    <option value="bowling">Bowling Records</option>
+                    <option value="ground">Ground Records</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-white">Time Period</label>
+                 <select class="form-control" name="time_period" style="background: #000000 !important; border: 1px solid rgba(255,153,0,0.3) !important; color: var(--sh-white) !important;">
+                    <option value="">All Time</option>
+                    <option value="this_month">This Month</option>
+                    <option value="this_year">This Year</option>
+                    <option value="last_year">Last Year</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-white">Sort By</label>
+                 <select class="form-control" name="sort_by" style="background: #000000 !important; border: 1px solid rgba(255,153,0,0.3) !important; color: var(--sh-white) !important;">
+                    <option value="total">Total</option>
+                    <option value="average">Average</option>
+                    <option value="matches">Matches</option>
+                    <option value="recent">Recent</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn" style="background: var(--sh-orange); border: none; color: #000; font-weight: 600;">
+                    <i class="fa-solid fa-search me-1"></i>Apply Filters
+                </button>
+                <a href="{% url 'admin_stats:records' %}" class="btn btn-outline-secondary ms-2" style="border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                    <i class="fa-solid fa-times me-1"></i>Clear Filters
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Individual Records -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bat me-2" style="color: var(--sh-orange);"></i>
+                        Highest Individual Score
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if highest_score_holder %}
+                    <div class="record-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="record-value">{{ highest_score }}</div>
+                                <div class="record-label">Runs</div>
+                                <div class="record-holder">{{ highest_score_holder.user.username }}</div>
+                                <div class="record-details">
+                                    {{ highest_score_holder.match_date|date:"M d, Y" }} at {{ highest_score_holder.ground.name|default:"Unknown Ground" }}
+                                </div>
+                            </div>
+                            <div class="achievement-badge">
+                                <i class="fa-solid fa-crown me-1"></i>RECORD
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-bat fa-2x mb-2"></i>
+                        <p>No batting records available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bowling-ball me-2" style="color: var(--sh-orange);"></i>
+                        Best Bowling Figures
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if best_bowling_holder %}
+                    <div class="record-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="record-value">{{ best_bowling }}</div>
+                                <div class="record-label">Wickets</div>
+                                <div class="record-holder">{{ best_bowling_holder.user.username }}</div>
+                                <div class="record-details">
+                                    {{ best_bowling_holder.match_date|date:"M d, Y" }} at {{ best_bowling_holder.ground.name|default:"Unknown Ground" }}
+                                </div>
+                            </div>
+                            <div class="achievement-badge">
+                                <i class="fa-solid fa-trophy me-1"></i>BEST
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-bowling-ball fa-2x mb-2"></i>
+                        <p>No bowling records available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Career Records -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>
+                        Career Batting Records
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if career_records %}
+                    <div class="table-responsive">
+                        <table class="custom-leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">Rank</th>
+                                    <th>Player</th>
+                                    <th class="text-center">Runs</th>
+                                    <th class="text-center">Matches</th>
+                                    <th class="text-center">Average</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in career_records %}
+                                <tr>
+                                    <td>
+                                        <div class="rank-badge">{{ forloop.counter }}</div>
+                                    </td>
+                                    <td class="fw-bold">{{ record.user.username }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.total_runs }}</td>
+                                    <td class="text-center">{{ record.total_matches }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.career_batting_average|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-chart-line fa-2x mb-2"></i>
+                        <p>No career batting records available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bowling-ball me-2" style="color: var(--sh-orange);"></i>
+                        Career Bowling Records
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if bowling_records %}
+                    <div class="table-responsive">
+                        <table class="custom-leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">Rank</th>
+                                    <th>Player</th>
+                                    <th class="text-center">Wickets</th>
+                                    <th class="text-center">Matches</th>
+                                    <th class="text-center">Average</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in bowling_records %}
+                                <tr>
+                                    <td>
+                                        <div class="rank-badge">{{ forloop.counter }}</div>
+                                    </td>
+                                    <td class="fw-bold">{{ record.user.username }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.total_wickets }}</td>
+                                    <td class="text-center">{{ record.total_matches }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.career_bowling_average|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-bowling-ball fa-2x mb-2"></i>
+                        <p>No career bowling records available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ground Records -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange);"></i>
+                        Ground Statistics
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if ground_records %}
+                    <div class="table-responsive">
+                        <table class="custom-leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="width: 80px;">Rank</th>
+                                    <th>Ground</th>
+                                    <th class="text-center">Matches</th>
+                                    <th class="text-center">Total Runs</th>
+                                    <th class="text-center">Total Wickets</th>
+                                    <th class="text-center">Average Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in ground_records %}
+                                <tr>
+                                    <td>
+                                        <div class="rank-badge">{{ forloop.counter }}</div>
+                                    </td>
+                                    <td class="fw-bold">{{ record.ground.name }}</td>
+                                    <td class="text-center">{{ record.total_matches }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.total_runs_scored }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.total_wickets }}</td>
+                                    <td class="text-center fw-bold text-warning">{{ record.average_score|floatformat:1 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fa-solid fa-map-marker-alt fa-2x mb-2"></i>
+                        <p>No ground records available</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card custom-leaderboard-card">
+                <div class="card-header custom-podium-header">
+                    <h5 class="mb-0 text-white">
+                        <i class="fa-solid fa-bolt me-2" style="color: var(--sh-orange);"></i>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row justify-content-center" style="padding-top: 20px;">
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="{% url 'admin_stats:player_comparison' %}" class="btn btn-outline-primary w-100">
+                                <i class="fa-solid fa-balance-scale me-2"></i>Compare Players
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-lg-3 mb-3">
+                            <a href="/admin/" class="btn btn-outline-warning w-100">
+                                <i class="fa-solid fa-cog me-2"></i>Admin Panel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

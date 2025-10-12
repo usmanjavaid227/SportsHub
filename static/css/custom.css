@@ -356,3 +356,184 @@ input.form-control:focus, textarea.form-control:focus, select.form-control:focus
     box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
 }
 
+/* Footer Styling for New Footer */
+footer {
+    background: linear-gradient(135deg, #0a0a0a 0%, #000000 100%) !important;
+    border-top: 1px solid rgba(255,153,0,0.2) !important;
+    position: relative;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.4), 0 -4px 16px rgba(0,0,0,0.2);
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sh-orange), var(--sh-orange-dark));
+}
+
+footer .text-tcc {
+    color: var(--sh-orange) !important;
+}
+
+footer .social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255,153,0,0.1);
+    border: 1px solid rgba(255,153,0,0.2);
+    border-radius: 50%;
+    color: var(--sh-gray);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    margin-right: 0.75rem;
+}
+
+footer .social-links a:hover {
+    background: var(--sh-orange);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,153,0,0.3);
+}
+
+footer .social-links a:last-child {
+    margin-right: 0;
+}
+
+footer a.text-muted {
+    transition: all 0.3s ease;
+}
+
+footer a.text-muted:hover {
+    color: var(--sh-orange) !important;
+    transform: translateX(4px);
+}
+
+footer hr {
+    border-color: rgba(255,153,0,0.3) !important;
+}
+
+/* Rank display styling */
+.rank-display {
+    background: var(--sh-orange) !important;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.rank-display:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4);
+    background: var(--sh-orange-dark) !important;
+}
+
+.rank-display span {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.rank-display i {
+    color: #000 !important;
+    margin-right: 5px;
+}
+
+/* Sports dropdown styling */
+.dropdown-menu {
+    background-color: #000000 !important;
+    border: 1px solid rgba(255,153,0,0.2) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+
+.dropdown-item {
+    color: var(--sh-white) !important;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+.dropdown-item:focus {
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+}
+
+.dropdown-item.active {
+    background-color: rgba(255,153,0,0.1) !important;
+    color: var(--sh-orange) !important;
+}
+
+/* News page styling */
+.news-card {
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+    border: 1px solid rgba(255,153,0,0.2) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255,153,0,0.3);
+    border-color: var(--sh-orange) !important;
+    background: linear-gradient(135deg, rgba(255,153,0,0.08) 0%, rgba(255,153,0,0.04) 100%) !important;
+}
+
+.news-card .card-title {
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--sh-white) !important;
+}
+
+.news-card .badge {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 15px;
+    background-color: var(--sh-orange) !important;
+    color: #000 !important;
+    border: 1px solid var(--sh-orange) !important;
+}
+
+.news-card .card-text {
+    line-height: 1.5;
+    color: var(--sh-gray) !important;
+}
+
+.news-card small {
+    font-size: 0.8rem;
+    color: var(--sh-gray) !important;
+}
+
+.news-card .card-body {
+    background: transparent !important;
+    color: var(--sh-white) !important;
+}
+
+.news-card .card-body * {
+    color: inherit;
+}
+
+@media (max-width: 768px) {
+    footer .social-links {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    footer .text-md-end {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+}
+

@@ -136,8 +136,19 @@
                             {% endif %}
                         </div>
 
+                        <!-- Privacy Policy Checkbox -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input privacy-checkbox" type="checkbox" id="privacy_policy" name="privacy_policy" required>
+                                <label class="form-check-label text-white" for="privacy_policy">
+                                    I agree to the <a href="{% url 'privacy_policy' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Privacy Policy</a> 
+                                    and <a href="{% url 'terms_of_service' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Terms of Service</a>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="d-grid">
-                            <button class="btn btn-tcc btn-lg" type="submit">
+                            <button class="btn btn-tcc btn-lg" type="submit" id="submitBtn" disabled>
                                 <i class="fa-solid fa-user-plus me-2"></i>Create Account
                             </button>
                         </div>
@@ -156,4 +167,145 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Privacy Policy Checkbox Animation */
+.privacy-checkbox {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid var(--sh-orange) !important;
+    border-radius: 4px !important;
+    background-color: #000000 !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    margin-right: 8px !important;
+    vertical-align: middle !important;
+}
+
+.privacy-checkbox:hover {
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2) !important;
+    transform: scale(1.05) !important;
+}
+
+.privacy-checkbox:focus {
+    outline: none !important;
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.3) !important;
+}
+
+.privacy-checkbox:checked {
+    background-color: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    animation: checkboxFill 0.4s ease-in-out !important;
+}
+
+.privacy-checkbox:checked::after {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important;
+    animation: checkmarkAppear 0.3s ease-in-out 0.1s both !important;
+}
+
+@keyframes checkboxFill {
+    0% {
+        background-color: #000000;
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(255, 153, 0, 0.5);
+        transform: scale(1.1);
+    }
+    100% {
+        background-color: var(--sh-orange);
+        transform: scale(1);
+    }
+}
+
+@keyframes checkmarkAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Submit button animation */
+#submitBtn {
+    transition: all 0.3s ease !important;
+}
+
+#submitBtn:disabled {
+    opacity: 0.6 !important;
+    transform: scale(0.98) !important;
+}
+
+#submitBtn:not(:disabled) {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3) !important;
+}
+
+#submitBtn:not(:disabled):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const privacyCheckbox = document.getElementById('privacy_policy');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Enable/disable submit button based on checkbox state
+    privacyCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            // Add a subtle animation to the button
+            submitBtn.style.transform = 'scale(1.02)';
+            setTimeout(() => {
+                submitBtn.style.transform = 'scale(1)';
+            }, 200);
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+        }
+    });
+    
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        if (!privacyCheckbox.checked) {
+            e.preventDefault();
+            alert('Please agree to the Privacy Policy and Terms of Service to continue.');
+            return false;
+        }
+    });
+    
+    // Add click animation to checkbox
+    privacyCheckbox.addEventListener('click', function() {
+        if (!this.checked) {
+            // Add a subtle bounce effect when checking
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 100);
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -113,7 +113,8 @@
                   <div class="alert alert-info mt-3">
                     <i class="fas fa-info-circle"></i>
                     <strong>Single Wicket Challenge:</strong> Each team has one batter and one bowler. 
-                    The winner is determined by which batter scores more runs. Participants can be the same person across different roles.
+                    The winner is determined by which batter scores more runs. 
+                    <strong>Important:</strong> The same player cannot be selected in both teams.
                   </div>
                 </div>
               </div>
@@ -163,6 +164,15 @@
                   <div class="form-text">How many overs for this challenge?</div>
                 </div>
               </div>
+            </div>
+
+            <!-- Ground Selection -->
+            <div class="mb-3">
+              <label class="form-label">Ground <span class="text-danger">*</span></label>
+              {{ form.ground }}
+              {% if form.ground.errors %}
+                <div class="text-danger small">{{ form.ground.errors|striptags }}</div>
+              {% endif %}
             </div>
 
             <!-- Date Selection -->
@@ -247,15 +257,6 @@
               {% endif %}
             </div>
 
-            <!-- Ground Selection -->
-          <div class="mb-3">
-              <label class="form-label">Ground <span class="text-danger">*</span></label>
-            {{ form.ground }}
-            {% if form.ground.errors %}
-              <div class="text-danger small">{{ form.ground.errors|striptags }}</div>
-            {% endif %}
-          </div>
-
             <!-- Summary -->
           <div class="mb-3">
               <label class="form-label">Summary/Comments</label>
@@ -266,9 +267,19 @@
               <div class="form-text">Additional comments or special conditions (optional)</div>
           </div>
 
+            <!-- Challenge Rules Agreement -->
+            <div class="mb-4">
+              <div class="form-check">
+                <input class="form-check-input challenge-rules-checkbox" type="checkbox" id="challenge_rules" name="challenge_rules" required>
+                <label class="form-check-label text-white" for="challenge_rules">
+                  I have read and agree to the <a href="{% url 'challenge_rules' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Challenge Rules & Guidelines</a>
+                </label>
+              </div>
+            </div>
+
             <!-- Submit Button -->
             <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg">
+              <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
                 <i class="fa-solid fa-plus me-2"></i>Create Challenge
               </button>
           </div>
@@ -509,6 +520,280 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Trigger change event on page load
     challengeTypeSelect.dispatchEvent(new Event('change'));
+    
+    // Challenge Rules Checkbox Handler
+    const rulesCheckbox = document.getElementById('challenge_rules');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (rulesCheckbox && submitBtn) {
+        // Enable/disable submit button based on checkbox state
+        rulesCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                // Add a subtle animation to the button
+                submitBtn.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    submitBtn.style.transform = 'scale(1)';
+                }, 200);
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.6';
+            }
+        });
+        
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            if (!rulesCheckbox.checked) {
+                e.preventDefault();
+                alert('You must agree to the Challenge Rules & Guidelines to create a challenge.');
+                return false;
+            }
+        });
+        
+        // Add click animation to checkbox
+        rulesCheckbox.addEventListener('click', function() {
+            if (!this.checked) {
+                // Add a subtle bounce effect when checking
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 100);
+            }
+        });
+    }
+    
+    // Single Wicket Team Validation
+    function validateSingleWicketTeams() {
+        const team1Batter = document.querySelector('select[name="team1_batter"]');
+        const team1Bowler = document.querySelector('select[name="team1_bowler"]');
+        const team2Batter = document.querySelector('select[name="team2_batter"]');
+        const team2Bowler = document.querySelector('select[name="team2_bowler"]');
+        
+        if (!team1Batter || !team1Bowler || !team2Batter || !team2Bowler) {
+            return true; // Not a single wicket challenge
+        }
+        
+        const team1BatterValue = team1Batter.value;
+        const team1BowlerValue = team1Bowler.value;
+        const team2BatterValue = team2Batter.value;
+        const team2BowlerValue = team2Bowler.value;
+        
+        // Check if any player is selected in both teams
+        const errors = [];
+        
+        if (team1BatterValue && team1BatterValue === team2BatterValue) {
+            errors.push('Team 1 Batter cannot be the same as Team 2 Batter');
+        }
+        
+        if (team1BatterValue && team1BatterValue === team2BowlerValue) {
+            errors.push('Team 1 Batter cannot be the same as Team 2 Bowler');
+        }
+        
+        if (team1BowlerValue && team1BowlerValue === team2BatterValue) {
+            errors.push('Team 1 Bowler cannot be the same as Team 2 Batter');
+        }
+        
+        if (team1BowlerValue && team1BowlerValue === team2BowlerValue) {
+            errors.push('Team 1 Bowler cannot be the same as Team 2 Bowler');
+        }
+        
+        if (errors.length > 0) {
+            alert('Team Selection Error:\n\n' + errors.join('\n'));
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Add validation to all team selection dropdowns
+    const teamSelects = document.querySelectorAll('select[name^="team"]');
+    teamSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            validateSingleWicketTeams();
+        });
+    });
+    
+    // Add validation to form submission
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!validateSingleWicketTeams()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
 });
 </script>
+
+<style>
+/* Challenge Rules Checkbox Animation */
+.challenge-rules-checkbox {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid var(--sh-orange) !important;
+    border-radius: 4px !important;
+    background-color: #000000 !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    margin-right: 8px !important;
+    vertical-align: middle !important;
+}
+
+.challenge-rules-checkbox:hover {
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2) !important;
+    transform: scale(1.05) !important;
+}
+
+.challenge-rules-checkbox:focus {
+    outline: none !important;
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.3) !important;
+}
+
+.challenge-rules-checkbox:checked {
+    background-color: var(--sh-orange) !important;
+    border-color: var(--sh-orange) !important;
+    animation: checkboxFill 0.4s ease-in-out !important;
+}
+
+.challenge-rules-checkbox:checked::after {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important;
+    animation: checkmarkAppear 0.3s ease-in-out 0.1s both !important;
+}
+
+@keyframes checkboxFill {
+    0% {
+        background-color: #000000;
+        transform: scale(1);
+    }
+    50% {
+        background-color: rgba(255, 153, 0, 0.5);
+        transform: scale(1.1);
+    }
+    100% {
+        background-color: var(--sh-orange);
+        transform: scale(1);
+    }
+}
+
+@keyframes checkmarkAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Submit button animation */
+#submitBtn {
+    transition: all 0.3s ease !important;
+}
+
+#submitBtn:disabled {
+    opacity: 0.6 !important;
+    transform: scale(0.98) !important;
+}
+
+#submitBtn:not(:disabled) {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3) !important;
+}
+
+#submitBtn:not(:disabled):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(255, 153, 0, 0.4) !important;
+}
+
+/* Form styling improvements */
+.form-select {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 153, 0, 0.3) !important;
+    color: var(--sh-white) !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-select:focus {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+    color: var(--sh-white) !important;
+}
+
+.form-select:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sh-orange) !important;
+}
+
+.form-select option {
+    background-color: #000000 !important;
+    color: var(--sh-white) !important;
+    padding: 8px 12px !important;
+}
+
+.form-control {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 153, 0, 0.3) !important;
+    color: var(--sh-white) !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+    color: var(--sh-white) !important;
+}
+
+.form-control:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sh-orange) !important;
+}
+
+/* Form text visibility improvements */
+.form-text {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.875rem !important;
+    margin-top: 0.25rem !important;
+}
+
+.form-label {
+    color: var(--sh-white) !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Input placeholder styling */
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Select dropdown styling */
+select.form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    padding-right: 2.5rem !important;
+}
+</style>
 {% endblock %}
