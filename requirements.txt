@@ -1,5 +1,5 @@
 
-Django==5.2.6
+Django>=5.0
 djangorestframework==3.15.2
 psycopg2-binary
 Pillow==10.4.0
@@ -8,7 +8,7 @@ djangorestframework-simplejwt
 django-cors-headers
 channels
 channels-redis
-numpy==1.22.4
+numpy==1.26.4
 pytz==2022.1
 gunicorn
 whitenoise
