@@ -1,0 +1,1 @@
+web: gunicorn tampere_cricket.wsgi
