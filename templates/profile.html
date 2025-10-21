@@ -1,244 +1,305 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}My Profile{% endblock %}
+
+{% block title %}SportsHub{% endblock %}
+
 {% block content %}
 <div class="container py-5">
-  <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">My Profile</h2></div>
-<div class="row g-4">
-  <!-- Profile Card -->
-  <div class="col-12 col-lg-4">
-    <div class="card text-center profile-card">
-      <div class="card-body">
-        {% if user.avatar and user.avatar.url %}
-        <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle mb-3 profile-avatar" style="width:120px;height:120px;object-fit:cover; border: 3px solid var(--sh-orange);">
+    <div class="row">
+        <!-- Sidebar Menu -->
+        <div class="col-12 col-lg-3 mb-4">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2); position: sticky; top: 20px;">
+                <div class="card-body p-4">
+                    <h5 class="mb-4" style="color: var(--sh-white);">
+                        <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
+                        Profile Menu
+                    </h5>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link profile-nav-link active" href="#profileInfo" data-bs-toggle="collapse" data-bs-target="#profileInfo" aria-expanded="true" aria-controls="profileInfo" style="color: var(--sh-white); background: rgba(255, 153, 0, 0.1); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
+                            Profile Info
+                        </a>
+                        
+                        <a class="nav-link profile-nav-link" href="#cricketDetails" data-bs-toggle="collapse" data-bs-target="#cricketDetails" aria-expanded="false" aria-controls="cricketDetails" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-baseball me-2" style="color: var(--sh-orange);"></i>
+                            Cricket Details
+                        </a>
+                        
+                        <a class="nav-link profile-nav-link" href="#recentMatches" data-bs-toggle="collapse" data-bs-target="#recentMatches" aria-expanded="false" aria-controls="recentMatches" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-history me-2" style="color: var(--sh-orange);"></i>
+                            Recent Matches
+                        </a>
+                        
+                        <a class="nav-link profile-nav-link" href="#challengeStats" data-bs-toggle="collapse" data-bs-target="#challengeStats" aria-expanded="false" aria-controls="challengeStats" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>
+                            Challenge Stats
+                        </a>
+                        
+                        {% if is_own_profile %}
+                        <a class="nav-link profile-nav-link" href="#securitySettings" data-bs-toggle="collapse" data-bs-target="#securitySettings" aria-expanded="false" aria-controls="securitySettings" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-shield-halved me-2" style="color: var(--sh-orange);"></i>
+                            Security Settings
+                        </a>
+                        {% endif %}
+                    </nav>
+                    
+                    <!-- Quick Profile Info -->
+                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <h6 class="mb-3" style="color: var(--sh-orange);">Quick Info</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                            <small style="color: var(--sh-white);">
+                                {% if profile.matches_played > 0 %}
+                                    Rank #{{ user_rank }}
         {% else %}
-        <div class="rounded-circle mb-3 profile-avatar-placeholder" style="width:120px;height:120px;background: var(--sh-orange); color: #000; display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 3px solid var(--sh-orange);">
-          <i class="fa-solid fa-user fa-3x"></i>
+                                    Not ranked yet
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                            <small style="color: var(--sh-white);">{{ profile.matches_played|default:0 }} matches played</small>
+                        </div>
+                        {% if is_own_profile %}
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-edit me-2" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                            <a href="{% url 'profile_edit' %}" class="text-decoration-none" style="color: var(--sh-orange); font-size: 0.9rem;">Edit Profile</a>
         </div>
         {% endif %}
-        <h5 class="card-title" style="color: var(--sh-white);">{{ user.get_full_name|default:user.username }}</h5>
-        <p class="text-muted">{{ user.city }}</p>
-        
-        <!-- Rank Display -->
-        <div class="mb-3">
-          <div class="rank-display" style="background: var(--sh-orange); padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);">
-            <span style="color: #000; font-weight: bold; font-size: 1.1rem;">
-              <i class="fa-solid fa-trophy me-1"></i>Rank #{{ user_rank }}
-            </span>
+                    </div>
+                </div>
           </div>
         </div>
         
+        <!-- Main Content -->
+        <div class="col-12 col-lg-9">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
         <div class="mb-3">
-          <span class="badge" style="background: var(--sh-orange); color: #000;">{{ user.get_role_display }}</span>
-          <span class="badge" style="background: rgba(255,153,0,0.2); color: var(--sh-orange); border: 1px solid var(--sh-orange);">{{ user.get_experience_level_display }}</span>
+                            {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="Avatar" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid var(--sh-orange);">
+                            {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px; background: var(--sh-orange); color: #000;">
+                                <i class="fa-solid fa-user fa-3x"></i>
         </div>
-        {% if user.bio %}
-        <p class="small text-muted">{{ user.bio|truncatewords:20 }}</p>
-        {% endif %}
-        
-        <!-- Contact Information -->
-        <div class="mt-3">
-          {% if user.email %}
-          <p class="small text-muted mb-1">
-            <i class="fa-solid fa-envelope me-1" style="color: var(--sh-orange);"></i>
-            {{ user.email }}
-          </p>
-          {% endif %}
-          {% if user.phone %}
-          <p class="small text-muted mb-1">
-            <i class="fa-solid fa-phone me-1" style="color: var(--sh-orange);"></i>
-            {{ user.phone }}
-          </p>
           {% endif %}
         </div>
-        
-        <div class="d-flex gap-2 justify-content-center">
-          <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc btn-sm">Edit Profile</a>
-          <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">
-            <i class="fa-solid fa-trash me-1"></i>Delete Profile
+                        <h1 class="h3 mb-3" style="color: var(--sh-white);">
+                            {% if is_own_profile %}
+                                My Profile
+                            {% else %}
+                                {{ user.get_full_name|default:user.username }}'s Profile
+                            {% endif %}
+                        </h1>
+                        <p class="text-secondary">Cricket player profile and statistics</p>
+                    </div>
+                    
+                    <!-- Profile Completion Alert (non-modal) -->
+                    {% if is_own_profile and is_profile_incomplete %}
+                    <div class="alert alert-info d-flex align-items-center mb-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                        <i class="fa-solid fa-user-check me-3 fa-2x" style="color: var(--sh-orange);"></i>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-2" style="color: var(--sh-white);">Complete Your Profile</h5>
+                            <p class="mb-3" style="color: var(--sh-gray);">Add your basic information to get the most out of your SportsHub experience.</p>
+                            <a href="{% url 'profile_edit' %}" class="btn btn-tcc btn-sm">
+                                <i class="fa-solid fa-edit me-1"></i>Complete Profile
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Login Required Notice for Non-Authenticated Users -->
+                    {% if not is_own_profile and not user.is_authenticated %}
+                    <div class="alert alert-warning d-flex align-items-center mb-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                        <i class="fa-solid fa-info-circle me-3 fa-2x" style="color: var(--sh-orange);"></i>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-2" style="color: var(--sh-white);">Login Required to View Full Profile</h5>
+                            <p class="mb-3" style="color: var(--sh-gray);">You're seeing a limited preview of this player's profile. Login to view complete statistics, match history, and detailed performance data.</p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'login' %}" class="btn btn-tcc">
+                                    <i class="fa-solid fa-sign-in-alt me-1"></i>Login
+                                </a>
+                                <a href="{% url 'register' %}" class="btn btn-outline-tcc">
+                                    <i class="fa-solid fa-user-plus me-1"></i>Sign Up
           </a>
         </div>
       </div>
     </div>
-
-    <!-- Cricket Details -->
-    <div class="card mt-3">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-cricket-bat-ball me-2" style="color: var(--sh-orange);"></i>Cricket Details</h6>
+                    {% endif %}
+                    
+                    <!-- Collapsible Sections -->
+                    <div class="accordion" id="profileAccordion" style="--bs-accordion-bg: rgba(255, 255, 255, 0.05); --bs-accordion-border-color: rgba(255, 255, 255, 0.1);">
+                        
+                        <!-- Section 1: Profile Information -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="profileInfoHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#profileInfo" aria-expanded="true" aria-controls="profileInfo" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Profile Information</strong>
+                                </button>
+                            </h2>
+                            <div id="profileInfo" class="accordion-collapse collapse show" aria-labelledby="profileInfoHeader" data-bs-parent="#profileAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6 class="mb-3" style="color: var(--sh-orange);">Basic Information</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ user.get_full_name|default:"Not provided" }}</div>
       </div>
-      <div class="card-body">
-        <div class="row text-center">
-          <div class="col-6 mb-2">
-            <div class="small text-muted">Role</div>
-            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_role_display }}</div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ user.username }}</div>
           </div>
-          <div class="col-6 mb-2">
-            <div class="small text-muted">Experience</div>
-            <div class="fw-bold" style="color: var(--sh-white);">{{ user.years_playing }} years</div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Email</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ user.email|default:"Not provided" }}</div>
           </div>
-          {% if user.preferred_batting_style %}
-          <div class="col-6 mb-2">
-            <div class="small text-muted">Batting</div>
-            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_preferred_batting_style_display }}</div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Phone</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ user.phone|default:"Not provided" }}</div>
           </div>
-          {% endif %}
-          {% if user.preferred_bowling_style %}
-          <div class="col-6 mb-2">
-            <div class="small text-muted">Bowling</div>
-            <div class="fw-bold" style="color: var(--sh-white);">{{ user.get_preferred_bowling_style_display }}</div>
+                                            {% if user.city %}
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">City</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ user.city }}</div>
           </div>
           {% endif %}
         </div>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="card mt-3">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>Recent Activity</h6>
-      </div>
-      <div class="card-body">
-        <p class="small text-muted">
-          <i class="fa-solid fa-calendar me-1" style="color: var(--sh-orange);"></i>
-          Joined {{ user.date_joined|date:"M d, Y" }}
-        </p>
-        {% if user.last_login %}
-        <p class="small text-muted">
-          <i class="fa-solid fa-clock me-1" style="color: var(--sh-orange);"></i>
-          Last seen {{ user.last_login|timesince }} ago
-        </p>
+                                        <div class="col-md-6">
+                                            <h6 class="mb-3" style="color: var(--sh-orange);">Ranking & Stats</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Current Rank</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">
+                                                    {% if profile.matches_played > 0 %}
+                                                        #{{ user_rank }}
+                                                    {% else %}
+                                                        Not ranked yet - Play 1 match to get ranked
         {% endif %}
       </div>
     </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Matches Played</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ profile.matches_played|default:0 }}</div>
   </div>
-
-  <!-- Stats and Charts -->
-  <div class="col-12 col-lg-8">
-    <!-- Basic Stats -->
-    <div class="card mb-4">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-bar me-2" style="color: var(--sh-orange);"></i>Match Statistics</h6>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Win Rate</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ profile.get_win_rate|floatformat:1 }}%</div>
       </div>
-      <div class="card-body">
-        <div class="row text-center">
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Matches</div>
-            <div class="display-6" style="color: var(--sh-orange);">{{ user.profile.matches_played|default:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Wins</div>
-            <div class="display-6" style="color: #28a745;">{{ user.profile.wins|default:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Losses</div>
-            <div class="display-6" style="color: #dc3545;">{{ user.profile.losses|default:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Win Rate</div>
-            <div class="display-6" style="color: var(--sh-orange);">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
-          </div>
-        </div>
-        <div class="row text-center mt-3">
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Overall Rating</div>
-            <div class="h4" style="color: var(--sh-orange);">{{ user.profile.rating|floatformat:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Batting Rating</div>
-            <div class="h4" style="color: #17a2b8;">{{ user.profile.batting_rating|floatformat:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Bowling Rating</div>
-            <div class="h4" style="color: #ffc107;">{{ user.profile.bowling_rating|floatformat:0 }}</div>
-          </div>
-          <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Total Runs</div>
-            <div class="h4" style="color: #28a745;">{{ user.profile.runs|default:0 }}</div>
-          </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold" style="color: var(--sh-orange); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">Overall Rating</label>
+                                                <div class="form-control" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: var(--sh-white); padding: 0.75rem; border-radius: 6px;">{{ profile.rating|floatformat:0 }}</div>
         </div>
       </div>
     </div>
 
-    <!-- Win/Loss Chart -->
-    <div class="card mb-4">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-pie me-2" style="color: var(--sh-orange);"></i>Win/Loss Ratio</h6>
-      </div>
-      <div class="card-body">
-        <div style="height: 200px; width: 100%;">
-          <canvas id="winLossChart"></canvas>
-        </div>
-        {% if user.profile.matches_played > 0 %}
-        <div class="row mt-3">
-          <div class="col-6 text-center">
-            <div class="fw-bold text-success">Win Rate: {{ user.profile.get_win_rate|floatformat:1 }}%</div>
-          </div>
-          <div class="col-6 text-center">
-            <div class="fw-bold text-muted">Total Matches: {{ user.profile.matches_played }}</div>
+                                    {% if is_own_profile %}
+                                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc btn-sm">
+                                                <i class="fa-solid fa-edit me-1"></i>
+                                            </a>
+                                            <a href="{% url 'player_stats' %}" class="btn btn-tcc btn-sm">
+                                                <i class="fa-solid fa-chart-line me-1"></i>View Stats
+                                            </a>
+                                            <a href="{% url 'delete_profile' %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">
+                                                <i class="fa-solid fa-trash me-1"></i>
+                                            </a>
           </div>
         </div>
         {% else %}
-        <div class="text-center text-muted mt-3">
-          <p>No matches played yet</p>
+                                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'player_stats' %}" class="btn btn-tcc btn-sm">
+                                                <i class="fa-solid fa-chart-line me-1"></i>View Stats
+                                            </a>
+                                        </div>
         </div>
         {% endif %}
+                                </div>
       </div>
     </div>
 
-    <!-- Cricket Performance Stats -->
-    <div class="card mb-4">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-cricket-bat-ball me-2" style="color: var(--sh-orange);"></i>Cricket Performance</h6>
-      </div>
-      <div class="card-body">
+                        <!-- Section 2: Cricket Details -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="cricketDetailsHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cricketDetails" aria-expanded="false" aria-controls="cricketDetails" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-baseball me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Cricket Details</strong>
+                                </button>
+                            </h2>
+                            <div id="cricketDetails" class="accordion-collapse collapse" aria-labelledby="cricketDetailsHeader" data-bs-parent="#profileAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
         <div class="row text-center">
+                                        {% if user.role %}
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Total Runs</div>
-            <div class="h4 text-success">{{ user.profile.runs|default:0 }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Role</div>
+                                            <div class="h5" style="color: var(--sh-orange);">{{ user.get_role_display }}</div>
           </div>
+                                        {% endif %}
+                                        {% if user.preferred_batting_style %}
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Total Wickets</div>
-            <div class="h4 text-danger">{{ user.profile.wickets|default:0 }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Batting Style</div>
+                                            <div class="h5" style="color: var(--sh-orange);">{{ user.get_preferred_batting_style_display }}</div>
           </div>
+                                        {% endif %}
+                                        {% if user.preferred_bowling_style %}
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Batting Average</div>
-            <div class="h4 text-info">{{ user.profile.get_batting_average }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Bowling Style</div>
+                                            <div class="h5" style="color: var(--sh-orange);">{{ user.get_preferred_bowling_style_display }}</div>
           </div>
+                                        {% endif %}
+                                        {% if user.city %}
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Bowling Average</div>
-            <div class="h4 text-warning">{{ user.profile.get_bowling_average }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Location</div>
+                                            <div class="h5" style="color: var(--sh-orange);">{{ user.city }}</div>
           </div>
+                                        {% endif %}
         </div>
         
-        <!-- Performance Chart -->
-        <div class="mt-4" style="height: 200px; width: 100%;">
-          <canvas id="performanceChart"></canvas>
+                                    {% if not user.role and not user.preferred_batting_style and not user.preferred_bowling_style %}
+                                    <div class="text-center text-muted">
+                                        <i class="fa-solid fa-cricket-bat-ball fa-3x mb-3" style="color: var(--sh-orange);"></i>
+                                        <p>No cricket details provided yet.</p>
+                                        {% if is_own_profile %}
+                                        <a href="{% url 'profile_edit' %}" class="btn btn-tcc btn-sm">
+                                            <i class="fa-solid fa-edit me-1"></i>Add Cricket Details
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
         </div>
       </div>
     </div>
 
-    <!-- Recent Matches -->
+                        <!-- Section 3: Recent Matches -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="recentMatchesHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#recentMatches" aria-expanded="false" aria-controls="recentMatches" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-history me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Recent Matches</strong>
+                                </button>
+                            </h2>
+                            <div id="recentMatches" class="accordion-collapse collapse" aria-labelledby="recentMatchesHeader" data-bs-parent="#profileAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
     {% if recent_matches %}
-    <div class="card mb-4">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-history me-2" style="color: var(--sh-orange);"></i>Recent Matches</h6>
-      </div>
-      <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-sm">
-            <thead class="table-dark">
-              <tr>
-                <th class="text-white">Date</th>
-                <th class="text-white">Opponent</th>
-                <th class="text-white">Result</th>
-                <th class="text-white">Runs</th>
-                <th class="text-white">Wickets</th>
+                                        <table class="table table-sm" style="color: var(--sh-white);">
+                                            <thead style="background: rgba(255,153,0,0.1); border-bottom: 1px solid rgba(255,153,0,0.2);">
+                                                <tr>
+                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Date</th>
+                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Opponent</th>
+                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Result</th>
+                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Runs</th>
+                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Wickets</th>
               </tr>
             </thead>
-            <tbody>
+                                            <tbody style="background: rgba(255, 255, 255, 0.02);">
               {% for match in recent_matches %}
-              <tr>
-                <td>
+                                                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                                    <td style="color: var(--sh-white);">
                   {% if match.completed_at %}
                     {{ match.completed_at|date:"M d, Y" }}
                   {% elif match.scheduled_at %}
@@ -249,21 +310,21 @@
                     {{ match.created_at|date:"M d, Y" }}
                   {% endif %}
                 </td>
-                <td>
+                                                    <td style="color: var(--sh-white);">
                   {% if match.challenger == user %}
                     {{ match.opponent.username }}
                   {% else %}
                     {{ match.challenger.username }}
                   {% endif %}
                 </td>
-                <td>
+                                                    <td style="color: var(--sh-white);">
                   {% if match.winner == user %}
-                    <span class="badge bg-success">Won</span>
+                                                            <span class="badge" style="background: #28a745; color: white;">Won</span>
                   {% else %}
-                    <span class="badge bg-danger">Lost</span>
+                                                            <span class="badge" style="background: #dc3545; color: white;">Lost</span>
                   {% endif %}
                 </td>
-                <td>
+                                                    <td style="color: var(--sh-white);">
                   {% if match.match_result %}
                     {% if match.challenger == user %}
                       {{ match.match_result.challenger_runs }}
@@ -274,7 +335,7 @@
                     -
                   {% endif %}
                 </td>
-                <td>
+                                                    <td style="color: var(--sh-white);">
                   {% if match.match_result %}
                     {% if match.challenger == user %}
                       {{ match.match_result.challenger_wickets }}
@@ -289,33 +350,48 @@
               {% endfor %}
             </tbody>
           </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center text-muted">
+                                        <i class="fa-solid fa-history fa-3x mb-3" style="color: var(--sh-orange);"></i>
+                                        <p>No recent matches found.</p>
+                                        {% if is_own_profile %}
+                                        <a href="{% url 'challenges_list' %}" class="btn btn-tcc btn-sm">
+                                            <i class="fa-solid fa-plus me-1"></i>Create Challenge
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
         </div>
       </div>
     </div>
-    {% endif %}
-
-    <!-- Challenge History -->
-    <div class="card">
-      <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-        <h6 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>Challenge Statistics</h6>
-      </div>
-      <div class="card-body">
+                        
+                        <!-- Section 4: Challenge Statistics -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="challengeStatsHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#challengeStats" aria-expanded="false" aria-controls="challengeStats" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Challenge Statistics</strong>
+                                </button>
+                            </h2>
+                            <div id="challengeStats" class="accordion-collapse collapse" aria-labelledby="challengeStatsHeader" data-bs-parent="#profileAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
         <div class="row text-center">
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Challenges Created</div>
-            <div class="h4">{{ user.challenges_made.count }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Challenges Created</div>
+                                            <div class="h4" style="color: var(--sh-white);">{{ user.challenges_made.count }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Challenges Accepted</div>
-            <div class="h4">{{ user.challenges_received.count }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Challenges Accepted</div>
+                                            <div class="h4" style="color: var(--sh-white);">{{ user.challenges_received.count }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Challenges Won</div>
-            <div class="h4">{{ user.challenges_won.count }}</div>
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Challenges Won</div>
+                                            <div class="h4" style="color: var(--sh-white);">{{ user.challenges_won.count }}</div>
           </div>
           <div class="col-6 col-md-3 mb-3">
-            <div class="fw-bold text-muted">Challenge Win Rate</div>
-            <div class="h4">
+                                            <div class="fw-bold" style="color: rgba(255, 255, 255, 0.7);">Challenge Win Rate</div>
+                                            <div class="h4" style="color: var(--sh-white);">
               {% if user.challenges_made.count > 0 %}
                 {% widthratio user.challenges_won.count user.challenges_made.count 100 %}%
               {% else %}
@@ -323,6 +399,64 @@
               {% endif %}
             </div>
           </div>
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="{% url 'challenges_list' %}" class="btn btn-tcc btn-sm">
+                                                <i class="fa-solid fa-list me-1"></i>View All Challenges
+                                            </a>
+                                            {% if is_own_profile %}
+                                            <a href="{% url 'challenge_create' %}" class="btn btn-outline-tcc btn-sm">
+                                                <i class="fa-solid fa-plus me-1"></i>Create Challenge
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section 5: Security Settings (Only for own profile) -->
+                        {% if is_own_profile %}
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="securitySettingsHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#securitySettings" aria-expanded="false" aria-controls="securitySettings" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-shield-halved me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Security Settings</strong>
+                                </button>
+                            </h2>
+                            <div id="securitySettings" class="accordion-collapse collapse" aria-labelledby="securitySettingsHeader" data-bs-parent="#profileAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h6 class="mb-3" style="color: var(--sh-orange);">Account Security</h6>
+                                            <p class="mb-4" style="color: var(--sh-gray);">Keep your account secure by regularly updating your password.</p>
+                                            
+                                            <div class="d-flex gap-3 justify-content-center">
+                                                <a href="{% url 'change_password' %}" class="btn btn-tcc">
+                                                    <i class="fa-solid fa-lock me-1"></i>Change Password
+                                                </a>
+                                                <a href="{% url 'profile_edit' %}" class="btn btn-outline-tcc">
+                                                    <i class="fa-solid fa-edit me-1"></i>Edit Profile
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                                <h6 class="mb-3" style="color: var(--sh-orange);">Security Tips</h6>
+                                                <ul class="list-unstyled" style="color: var(--sh-gray);">
+                                                    <li class="mb-2"><i class="fa-solid fa-check-circle me-2" style="color: var(--sh-orange);"></i>Use a strong, unique password</li>
+                                                    <li class="mb-2"><i class="fa-solid fa-check-circle me-2" style="color: var(--sh-orange);"></i>Don't share your password with others</li>
+                                                    <li class="mb-2"><i class="fa-solid fa-check-circle me-2" style="color: var(--sh-orange);"></i>Log out from shared devices</li>
+                                                    <li class="mb-2"><i class="fa-solid fa-check-circle me-2" style="color: var(--sh-orange);"></i>Keep your profile information updated</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
         </div>
       </div>
     </div>
@@ -330,71 +464,306 @@
 </div>
 </div>
 
-<!-- Chart.js for visualizations -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Win/Loss Ratio Chart
-const winLossCtx = document.getElementById('winLossChart').getContext('2d');
-const winLossChart = new Chart(winLossCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Wins', 'Losses'],
-        datasets: [{
-            data: [{{ user.profile.wins|default:0 }}, {{ user.profile.losses|default:0 }}],
-            backgroundColor: ['#28a745', '#dc3545'],
-            borderWidth: 2,
-            borderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom'
+// Profile navigation functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle sidebar navigation clicks
+    const navLinks = document.querySelectorAll('.profile-nav-link');
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    
+    // Update sidebar active state when accordion is clicked
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-bs-target').replace('#', '');
+            
+            // Update all nav links
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                link.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+            
+            // Activate corresponding nav link
+            const correspondingNavLink = document.querySelector(`[href="#${targetId}"]`);
+            if (correspondingNavLink) {
+                correspondingNavLink.classList.add('active');
+                correspondingNavLink.style.background = 'rgba(255, 153, 0, 0.1)';
             }
+        });
+    });
+    
+    // Handle sidebar nav link clicks
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').replace('#', '');
+            
+            // Update all nav links
+            navLinks.forEach(navLink => {
+                navLink.classList.remove('active');
+                navLink.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+            
+            // Activate clicked nav link
+            this.classList.add('active');
+            this.style.background = 'rgba(255, 153, 0, 0.1)';
+            
+            // Trigger accordion collapse
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                const accordionButton = document.querySelector(`[data-bs-target="#${targetId}"]`);
+                if (accordionButton) {
+                    accordionButton.click();
+                }
+            }
+        });
+    });
+    
+    // Profile completion popup functionality
+    const profilePopup = document.getElementById('profileCompletionPopup');
+    
+    if (profilePopup) {
+        // Check if popup was already shown in this session
+        const popupShown = sessionStorage.getItem('profilePopupShown');
+        
+        if (!popupShown) {
+            // Show popup after a short delay for better UX
+            setTimeout(() => {
+                profilePopup.classList.remove('hidden');
+            }, 1000);
+            
+            // Auto-hide popup after 30 seconds if user doesn't interact
+            setTimeout(() => {
+                if (!profilePopup.classList.contains('hidden')) {
+                    closeProfilePopup();
+                }
+            }, 30000);
+        } else {
+            // Hide popup if already shown in this session
+            profilePopup.classList.add('hidden');
         }
     }
+    
 });
 
-// Performance Chart
-const performanceCtx = document.getElementById('performanceChart').getContext('2d');
-const performanceChart = new Chart(performanceCtx, {
-    type: 'bar',
-    data: {
-        labels: ['Total Runs', 'Total Wickets', 'Batting Rating', 'Bowling Rating'],
-        datasets: [{
-            label: 'Performance',
-            data: [{{ user.profile.runs|default:0 }}, {{ user.profile.wickets|default:0 }}, {{ user.profile.batting_rating|floatformat:0 }}, {{ user.profile.bowling_rating|floatformat:0 }}],
-            backgroundColor: [
-                'rgba(40, 167, 69, 0.8)',
-                'rgba(220, 53, 69, 0.8)',
-                'rgba(23, 162, 184, 0.8)',
-                'rgba(255, 193, 7, 0.8)'
-            ],
-            borderColor: [
-                'rgba(40, 167, 69, 1)',
-                'rgba(220, 53, 69, 1)',
-                'rgba(23, 162, 184, 1)',
-                'rgba(255, 193, 7, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        },
-        plugins: {
-            legend: {
-                display: false
-            }
-        }
+// Function to close the profile completion popup
+function closeProfilePopup() {
+    const popup = document.getElementById('profileCompletionPopup');
+    if (popup) {
+        popup.classList.add('hidden');
+        // Store in sessionStorage to not show again in this session
+        sessionStorage.setItem('profilePopupShown', 'true');
     }
-});
+}
+
+// Function to show the popup (for testing purposes)
+function showProfilePopup() {
+    const popup = document.getElementById('profileCompletionPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+    }
+}
 </script>
+
+<style>
+.profile-nav-link:hover {
+    background: rgba(255, 153, 0, 0.15) !important;
+    transform: translateX(5px);
+}
+
+.profile-nav-link.active {
+    background: rgba(255, 153, 0, 0.1) !important;
+    border-left: 3px solid var(--sh-orange);
+}
+
+.accordion-button:not(.collapsed) {
+    background: rgba(255, 153, 0, 0.1);
+    color: var(--sh-orange);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25);
+    border-color: var(--sh-orange);
+}
+
+/* Collapse icon color changes - Orange Bootstrap chevron */
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff9900'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff9900'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+/* Profile Completion Popup Styles */
+.profile-completion-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.profile-completion-popup.hidden {
+    display: none;
+}
+
+.profile-completion-modal {
+    background: linear-gradient(135deg, var(--sh-dark) 0%, #1a1a1a 100%);
+    border: 2px solid var(--sh-orange);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(255, 153, 0, 0.3);
+    animation: slideIn 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-completion-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--sh-orange), #f7931e, var(--sh-orange));
+    animation: shimmer 2s infinite;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 200px 0; }
+}
+
+.profile-completion-icon {
+    font-size: 4rem;
+    color: var(--sh-orange);
+    margin-bottom: 1rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.profile-completion-title {
+    color: var(--sh-white);
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.profile-completion-text {
+    color: var(--sh-gray);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.profile-completion-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.profile-completion-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: var(--sh-gray);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.profile-completion-close:hover {
+    color: var(--sh-orange);
+}
+
+.profile-completion-progress {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 8px;
+    margin: 1rem 0;
+    overflow: hidden;
+}
+
+.profile-completion-progress-bar {
+    background: linear-gradient(90deg, var(--sh-orange), #f7931e);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    animation: progressGlow 2s infinite;
+}
+
+@keyframes progressGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 153, 0, 0.5); }
+    50% { box-shadow: 0 0 15px rgba(255, 153, 0, 0.8); }
+}
+</style>
+
+<!-- Profile Completion Popup Modal -->
+{% if is_own_profile and is_profile_incomplete %}
+<div id="profileCompletionPopup" class="profile-completion-popup hidden" onclick="closeProfilePopup()">
+    <div class="profile-completion-modal" onclick="event.stopPropagation()">
+        <button class="profile-completion-close" onclick="closeProfilePopup()">&times;</button>
+        
+        <div class="profile-completion-icon">
+            <i class="fa-solid fa-user-plus"></i>
+        </div>
+        
+        <h2 class="profile-completion-title">Welcome to SportsHub!</h2>
+        
+        <p class="profile-completion-text">
+            Complete your profile to unlock the full potential of your cricket journey. 
+            Add your basic information and cricket preferences to get started.
+        </p>
+        
+        <!-- Progress Bar -->
+        <div class="profile-completion-progress">
+            <div class="profile-completion-progress-bar" style="width: 25%;"></div>
+        </div>
+        <small style="color: var(--sh-gray);">Profile Completion: 25%</small>
+        
+        <div class="profile-completion-buttons">
+            <a href="{% url 'profile_edit' %}" class="btn btn-tcc btn-lg">
+                <i class="fa-solid fa-edit me-2"></i>Complete Profile
+            </a>
+            <button class="btn btn-outline-tcc btn-lg" onclick="closeProfilePopup()">
+                <i class="fa-solid fa-clock me-2"></i>Maybe Later
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}

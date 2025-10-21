@@ -1,15 +1,59 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Contact • SportsHub{% endblock %}
+{% block title %}SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
+    <div class="row">
+        <!-- Sidebar Menu -->
+        <div class="col-12 col-lg-3 mb-4">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2); position: sticky; top: 20px;">
+                <div class="card-body p-4">
+                    <h5 class="mb-4" style="color: var(--sh-white);">
+                        <i class="fa-solid fa-bars me-2" style="color: var(--sh-orange);"></i>
+                        Contact Menu
+                    </h5>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link contact-nav-link active" href="#contactForm" data-bs-toggle="collapse" data-bs-target="#contactForm" aria-expanded="true" aria-controls="contactForm" style="color: var(--sh-white); background: rgba(255, 153, 0, 0.1); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-paper-plane me-2" style="color: var(--sh-orange);"></i>
+                            Contact Us
+                        </a>
+                        
+                        <a class="nav-link contact-nav-link" href="#faqSection" data-bs-toggle="collapse" data-bs-target="#faqSection" aria-expanded="false" aria-controls="faqSection" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-question-circle me-2" style="color: var(--sh-orange);"></i>
+                            FAQ
+                        </a>
+                        
+                        <a class="nav-link contact-nav-link" href="#contactDetails" data-bs-toggle="collapse" data-bs-target="#contactDetails" aria-expanded="false" aria-controls="contactDetails" style="color: var(--sh-white); background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 0.5rem; padding: 0.75rem 1rem; text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa-solid fa-address-book me-2" style="color: var(--sh-orange);"></i>
+                            Contact Details
+                        </a>
+                    </nav>
+                    
+                    <!-- Quick Contact Info -->
+                    <div class="mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <h6 class="mb-3" style="color: var(--sh-orange);">Quick Info</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-envelope me-2" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                            <small style="color: var(--sh-white);">info@sportshub.fi</small>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa-solid fa-phone me-2" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                            <small style="color: var(--sh-white);">+358 40 123 4567</small>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-12 col-lg-9">
             <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
                 <div class="card-body p-5">
-                    <div class="text-center mb-4">
+                    <div class="text-center mb-5">
                         <div class="mb-3">
                             <i class="fa-solid fa-envelope fa-3x" style="color: var(--sh-orange);"></i>
                         </div>
@@ -17,19 +61,23 @@
                         <p class="text-secondary">Get in touch with the SportsHub team</p>
                     </div>
                     
-                   
-
-                    <!-- Get in Touch Section -->
-                    <div class="mb-5">
-                        <div class="section-heading">
-                            <div class="bar"></div>
-                            <h5 class="h5 m-0">Get in Touch</h5>
-                        </div>
-                        <p class="text-secondary">
-                            Have questions about our cricket challenges, want to suggest new grounds, 
+                    <!-- Collapsible Sections -->
+                    <div class="accordion" id="contactAccordion" style="--bs-accordion-bg: rgba(255, 255, 255, 0.05); --bs-accordion-border-color: rgba(255, 255, 255, 0.1);">
+                        
+                        <!-- Section 1: Contact Us Form -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="contactFormHeader">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#contactForm" aria-expanded="true" aria-controls="contactForm" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-paper-plane me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Contact Us</strong>
+                                </button>
+                            </h2>
+                            <div id="contactForm" class="accordion-collapse collapse show" aria-labelledby="contactFormHeader" data-bs-parent="#contactAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                    <p class="text-secondary mb-4">
+                                        Have questions about our cricket challenges, want to share your thoughts, 
                             or need help with your account? We'd love to hear from you!
                         </p>
-                    </div>
 
                     <!-- Contact Form -->
                     <form method="post" action="{% url 'contact' %}" class="needs-validation" novalidate>
@@ -58,13 +106,20 @@
                             </button>
                         </div>
                     </form>
-
-                    <!-- FAQ Section -->
-                    <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                        <div class="section-heading mb-4">
-                            <div class="bar"></div>
-                            <h5 class="h5 m-0">Frequently Asked Questions</h5>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Section 2: Frequently Asked Questions -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 1rem;">
+                            <h2 class="accordion-header" id="faqHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSection" aria-expanded="false" aria-controls="faqSection" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-question-circle me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Frequently Asked Questions</strong>
+                                </button>
+                            </h2>
+                            <div id="faqSection" class="accordion-collapse collapse" aria-labelledby="faqHeader" data-bs-parent="#contactAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
                         <div class="accordion" id="faqAccordion" style="--bs-accordion-bg: rgba(255, 255, 255, 0.05); --bs-accordion-border-color: rgba(255, 255, 255, 0.1);">
                             <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
                                 <h2 class="accordion-header" id="faq1">
@@ -103,7 +158,7 @@
                                 </h2>
                                 <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
-                                        The leaderboard is updated based on your match results. Win matches to gain points and climb the rankings. The leaderboard is updated weekly.
+                                                    The leaderboard is updated based on your match results. Win matches to gain points and climb the rankings. The leaderboard is updated after each match.
                                     </div>
                                 </div>
                             </div>
@@ -117,21 +172,71 @@
                                 </h2>
                                 <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="faq4" data-bs-parent="#faqAccordion">
                                     <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
-                                        Our cricket grounds are located throughout Tampere. Check the grounds page for specific locations and facilities available at each venue.
-                                    </div>
+                                                    Our cricket grounds are located throughout Tampere. You can find information about available grounds on our home page.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <h2 class="accordion-header" id="faq5">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                                    <i class="fa-solid fa-user-plus me-2" style="color: var(--sh-orange);"></i>
+                                                    How do I register for an account?
+                                                </button>
+                                            </h2>
+                                            <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="faq5" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                                    Click the "Sign Up" button in the top navigation, fill out the registration form with your details, and agree to our terms and conditions.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <h2 class="accordion-header" id="faq6">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                                    <i class="fa-solid fa-shield-halved me-2" style="color: var(--sh-orange);"></i>
+                                                    Is my personal information secure?
+                                                </button>
+                                            </h2>
+                                            <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="faq6" data-bs-parent="#faqAccordion">
+                                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                                    Yes, we take your privacy seriously. All personal information is encrypted and stored securely. Please review our Privacy Policy for more details.
+                                                </div>
+                                            </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                     <!-- Contact Information -->
-                     <div class="row g-4 mb-5 mt-5 " style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <!-- Section 3: Contact Details & Find Us -->
+                        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <h2 class="accordion-header" id="contactDetailsHeader">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contactDetails" aria-expanded="false" aria-controls="contactDetails" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                                    <i class="fa-solid fa-address-book me-2" style="color: var(--sh-orange);"></i>
+                                    <strong>Contact Details</strong>
+                                </button>
+                            </h2>
+                            <div id="contactDetails" class="accordion-collapse collapse" aria-labelledby="contactDetailsHeader" data-bs-parent="#contactAccordion">
+                                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                                    <!-- Contact Information Grid -->
+                                    <div class="row g-4 mb-4">
                         <div class="col-12 col-md-6">
                             <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
                                 <i class="fa-solid fa-envelope fa-2x me-3" style="color: var(--sh-orange);"></i>
                                 <div>
-                                    <h6 class="mb-1 fw-bold">Email</h6>
-                                    <p class="mb-0 text-secondary">info@tamperecricket.fi</p>
+                                                    {% comment %} <h6 class="mb-1 fw-bold">Email</h6> {% endcomment %}
+                                                    <p class="mb-0 text-secondary">info@sportshub.fi</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-12 col-md-6">
+                                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                                <i class="fa-solid fa-phone fa-2x me-3" style="color: var(--sh-orange);"></i>
+                                                <div>
+                                                    {% comment %} <h6 class="mb-1 fw-bold">Phone</h6> {% endcomment %}
+                                                    <p class="mb-0 text-secondary">+358 40 123 4567</p>
                                 </div>
                             </div>
                         </div>
@@ -140,54 +245,30 @@
                             <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
                                 <i class="fa-solid fa-location-dot fa-2x me-3" style="color: var(--sh-orange);"></i>
                                 <div>
-                                    <h6 class="mb-1 fw-bold">Location</h6>
+                                                    {% comment %} <h6 class="mb-1 fw-bold">Location</h6> {% endcomment %}
                                     <p class="mb-0 text-secondary">Tampere, Finland</p>
-                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Additional Contact Info -->
-                    <div class="row g-4 mb-5">
                         <div class="col-12 col-md-6">
                             <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
                                 <i class="fa-solid fa-clock fa-2x me-3" style="color: var(--sh-orange);"></i>
                                 <div>
-                                    <h6 class="mb-1 fw-bold">Response Time</h6>
+                                                    {% comment %} <h6 class="mb-1 fw-bold">Response Time</h6> {% endcomment %}
                                     <p class="mb-0 text-secondary">Within 24 hours</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
-                                <i class="fa-solid fa-phone fa-2x me-3" style="color: var(--sh-orange);"></i>
-                                <div>
-                                    <h6 class="mb-1 fw-bold">Phone</h6>
-                                    <p class="mb-0 text-secondary">+358 40 123 4567</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-12">
-                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
-                                <i class="fa-solid fa-users fa-2x me-3" style="color: var(--sh-orange);"></i>
-                                <div>
-                                    <h6 class="mb-1 fw-bold">Community</h6>
-                                    <p class="mb-0 text-secondary">Active Support</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+
                     <!-- Social Media Section -->
-                    <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                        <div class="text-center">
-                            <div class="section-heading justify-content-center mb-4">
-                                <div class="bar"></div>
-                                <h5 class="h5 m-0">Follow Us</h5>
-                            </div>
-                            <p class="text-secondary mb-4">Stay connected with ChallengeHub on social media</p>
-                            
-                            <div class="social-media-links d-flex justify-content-center gap-5">
+                                    <div class="mt-4">
+                                        <h6 class="fw-bold mb-3">Follow Us</h6>
+                                        <p class="text-secondary mb-4">Stay connected with SportsHub on social media</p>
+                                        
+                                        <div class="social-media-links d-flex justify-content-center gap-4">
                                 <a href="#" class="social-link" title="Facebook" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
@@ -203,6 +284,9 @@
                                 <a href="#" class="social-link" title="YouTube" style="color: var(--sh-orange); font-size: 2rem; transition: all 0.3s ease; text-decoration: none;">
                                     <i class="fab fa-youtube"></i>
                                 </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -232,5 +316,97 @@
     background: none !important;
     border: none !important;
 }
+
+/* Custom accordion styling */
+.accordion-button:not(.collapsed) {
+    background: rgba(255, 153, 0, 0.1) !important;
+    color: var(--sh-orange) !important;
+    box-shadow: none !important;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+    border-color: var(--sh-orange) !important;
+}
+
+.accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff9900'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+/* Sidebar Navigation Styles */
+.contact-nav-link:hover {
+    background: rgba(255, 153, 0, 0.15) !important;
+    transform: translateX(5px);
+}
+
+.contact-nav-link.active {
+    background: rgba(255, 153, 0, 0.1) !important;
+    border-left: 3px solid var(--sh-orange);
+}
+
+.contact-nav-link.active:hover {
+    background: rgba(255, 153, 0, 0.2) !important;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle sidebar navigation clicks
+    const navLinks = document.querySelectorAll('.contact-nav-link');
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all nav links
+            navLinks.forEach(navLink => {
+                navLink.classList.remove('active');
+                navLink.style.background = 'rgba(255, 255, 255, 0.05)';
+            });
+            
+            // Add active class to clicked link
+            this.classList.add('active');
+            this.style.background = 'rgba(255, 153, 0, 0.1)';
+            
+            // Get the target accordion button
+            const targetId = this.getAttribute('data-bs-target');
+            const targetButton = document.querySelector(`[data-bs-target="${targetId}"]`);
+            
+            if (targetButton) {
+                // Close all other accordions first
+                accordionButtons.forEach(button => {
+                    if (button !== targetButton) {
+                        const collapse = new bootstrap.Collapse(button.getAttribute('data-bs-target'), {toggle: false});
+                        collapse.hide();
+                    }
+                });
+                
+                // Toggle the target accordion
+                const collapse = new bootstrap.Collapse(targetId, {toggle: true});
+            }
+        });
+    });
+    
+    // Update sidebar when accordion buttons are clicked
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-bs-target');
+            const correspondingNavLink = document.querySelector(`[data-bs-target="${targetId}"]`);
+            
+            if (correspondingNavLink) {
+                // Remove active class from all nav links
+                navLinks.forEach(navLink => {
+                    navLink.classList.remove('active');
+                    navLink.style.background = 'rgba(255, 255, 255, 0.05)';
+                });
+                
+                // Add active class to corresponding nav link
+                correspondingNavLink.classList.add('active');
+                correspondingNavLink.style.background = 'rgba(255, 153, 0, 0.1)';
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

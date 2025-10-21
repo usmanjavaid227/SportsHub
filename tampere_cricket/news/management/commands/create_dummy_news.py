@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'Create dummy news articles for testing'
+    help = 'Create dummy highlights articles for testing'
 
     def handle(self, *args, **options):
         # Get or create an admin user
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f'Created admin user: {admin_user.username}')
             )
 
-        # Create dummy news articles
+        # Create dummy highlights articles
         dummy_news = [
             {
                 'title': 'New Season of Single Wicket Cricket in Tampere Starts Soon!',
@@ -128,13 +128,13 @@ Stay tuned for more spotlights and community features in the coming months.''',
             if created:
                 created_count += 1
                 self.stdout.write(
-                    self.style.SUCCESS(f'Created news: {news.title}')
+                    self.style.SUCCESS(f'Created highlights: {news.title}')
                 )
             else:
                 self.stdout.write(
-                    self.style.WARNING(f'News already exists: {news.title}')
+                    self.style.WARNING(f'Highlights already exists: {news.title}')
                 )
 
         self.stdout.write(
-            self.style.SUCCESS(f'Successfully created {created_count} dummy news articles')
+            self.style.SUCCESS(f'Successfully created {created_count} dummy highlights articles')
         )

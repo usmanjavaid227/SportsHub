@@ -1,99 +1,76 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ ground.name }} - Ground Details{% endblock %}
+{% block title %}SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="section-heading mb-4">
-        <div class="bar"></div>
-        <h2 class="h4 m-0" style="color: var(--sh-white);">Ground Details</h2>
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div class="mb-3">
+                            <i class="fa-solid fa-location-dot fa-3x" style="color: var(--sh-orange);"></i>
+                        </div>
+                        <h1 class="h3 mb-3" style="color: var(--sh-white);">{{ ground.name }}</h1>
+                        <p class="text-secondary">Cricket ground information</p>
     </div>
     
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-                    <h4 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fa-solid fa-location-dot me-2" style="color: var(--sh-orange);"></i>{{ ground.name }}
-                    </h4>
+                    <div class="row g-4 mb-4">
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <i class="fa-solid fa-map-marker-alt fa-2x me-3" style="color: var(--sh-orange);"></i>
+                                <div>
+                                    {% comment %} <h6 class="mb-1 fw-bold" style="color: var(--sh-white);">Location</h6> {% endcomment %}
+                                    <p class="mb-0 text-secondary">{{ ground.location }}</p>
+                                </div>
+                            </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Location</h6>
-                            <p class="mb-3" style="color: var(--sh-white);">
-                                <i class="fa-solid fa-map-marker-alt me-2" style="color: var(--sh-orange);"></i>
-                                {{ ground.location }}
-                            </p>
-                            
-                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Capacity</h6>
-                            <p class="mb-3" style="color: var(--sh-white);">
-                                <i class="fa-solid fa-users me-2" style="color: var(--sh-orange);"></i>
-                                {{ ground.capacity }} people
-                            </p>
+                        
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <i class="fa-solid fa-users fa-2x me-3" style="color: var(--sh-orange);"></i>
+                                <div>
+                                    {% comment %} <h6 class="mb-1 fw-bold" style="color: var(--sh-white);">Capacity</h6> {% endcomment %}
+                                    <p class="mb-0 text-secondary">{{ ground.capacity }} players</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-1" style="color: var(--sh-gray);">Availability</h6>
-                            <p class="mb-3">
+                        
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <i class="fa-solid fa-check-circle fa-2x me-3" style="color: var(--sh-orange);"></i>
+                                <div>
+                                    {% comment %} <h6 class="mb-1 fw-bold" style="color: var(--sh-white);">Status</h6> {% endcomment %}
+                                    <p class="mb-0 text-secondary">
                                 {% if ground.is_available %}
-                                    <span class="badge" style="background: #28a745; color: white;">
-                                        <i class="fa-solid fa-check me-1"></i>Available
-                                    </span>
+                                            <span class="text-success">Available</span>
                                 {% else %}
-                                    <span class="badge" style="background: #dc3545; color: white;">
-                                        <i class="fa-solid fa-times me-1"></i>Unavailable
-                                    </span>
+                                            <span class="text-warning">Unavailable</span>
                                 {% endif %}
                             </p>
                         </div>
+                            </div>
+                        </div>
+                        
+                       
                     </div>
                     
                     {% if ground.facilities %}
-                    <div class="mt-4">
-                        <h6 class="text-muted mb-2" style="color: var(--sh-gray);">Facilities</h6>
-                        <div class="p-3 rounded" style="background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2);">
-                            <i class="fa-solid fa-list me-2" style="color: var(--sh-orange);"></i>
-                            <span style="color: var(--sh-white);">{{ ground.facilities }}</span>
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3" style="color: var(--sh-white);">
+                            <i class="fa-solid fa-list me-2" style="color: var(--sh-orange);"></i>Facilities
+                        </h6>
+                        <div class="p-3 rounded" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <p class="mb-0 text-secondary">{{ ground.facilities }}</p>
                         </div>
                     </div>
                     {% endif %}
                     
-                    {% if ground.description %}
-                    <div class="mt-4">
-                        <h6 class="text-muted mb-2" style="color: var(--sh-gray);">Description</h6>
-                        <div class="p-3 rounded" style="background: rgba(255,153,0,0.05); border: 1px solid rgba(255,153,0,0.2);">
-                            <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
-                            <span style="color: var(--sh-white);">{{ ground.description }}</span>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="card-footer" style="background: rgba(255,153,0,0.05); border-top: 1px solid rgba(255,153,0,0.2);">
-                    <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
-                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Challenges
-                    </a>
-                    <a href="{% url 'grounds_list' %}" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-list me-1"></i>All Grounds
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4">
-            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-                    <h6 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fa-solid fa-calendar me-2" style="color: var(--sh-orange);"></i>Quick Actions
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'challenge_create' %}" class="btn btn-tcc">
-                            <i class="fa-solid fa-plus me-1"></i>Create Challenge
-                        </a>
-                        <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
-                            <i class="fa-solid fa-list me-1"></i>View All Challenges
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-tcc btn-lg">
+                            <i class="fa-solid fa-home me-2"></i>Back to Home
                         </a>
                     </div>
                 </div>

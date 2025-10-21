@@ -8,15 +8,14 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'experience_level', 'role', 'city', 'is_deleted', 'deleted_at')
-    list_filter = ('experience_level', 'role', 'is_staff', 'is_active', 'is_deleted')
+    list_display = ('username', 'email', 'role', 'city', 'is_deleted', 'deleted_at')
+    list_filter = ('role', 'is_staff', 'is_active', 'is_deleted')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('-date_joined',)
     
     fieldsets = UserAdmin.fieldsets + (
         ('Cricket Information', {
-            'fields': ('bio', 'role', 'experience_level', 'preferred_batting_style', 
-                      'preferred_bowling_style', 'years_playing', 'phone', 'city', 'avatar')
+            'fields': ('role', 'preferred_batting_style', 'preferred_bowling_style', 'phone', 'city', 'avatar')
         }),
         ('Soft Delete Information', {
             'fields': ('is_deleted', 'deleted_at', 'deleted_reason'),

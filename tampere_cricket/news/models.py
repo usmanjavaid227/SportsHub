@@ -13,8 +13,8 @@ class NewsCategory(models.Model):
     color = models.CharField(max_length=7, default='#FF9900', help_text="Hex color code for category")
     
     class Meta:
-        verbose_name = 'News Category'
-        verbose_name_plural = 'News Categories'
+        verbose_name = 'Highlights Category'
+        verbose_name_plural = 'Highlights Categories'
         ordering = ['name']
     
     def __str__(self):
@@ -22,13 +22,13 @@ class NewsCategory(models.Model):
 
 
 class News(models.Model):
-    title = models.CharField(max_length=200, help_text="News article title")
+    title = models.CharField(max_length=200, help_text="Highlights article title")
     slug = models.SlugField(max_length=200, unique=True, blank=True, help_text="URL-friendly version of the title")
     content = models.TextField(help_text="Full article content")
     excerpt = models.TextField(max_length=500, blank=True, help_text="Short summary for preview")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='news_articles')
     category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='news_articles')
-    featured_image = models.ImageField(upload_to='news/images/', blank=True, null=True, help_text="Featured image for the article")
+    featured_image = models.ImageField(upload_to='news/images/', blank=True, null=True, help_text="Featured image for the highlights article")
     published = models.BooleanField(default=False, help_text="Publish this article")
     published_at = models.DateTimeField(null=True, blank=True, help_text="When this article was published")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -36,8 +36,8 @@ class News(models.Model):
     
     class Meta:
         ordering = ['-published_at', '-created_at']
-        verbose_name = 'News Article'
-        verbose_name_plural = 'News Articles'
+        verbose_name = 'Highlights Article'
+        verbose_name_plural = 'Highlights Articles'
     
     def __str__(self):
         return self.title

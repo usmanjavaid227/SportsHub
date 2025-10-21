@@ -6,23 +6,12 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     phone = models.CharField(max_length=24, blank=True, default='')
     city = models.CharField(max_length=100, default='Tampere')
-    bio = models.TextField(blank=True, default='', help_text="Tell us about your cricket experience")
     role = models.CharField(
         max_length=10,
         choices=[('batter', 'Batter'), ('bowler', 'Bowler'), ('allrounder', 'All Rounder')],
         default='allrounder',
+        blank=True,
         help_text="Your primary role in cricket"
-    )
-    experience_level = models.CharField(
-        max_length=20,
-        choices=[
-            ('beginner', 'Beginner'),
-            ('intermediate', 'Intermediate'),
-            ('advanced', 'Advanced'),
-            ('professional', 'Professional')
-        ],
-        default='intermediate',
-        help_text="Your cricket experience level"
     )
     preferred_batting_style = models.CharField(
         max_length=20,
@@ -47,10 +36,6 @@ class User(AbstractUser):
         ],
         blank=True,
         help_text="Your bowling style"
-    )
-    years_playing = models.PositiveIntegerField(
-        default=0,
-        help_text="Years of cricket experience"
     )
     
     # Soft delete fields
@@ -96,9 +81,9 @@ class Profile(models.Model):
     matches_played = models.PositiveIntegerField(default=0)
     wins = models.PositiveIntegerField(default=0)
     losses = models.PositiveIntegerField(default=0)
-    rating = models.FloatField(default=1000.0)  # Elo-style rating
-    batting_rating = models.FloatField(default=1000.0)
-    bowling_rating = models.FloatField(default=1000.0)
+    rating = models.FloatField(default=0.0)  # Elo-style rating starting from 0
+    batting_rating = models.FloatField(default=0.0)
+    bowling_rating = models.FloatField(default=0.0)
     runs = models.PositiveIntegerField(default=0)
     wickets = models.PositiveIntegerField(default=0)
     balls_faced = models.PositiveIntegerField(default=0)
@@ -179,28 +164,33 @@ class Profile(models.Model):
         }
     
     def _update_ratings(self):
-        """Update Elo-style ratings based on performance"""
+        """Update Elo-style ratings based on performance - starts from 0"""
         if self.matches_played == 0:
+            self.rating = 0.0
+            self.batting_rating = 0.0
+            self.bowling_rating = 0.0
             return
         
-        # Simple rating calculation based on win rate
+        # Rating starts from 0 and increases with wins
+        # Base points: 10 points per win, 5 points per run, 3 points per wicket
+        base_rating = (self.wins * 10) + (self.runs * 0.5) + (self.wickets * 3)
+        
+        # Win rate bonus: up to 50 points for 100% win rate
         win_rate = self.wins / self.matches_played if self.matches_played > 0 else 0
+        win_rate_bonus = win_rate * 50
         
-        # Base rating adjustment
-        rating_adjustment = (win_rate - 0.5) * 200  # Adjust by up to ±100 points
-        self.rating = max(800, min(1200, 1000 + rating_adjustment))
+        # Performance bonus based on averages
+        runs_per_match = self.runs / self.matches_played if self.matches_played > 0 else 0
+        wickets_per_match = self.wickets / self.matches_played if self.matches_played > 0 else 0
         
-        # Batting rating based on runs per match
-        if self.matches_played > 0:
-            runs_per_match = self.runs / self.matches_played
-            batting_adjustment = (runs_per_match - 20) * 5  # Adjust based on 20 runs per match baseline
-            self.batting_rating = max(800, min(1200, 1000 + batting_adjustment))
+        # Batting rating: starts from 0, increases with runs and win rate
+        self.batting_rating = (self.runs * 0.3) + (runs_per_match * 2) + (win_rate * 25)
         
-        # Bowling rating based on wickets per match
-        if self.matches_played > 0:
-            wickets_per_match = self.wickets / self.matches_played
-            bowling_adjustment = (wickets_per_match - 2) * 50  # Adjust based on 2 wickets per match baseline
-            self.bowling_rating = max(800, min(1200, 1000 + bowling_adjustment))
+        # Bowling rating: starts from 0, increases with wickets and win rate
+        self.bowling_rating = (self.wickets * 2) + (wickets_per_match * 10) + (win_rate * 25)
+        
+        # Overall rating: combination of all factors
+        self.rating = base_rating + win_rate_bonus + (runs_per_match * 1) + (wickets_per_match * 5)
     
     def get_win_rate(self):
         """Get win rate percentage"""

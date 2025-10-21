@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Sign Up • SportsHub{% endblock %}
+{% block title %}SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -11,7 +11,7 @@
                 <div class="card-body p-5">
                     <div class="text-center mb-4">
                         <div class="mb-3">
-                            <i class="fa-solid fa-user-plus fa-3x" style="color: var(--sh-orange);"></i>
+                            <i class="fa-solid fa-user fa-3x" style="color: var(--sh-orange);"></i>
                         </div>
                         <h1 class="h3 mb-3" style="color: var(--sh-white);">Join SportsHub</h1>
                         <p class="text-secondary">Create your account to start challenging and competing</p>
@@ -38,14 +38,18 @@
                                    name="{{ form.username.name }}" 
                                    value="{{ form.username.value|default:'' }}"
                                    required
+                                   minlength="3"
+                                   maxlength="30"
+                                   pattern="^[a-zA-Z0-9_]+$"
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validateUsername(this)"
+                                   oninput="validateUsername(this)">
+                            <div class="invalid-feedback" id="username-error">
                             {% if form.username.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.username.errors %}{{ error }}{% endfor %}
+                                {% endif %}
                                 </div>
-                            {% endif %}
                         </div>
 
                         <div class="mb-3">
@@ -58,12 +62,13 @@
                                    required
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validateEmail(this)"
+                                   oninput="validateEmail(this)">
+                            <div class="invalid-feedback" id="email-error">
                             {% if form.email.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.email.errors %}{{ error }}{% endfor %}
+                                {% endif %}
                                 </div>
-                            {% endif %}
                         </div>
 
                         <div class="mb-3">
@@ -73,15 +78,19 @@
                                    id="{{ form.first_name.id_for_label }}" 
                                    name="{{ form.first_name.name }}" 
                                    value="{{ form.first_name.value|default:'' }}"
+                                   required
+                                   minlength="2"
+                                   maxlength="30"
+                                   pattern="^[a-zA-Z\s]+$"
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'"
-                                   required>
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validateName(this, 'first')"
+                                   oninput="validateName(this, 'first')">
+                            <div class="invalid-feedback" id="first_name-error">
                             {% if form.first_name.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                                {% endif %}
                                 </div>
-                            {% endif %}
                         </div>
 
                         <div class="mb-3">
@@ -92,14 +101,18 @@
                                    name="{{ form.last_name.name }}" 
                                    value="{{ form.last_name.value|default:'' }}"
                                    required
+                                   minlength="2"
+                                   maxlength="30"
+                                   pattern="^[a-zA-Z\s]+$"
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validateName(this, 'last')"
+                                   oninput="validateName(this, 'last')">
+                            <div class="invalid-feedback" id="last_name-error">
                             {% if form.last_name.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                                {% endif %}
                                 </div>
-                            {% endif %}
                         </div>
 
                         <div class="mb-3">
@@ -109,14 +122,19 @@
                                    id="{{ form.password1.id_for_label }}" 
                                    name="{{ form.password1.name }}" 
                                    required
+                                   minlength="8"
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validatePassword(this)"
+                                   oninput="validatePassword(this)">
+                            <div class="invalid-feedback" id="password1-error">
                             {% if form.password1.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.password1.errors %}{{ error }}{% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="form-text text-muted">
+                                Password must be at least 8 characters long and contain at least one letter and one number.
                                 </div>
-                            {% endif %}
                         </div>
 
                         <div class="mb-4">
@@ -128,12 +146,13 @@
                                    required
                                    style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;"
                                    onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'"
-                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                                   onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'; validateConfirmPassword(this)"
+                                   oninput="validateConfirmPassword(this)">
+                            <div class="invalid-feedback" id="password2-error">
                             {% if form.password2.errors %}
-                                <div class="invalid-feedback">
                                     {% for error in form.password2.errors %}{{ error }}{% endfor %}
+                                {% endif %}
                                 </div>
-                            {% endif %}
                         </div>
 
                         <!-- Privacy Policy Checkbox -->
@@ -141,15 +160,15 @@
                             <div class="form-check">
                                 <input class="form-check-input privacy-checkbox" type="checkbox" id="privacy_policy" name="privacy_policy" required>
                                 <label class="form-check-label text-white" for="privacy_policy">
-                                    I agree to the <a href="{% url 'privacy_policy' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Privacy Policy</a> 
-                                    and <a href="{% url 'terms_of_service' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Terms of Service</a>
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-decoration-none" style="color: var(--sh-orange);">Privacy Policy</a> 
+                                    and <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-decoration-none" style="color: var(--sh-orange);">Terms of Service</a>
                                 </label>
                             </div>
                         </div>
 
                         <div class="d-grid">
                             <button class="btn btn-tcc btn-lg" type="submit" id="submitBtn" disabled>
-                                <i class="fa-solid fa-user-plus me-2"></i>Create Account
+                                <i class="fa-solid me-2"></i>Create Account
                             </button>
                         </div>
                     </form>
@@ -307,5 +326,465 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Function to check privacy policy checkbox when "I Understand" is clicked
+function checkPrivacyPolicy() {
+    const privacyCheckbox = document.getElementById('privacy_policy');
+    if (privacyCheckbox) {
+        privacyCheckbox.checked = true;
+        // Trigger the change event to enable the submit button
+        privacyCheckbox.dispatchEvent(new Event('change'));
+    }
+}
+
+// Validation Functions
+function validateUsername(field) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById('username-error');
+    
+    if (value.length < 3) {
+        showError(field, errorElement, 'Username must be at least 3 characters long');
+        return false;
+    }
+    if (value.length > 30) {
+        showError(field, errorElement, 'Username must be less than 30 characters');
+        return false;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+        showError(field, errorElement, 'Username can only contain letters, numbers, and underscores');
+        return false;
+    }
+    
+    // Check username uniqueness
+    checkUsernameAvailability(value, field, errorElement);
+    return true;
+}
+
+// Debounce timer for username checking
+let usernameCheckTimeout;
+
+function checkUsernameAvailability(username, field, errorElement) {
+    if (username.length < 3) return;
+    
+    // Clear previous timeout
+    if (usernameCheckTimeout) {
+        clearTimeout(usernameCheckTimeout);
+    }
+    
+    // Show loading state
+    field.style.borderColor = '#ffc107';
+    errorElement.style.display = 'none';
+    
+    // Debounce the API call by 500ms
+    usernameCheckTimeout = setTimeout(() => {
+        // Make AJAX request to check username availability
+        fetch('/accounts/check-username/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                'username': username
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.available) {
+                showValid(field, errorElement);
+            } else {
+                showError(field, errorElement, 'Username is already taken. Please choose another one.');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking username:', error);
+            // Don't show error for network issues, just reset to default
+            field.style.borderColor = 'rgba(255, 153, 0, 0.3)';
+        });
+    }, 500);
+}
+
+function validateEmail(field) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById('email-error');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!value) {
+        showError(field, errorElement, 'Email is required');
+        return false;
+    }
+    if (!emailRegex.test(value)) {
+        showError(field, errorElement, 'Please enter a valid email address');
+        return false;
+    }
+    showValid(field, errorElement);
+    return true;
+}
+
+function validateName(field, type) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById(`${type}_name-error`);
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    
+    if (value.length < 2) {
+        showError(field, errorElement, `${type.charAt(0).toUpperCase() + type.slice(1)} name must be at least 2 characters long`);
+        return false;
+    }
+    if (value.length > 30) {
+        showError(field, errorElement, `${type.charAt(0).toUpperCase() + type.slice(1)} name must be less than 30 characters`);
+        return false;
+    }
+    if (!nameRegex.test(value)) {
+        showError(field, errorElement, `${type.charAt(0).toUpperCase() + type.slice(1)} name can only contain letters and spaces`);
+        return false;
+    }
+    showValid(field, errorElement);
+    return true;
+}
+
+function validatePassword(field) {
+    const value = field.value;
+    const errorElement = document.getElementById('password1-error');
+    
+    if (value.length < 8) {
+        showError(field, errorElement, 'Password must be at least 8 characters long');
+        return false;
+    }
+    if (!/(?=.*[a-zA-Z])/.test(value)) {
+        showError(field, errorElement, 'Password must contain at least one letter');
+        return false;
+    }
+    if (!/(?=.*\d)/.test(value)) {
+        showError(field, errorElement, 'Password must contain at least one number');
+        return false;
+    }
+    showValid(field, errorElement);
+    return true;
+}
+
+function validateConfirmPassword(field) {
+    const value = field.value;
+    const password1Field = document.getElementById('{{ form.password1.id_for_label }}');
+    const password1 = password1Field ? password1Field.value : '';
+    const errorElement = document.getElementById('password2-error');
+    
+    if (!value) {
+        showError(field, errorElement, 'Please confirm your password');
+        return false;
+    }
+    if (value !== password1) {
+        showError(field, errorElement, 'Passwords do not match');
+        return false;
+    }
+    showValid(field, errorElement);
+    return true;
+}
+
+function showError(field, errorElement, message) {
+    field.classList.remove('is-valid');
+    field.classList.add('is-invalid');
+    field.style.borderColor = '#dc3545';
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+}
+
+function showValid(field, errorElement) {
+    field.classList.remove('is-invalid');
+    field.classList.add('is-valid');
+    field.style.borderColor = '#28a745';
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+}
 </script>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" style="max-width: 600px;">
+        <div class="modal-content" style="background: linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(20,20,20,0.95) 100%); border: 1px solid rgba(255,153,0,0.3);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,153,0,0.2);">
+                <h5 class="modal-title text-white" id="termsModalLabel">
+                    <i class="fa-solid fa-file-contract me-2" style="color: var(--sh-orange);"></i>
+                    Terms of Service & Privacy Policy
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 50vh; overflow-y: auto;">
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-tabs mb-4" id="termsTabs" role="tablist" style="border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="terms-tab" data-bs-toggle="tab" data-bs-target="#terms-content" type="button" role="tab" aria-controls="terms-content" aria-selected="true" style="color: var(--sh-orange); border: none; background: transparent;">
+                            <i class="fa-solid fa-file-contract me-2"></i>Terms of Service
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="privacy-tab" data-bs-toggle="tab" data-bs-target="#privacy-content" type="button" role="tab" aria-controls="privacy-content" aria-selected="false" style="color: #888; border: none; background: transparent;">
+                            <i class="fa-solid fa-shield-halved me-2"></i>Privacy Policy
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="termsTabContent">
+                    <!-- Terms of Service Content -->
+                    <div class="tab-pane fade show active" id="terms-content" role="tabpanel" aria-labelledby="terms-tab">
+                        <div class="terms-content">
+                            <p class="text-muted mb-3"><small>Last updated: January 2025</small></p>
+                            
+                            <h6 class="text-white mb-3">1. Acceptance of Terms</h6>
+                            <p class="text-muted mb-3">
+                                By accessing and using SportsHub, you accept and agree to be bound by the terms and 
+                                provision of this agreement. If you do not agree to abide by the above, please do not 
+                                use this service.
+                            </p>
+
+                            <h6 class="text-white mb-3">2. Description of Service</h6>
+                            <p class="text-muted mb-3">
+                                SportsHub is a sports platform that allows users to:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Create and participate in sports challenges</li>
+                                <li>Track performance and statistics</li>
+                                <li>Connect with other sports enthusiasts</li>
+                                <li>Access sports highlights and information</li>
+                                <li>Find and book sports grounds</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">3. User Accounts</h6>
+                            <p class="text-muted mb-3">
+                                To access certain features of our service, you must register for an account. You agree to:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Provide accurate and complete information</li>
+                                <li>Maintain the security of your password</li>
+                                <li>Accept responsibility for all activities under your account</li>
+                                <li>Notify us immediately of any unauthorized use</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">4. User Conduct</h6>
+                            <p class="text-muted mb-3">
+                                You agree not to use the service to:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Violate any laws or regulations</li>
+                                <li>Infringe on the rights of others</li>
+                                <li>Transmit harmful or malicious code</li>
+                                <li>Spam or send unsolicited communications</li>
+                                <li>Impersonate another person or entity</li>
+                                <li>Harass, abuse, or harm other users</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">5. Content and Intellectual Property</h6>
+                            <p class="text-muted mb-3">
+                                You retain ownership of content you create, but grant us a license to use, display, and 
+                                distribute your content in connection with our service. You agree not to post content that 
+                                infringes on intellectual property rights of others.
+                            </p>
+
+                            <h6 class="text-white mb-3">6. Privacy and Data Protection</h6>
+                            <p class="text-muted mb-3">
+                                Your privacy is important to us. Please review our Privacy Policy, which also governs your 
+                                use of the service, to understand our practices.
+                            </p>
+
+                            <h6 class="text-white mb-3">7. Prohibited Activities</h6>
+                            <p class="text-muted mb-3">
+                                The following activities are strictly prohibited:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Cheating or manipulating game results</li>
+                                <li>Creating multiple accounts to gain unfair advantages</li>
+                                <li>Sharing account credentials with others</li>
+                                <li>Attempting to hack or compromise our systems</li>
+                                <li>Using automated tools to access our service</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">8. Termination</h6>
+                            <p class="text-muted mb-3">
+                                We may terminate or suspend your account immediately, without prior notice, for conduct that 
+                                we believe violates these Terms of Service or is harmful to other users, us, or third parties.
+                            </p>
+
+                            <h6 class="text-white mb-3">9. Disclaimers</h6>
+                            <p class="text-muted mb-3">
+                                The service is provided "as is" without warranties of any kind. We do not guarantee that 
+                                the service will be uninterrupted, secure, or error-free. You use the service at your own risk.
+                            </p>
+
+                            <h6 class="text-white mb-3">10. Limitation of Liability</h6>
+                            <p class="text-muted mb-3">
+                                To the maximum extent permitted by law, SportsHub shall not be liable for any indirect, 
+                                incidental, special, consequential, or punitive damages resulting from your use of the service.
+                            </p>
+
+                            <h6 class="text-white mb-3">11. Governing Law</h6>
+                            <p class="text-muted mb-3">
+                                These Terms of Service shall be governed by and construed in accordance with the laws of 
+                                the jurisdiction in which SportsHub operates, without regard to conflict of law principles.
+                            </p>
+
+                            <h6 class="text-white mb-3">12. Changes to Terms</h6>
+                            <p class="text-muted mb-3">
+                                We reserve the right to modify these terms at any time. We will notify users of any material 
+                                changes by posting the new Terms of Service on this page and updating the "Last updated" date.
+                            </p>
+
+                            <h6 class="text-white mb-3">13. Contact Information</h6>
+                            <p class="text-muted mb-3">
+                                If you have any questions about these Terms of Service, please contact us at:
+                            </p>
+                            <div class="contact-info" style="background: rgba(255,153,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,153,0,0.2);">
+                                <p class="text-white mb-2"><strong>SportsHub</strong></p>
+                                <p class="text-muted mb-1">Email: legal@sportshub.com</p>
+                                <p class="text-muted mb-0">Phone: +1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Policy Content -->
+                    <div class="tab-pane fade" id="privacy-content" role="tabpanel" aria-labelledby="privacy-tab">
+                        <div class="privacy-content">
+                            <p class="text-muted mb-3"><small>Last updated: January 2025</small></p>
+                            
+                            <h6 class="text-white mb-3">1. Information We Collect</h6>
+                            <p class="text-muted mb-3">
+                                We collect information you provide directly to us, such as when you create an account, 
+                                participate in challenges, or contact us for support. This may include:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Name, email address, and contact information</li>
+                                <li>Username and profile information</li>
+                                <li>Sports preferences and performance data</li>
+                                <li>Challenge participation and match results</li>
+                                <li>Communication preferences</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">2. How We Use Your Information</h6>
+                            <p class="text-muted mb-3">
+                                We use the information we collect to:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Provide, maintain, and improve our services</li>
+                                <li>Process transactions and send related information</li>
+                                <li>Send technical notices, updates, and support messages</li>
+                                <li>Respond to your comments and questions</li>
+                                <li>Monitor and analyze trends and usage</li>
+                                <li>Personalize your experience on our platform</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">3. Information Sharing</h6>
+                            <p class="text-muted mb-3">
+                                We do not sell, trade, or otherwise transfer your personal information to third parties 
+                                without your consent, except in the following circumstances:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>With your explicit consent</li>
+                                <li>To comply with legal obligations</li>
+                                <li>To protect our rights and prevent fraud</li>
+                                <li>With service providers who assist in our operations</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">4. Data Security</h6>
+                            <p class="text-muted mb-3">
+                                We implement appropriate security measures to protect your personal information against 
+                                unauthorized access, alteration, disclosure, or destruction. However, no method of 
+                                transmission over the internet is 100% secure.
+                            </p>
+
+                            <h6 class="text-white mb-3">5. Your Rights</h6>
+                            <p class="text-muted mb-3">
+                                You have the right to:
+                            </p>
+                            <ul class="text-muted mb-4">
+                                <li>Access and update your personal information</li>
+                                <li>Request deletion of your account and data</li>
+                                <li>Opt-out of marketing communications</li>
+                                <li>Request a copy of your data</li>
+                                <li>Withdraw consent at any time</li>
+                            </ul>
+
+                            <h6 class="text-white mb-3">6. Cookies and Tracking</h6>
+                            <p class="text-muted mb-3">
+                                We use cookies and similar technologies to enhance your experience, analyze usage patterns, 
+                                and provide personalized content. You can control cookie settings through your browser preferences.
+                            </p>
+
+                            <h6 class="text-white mb-3">7. Children's Privacy</h6>
+                            <p class="text-muted mb-3">
+                                Our services are not intended for children under 13. We do not knowingly collect personal 
+                                information from children under 13. If we become aware of such collection, we will take 
+                                steps to delete the information.
+                            </p>
+
+                            <h6 class="text-white mb-3">8. Changes to This Policy</h6>
+                            <p class="text-muted mb-3">
+                                We may update this Privacy Policy from time to time. We will notify you of any changes by 
+                                posting the new Privacy Policy on this page and updating the "Last updated" date.
+                            </p>
+
+                            <h6 class="text-white mb-3">9. Contact Us</h6>
+                            <p class="text-muted mb-3">
+                                If you have any questions about this Privacy Policy, please contact us at:
+                            </p>
+                            <div class="contact-info" style="background: rgba(255,153,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,153,0,0.2);">
+                                <p class="text-white mb-2"><strong>SportsHub</strong></p>
+                                <p class="text-muted mb-1">Email: privacy@sportshub.com</p>
+                                <p class="text-muted mb-0">Phone: +1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(255,153,0,0.2);">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-tcc" data-bs-dismiss="modal" onclick="checkPrivacyPolicy()">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Modal -->
+<style>
+.modal-content {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--sh-orange);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #ff8800;
+}
+
+.nav-tabs .nav-link {
+    color: #888 !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--sh-orange) !important;
+    background: transparent !important;
+    border-bottom: 2px solid var(--sh-orange) !important;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--sh-orange) !important;
+    border: none !important;
+}
+</style>
+
 {% endblock %}

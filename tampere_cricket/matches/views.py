@@ -255,8 +255,7 @@ def open_challenge_accept(request, challenge_id):
 def is_profile_complete(user):
     """Check if user profile is complete for challenge creation"""
     required_fields = [
-        'phone', 'bio', 'role', 'experience_level', 
-        'preferred_batting_style', 'preferred_bowling_style', 'years_playing'
+        'first_name', 'last_name', 'email', 'phone'
     ]
     
     for field in required_fields:

@@ -21,8 +21,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from tampere_cricket.matches.views import ChallengeViewSet, challenges_list, challenge_detail, challenge_accept
-from tampere_cricket.accounts.views import public_profile_view, signup, profile, custom_login, custom_logout
-from tampere_cricket.grounds.views import grounds_list
+from tampere_cricket.accounts.views import signup, profile, custom_login, custom_logout
 from tampere_cricket.news.views import news_list
 from tampere_cricket import pages
 from tampere_cricket import admin as project_admin
@@ -70,7 +69,7 @@ urlpatterns = [
     path('accounts/', include('tampere_cricket.accounts.urls')),
     path('matches/', include('tampere_cricket.matches.urls')),
     path('grounds/', include('tampere_cricket.grounds.urls')),
-    path('news/', include('tampere_cricket.news.urls')),
+    path('highlights/', include('tampere_cricket.news.urls')),
     path('notifications/', include('tampere_cricket.notifications.urls')),
     
     # Main pages
@@ -78,13 +77,9 @@ urlpatterns = [
     path('leaderboard/', pages.leaderboard, name='leaderboard'),
     path('contact/', pages.contact, name='contact'),
     
-    # Direct URLs for templates
-    path('grounds/', grounds_list, name='grounds'),
-    path('news/', news_list, name='news'),
-    
     # Profile URLs
     path('profile/', profile, name='profile'),
-    path('profile/<int:user_id>/', public_profile_view, name='public_profile'),
+    path('profile/<int:user_id>/', profile, name='public_profile'),
     path('delete-profile/', pages.delete_profile, name='delete_profile'),
     
     # Admin

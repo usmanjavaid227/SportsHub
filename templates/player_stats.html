@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}SportsHub{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+      <!-- Player Stats Card -->
+      <div class="card player-stats-card" style="background: linear-gradient(135deg, rgba(255,153,0,0.1) 0%, rgba(255,153,0,0.05) 100%); border: 1px solid rgba(255,153,0,0.2); overflow: hidden; position: relative;">
+        
+        <!-- Background Elements -->
+        <div class="stats-background" style="position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: linear-gradient(45deg, rgba(255,153,0,0.1), rgba(255,153,0,0.05)); z-index: 1;"></div>
+        <div class="stats-overlay" style="position: absolute; top: 0; right: 0; width: 40%; height: 100%; background: url('{% static "img/hero.jpg" %}') center/cover; opacity: 0.1; z-index: 2;"></div>
+        
+        <div class="card-body p-0" style="position: relative; z-index: 3;">
+          <div class="row g-0">
+            
+            <!-- Left Side - Stats -->
+            <div class="col-12 col-lg-7 p-4">
+              <!-- Player Header -->
+              <div class="d-flex align-items-center mb-4">
+                <div class="player-flag me-3" style="width: 40px; height: 30px; background: linear-gradient(45deg, #ff6b35, #f7931e); border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                  <i class="fa-solid fa-flag" style="color: white; font-size: 16px;"></i>
+                </div>
+                <div>
+                  <h2 class="h3 mb-0" style="color: var(--sh-white); font-weight: bold; letter-spacing: 1px;">{{ user.get_full_name|default:user.username|upper }}</h2>
+                  <p class="mb-0" style="color: var(--sh-orange); font-size: 0.9rem; font-weight: 600;">SPORTSHUB PLAYER</p>
+                </div>
+              </div>
+
+              <!-- Career Stats Table -->
+              <div class="career-stats-table" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+                <h4 class="mb-4" style="color: #1a1a1a; font-weight: bold; text-align: center; letter-spacing: 1px;">CAREER STATS</h4>
+                
+                <!-- First Row -->
+                <div class="row mb-3">
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">MATCHES</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.matches_played|default:0 }}</div>
+                  </div>
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">RUNS</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.runs|default:0 }}</div>
+                  </div>
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">AVERAGE</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.get_batting_average|floatformat:2 }}</div>
+                  </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="row mb-3">
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">WICKETS</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.wickets|default:0 }}</div>
+                  </div>
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">WINS</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.wins|default:0 }}</div>
+                  </div>
+                  <div class="col-4 text-center">
+                    <div class="stat-label" style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">WIN RATE</div>
+                    <div class="stat-value" style="color: #1a1a1a; font-size: 2rem; font-weight: bold;">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
+                  </div>
+                </div>
+
+                <!-- Rating Section -->
+                <div class="row mt-4 pt-3" style="border-top: 2px solid #eee;">
+                  <div class="col-12 text-center">
+                    <div class="rating-section" style="background: linear-gradient(135deg, var(--sh-orange), #f7931e); padding: 16px; border-radius: 8px; color: white;">
+                      <div class="rating-label" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 8px;">SPORTSHUB RATING</div>
+                      <div class="rating-value" style="font-size: 2.5rem; font-weight: bold;">{{ user.profile.rating|floatformat:0 }}</div>
+                      <div class="rating-change" style="font-size: 0.8rem; margin-top: 4px;">
+                        <i class="fa-solid fa-arrow-up" style="color: #28a745;"></i>
+                        {% if user_rank %}
+                          Rank #{{ user_rank }}
+                        {% else %}
+                          Rank ----
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Performance Breakdown -->
+              <div class="row mt-4">
+                <div class="col-6">
+                  <div class="performance-card" style="background: rgba(255,255,255,0.9); border-radius: 8px; padding: 16px; text-align: center;">
+                    <div class="performance-label" style="color: #666; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">BATTING RATING</div>
+                    <div class="performance-value" style="color: #17a2b8; font-size: 1.8rem; font-weight: bold;">{{ user.profile.batting_rating|floatformat:0 }}</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="performance-card" style="background: rgba(255,255,255,0.9); border-radius: 8px; padding: 16px; text-align: center;">
+                    <div class="performance-label" style="color: #666; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;">BOWLING RATING</div>
+                    <div class="performance-value" style="color: #ffc107; font-size: 1.8rem; font-weight: bold;">{{ user.profile.bowling_rating|floatformat:0 }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side - Player Image -->
+            <div class="col-12 col-lg-5 d-flex align-items-center justify-content-center p-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.1), rgba(255,153,0,0.05));">
+              <div class="player-image-container" style="position: relative; text-align: center;">
+                {% if user.avatar %}
+                  <img src="{{ user.avatar.url }}" alt="{{ user.get_full_name|default:user.username }}" class="player-image" style="width: 300px; height: 300px; object-fit: cover; border-radius: 50%; border: 6px solid var(--sh-orange); box-shadow: 0 20px 40px rgba(255,153,0,0.3);">
+                {% else %}
+                  <div class="player-placeholder" style="width: 300px; height: 300px; background: linear-gradient(135deg, var(--sh-orange), #f7931e); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 6px solid var(--sh-orange); box-shadow: 0 20px 40px rgba(255,153,0,0.3);">
+                    <i class="fa-solid fa-user" style="font-size: 8rem; color: white;"></i>
+                  </div>
+                {% endif %}
+                
+                <!-- Player Role Badge -->
+                {% if user.role %}
+                <div class="role-badge" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--sh-orange); color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(255,153,0,0.4);">
+                  {{ user.get_role_display|upper }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Stats Cards -->
+      <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+          <div class="card stats-mini-card" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05)); border: 1px solid rgba(40, 167, 69, 0.2);">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-trophy fa-2x mb-3" style="color: #28a745;"></i>
+              <h5 class="card-title" style="color: var(--sh-white);">Total Wins</h5>
+              <div class="display-4" style="color: #28a745; font-weight: bold;">{{ user.profile.wins|default:0 }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card stats-mini-card" style="background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05)); border: 1px solid rgba(220, 53, 69, 0.2);">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-times fa-2x mb-3" style="color: #dc3545;"></i>
+              <h5 class="card-title" style="color: var(--sh-white);">Total Losses</h5>
+              <div class="display-4" style="color: #dc3545; font-weight: bold;">{{ user.profile.losses|default:0 }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3">
+          <div class="card stats-mini-card" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05)); border: 1px solid rgba(255, 193, 7, 0.2);">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-percentage fa-2x mb-3" style="color: #ffc107;"></i>
+              <h5 class="card-title" style="color: var(--sh-white);">Win Rate</h5>
+              <div class="display-4" style="color: #ffc107; font-weight: bold;">{{ user.profile.get_win_rate|floatformat:1 }}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="card mt-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+        <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+          <h5 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>Performance Overview</h5>
+        </div>
+        <div class="card-body">
+          <div style="height: 300px; width: 100%;">
+            <canvas id="performanceChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Performance Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+const performanceChart = new Chart(performanceCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Matches', 'Runs', 'Wickets', 'Wins', 'Losses', 'Batting Rating', 'Bowling Rating'],
+        datasets: [{
+            label: 'Performance Metrics',
+            data: [
+                {{ user.profile.matches_played|default:0 }},
+                {{ user.profile.runs|default:0 }},
+                {{ user.profile.wickets|default:0 }},
+                {{ user.profile.wins|default:0 }},
+                {{ user.profile.losses|default:0 }},
+                {{ user.profile.batting_rating|floatformat:0 }},
+                {{ user.profile.bowling_rating|floatformat:0 }}
+            ],
+            backgroundColor: [
+                'rgba(255, 153, 0, 0.8)',
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(23, 162, 184, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(108, 117, 125, 0.8)',
+                'rgba(111, 66, 193, 0.8)'
+            ],
+            borderColor: [
+                'rgba(255, 153, 0, 1)',
+                'rgba(40, 167, 69, 1)',
+                'rgba(220, 53, 69, 1)',
+                'rgba(23, 162, 184, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(108, 117, 125, 1)',
+                'rgba(111, 66, 193, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'var(--sh-white)'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'var(--sh-white)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'var(--sh-white)'
+                }
+            }
+        }
+    }
+});
+</script>
+
+<style>
+.player-stats-card {
+  box-shadow: 0 20px 60px rgba(255, 153, 0, 0.2);
+  border-radius: 20px;
+}
+
+.stats-mini-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 15px;
+}
+
+.stats-mini-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.player-image {
+  transition: transform 0.3s ease;
+}
+
+.player-image:hover {
+  transform: scale(1.05);
+}
+
+.role-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+.stat-value {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.performance-value {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

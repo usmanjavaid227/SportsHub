@@ -53,14 +53,31 @@ def home(request):
     from tampere_cricket.grounds.models import Ground
     top_grounds = Ground.objects.filter(is_available=True)[:3]
     
-    # Get top 3 news items
+    # Get top 3 highlights items (not older than 1 month)
     from tampere_cricket.news.models import News
-    recent_news = News.objects.filter(published=True).order_by('-created_at')[:3]
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    one_month_ago = timezone.now() - timedelta(days=30)
+    recent_news = News.objects.filter(
+        published=True,
+        created_at__gte=one_month_ago
+    ).order_by('-created_at')[:3]
     
     # Calculate real statistics for About section
     total_players = User.objects.count()
     total_challenges = Challenge.objects.count()
     total_grounds = Ground.objects.filter(is_available=True).count()
+    
+    # Check if profile is incomplete (for popup display)
+    is_profile_incomplete = False
+    if request.user.is_authenticated:
+        required_fields = ['first_name', 'last_name', 'email', 'phone']
+        for field in required_fields:
+            value = getattr(request.user, field, None)
+            if not value or (isinstance(value, str) and not value.strip()):
+                is_profile_incomplete = True
+                break
     
     context = {
         'recent_challenges': recent_challenges,
@@ -70,6 +87,7 @@ def home(request):
         'total_players': total_players,
         'total_challenges': total_challenges,
         'total_grounds': total_grounds,
+        'is_profile_incomplete': is_profile_incomplete,
     }
     return render(request, 'home.html', context)
 
@@ -139,9 +157,6 @@ def leaderboard(request):
     return render(request, 'leaderboard.html', context)
 
 
-def grounds(request):
-    """Grounds page view"""
-    return render(request, 'grounds.html')
 
 
 def delete_profile(request):
@@ -159,8 +174,8 @@ def delete_profile(request):
 
 
 def news(request):
-    """News page view"""
-    return render(request, 'news.html')
+    """Highlights page view"""
+    return render(request, 'highlights.html')
 
 
 def contact(request):

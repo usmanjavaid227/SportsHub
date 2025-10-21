@@ -5,8 +5,12 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 from .models import User, Profile
-from .forms import RegistrationForm, CustomAuthenticationForm, ProfileEditForm
+from .forms import RegistrationForm, CustomAuthenticationForm, ProfileEditForm, PasswordChangeForm
 
 
 def signup(request):
@@ -48,105 +52,119 @@ def custom_login(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            remember_me = request.POST.get('remember') == '1'
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.success(request, f'Welcome back, {username}!')
+                # Handle remember me functionality
+                if remember_me:
+                    # Set session to expire in 2 weeks
+                    request.session.set_expiry(1209600)  # 2 weeks in seconds
+                    # Also set the session cookie to persist
+                    request.session.modified = True
+                    messages.success(request, f'Welcome back, {username}! You will stay logged in for 2 weeks.')
+                else:
+                    # Use default session expiry (browser session)
+                    request.session.set_expiry(0)
+                    messages.success(request, f'Welcome back, {username}!')
                 return redirect('home')
             else:
-                messages.error(request, 'Invalid username or password.')
+                # Add authentication error to form's non-field errors
+                form.add_error(None, 'Invalid username or password.')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            # Add form validation errors to form's non-field errors
+            form.add_error(None, 'Please correct the errors below.')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'auth/login.html', {'form': form})
 
 
-@login_required
-def profile(request):
-    """User profile view"""
-    # Get or create profile for the user
+def profile(request, user_id=None):
+    """Unified profile view - handles both own profile and public profile"""
     from tampere_cricket.accounts.models import Profile
+    
+    # Determine which user's profile to show
+    if user_id:
+        # Public profile - viewing another user's profile
+        profile_user = get_object_or_404(User, id=user_id)
+        is_own_profile = request.user.is_authenticated and request.user.id == user_id
+    else:
+        # Own profile - user must be logged in
+        if not request.user.is_authenticated:
+            return redirect('login')
+        profile_user = request.user
+        is_own_profile = True
+    
+    # Get or create profile for the user
     try:
-        profile = Profile.objects.get(user=request.user)
+        user_profile = Profile.objects.get(user=profile_user)
     except Profile.DoesNotExist:
-        profile = Profile.objects.create(user=request.user)
+        user_profile = Profile.objects.create(user=profile_user)
     
     # Update statistics based on completed matches
-    stats = profile.update_statistics()
+    stats = user_profile.update_statistics()
     
     # Get recent matches for the user
-    recent_matches = profile.get_recent_matches(limit=10)
+    recent_matches = user_profile.get_recent_matches(limit=10)
     
-    # Get user's current rank
-    user_rank = profile.get_rank()
+    # Get user's current rank (only if they've played matches)
+    user_rank = user_profile.get_rank() if user_profile.matches_played > 0 else None
+    
+    # Check if profile is incomplete (for popup display)
+    is_profile_incomplete = False
+    if is_own_profile:
+        required_fields = ['first_name', 'last_name', 'email', 'phone']
+        for field in required_fields:
+            value = getattr(profile_user, field, None)
+            if not value or (isinstance(value, str) and not value.strip()):
+                is_profile_incomplete = True
+                break
+    
+    # Get additional data for charts and trends (only for own profile or if logged in)
+    performance_trend = []
+    chart_data = {}
+    avg_runs_per_match = 0
+    avg_wickets_per_match = 0
+    
+    if request.user.is_authenticated:
+        performance_trend = user_profile.get_performance_trend(days=30)
+        
+        # Calculate averages
+        avg_runs_per_match = user_profile.runs / user_profile.matches_played if user_profile.matches_played > 0 else 0
+        avg_wickets_per_match = user_profile.wickets / user_profile.matches_played if user_profile.matches_played > 0 else 0
+        
+        # Prepare chart data
+        chart_data = {
+            'win_loss': {
+                'labels': ['Wins', 'Losses'],
+                'data': [user_profile.wins, user_profile.losses],
+                'colors': ['#28a745', '#dc3545']
+            },
+            'performance': {
+                'labels': ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
+                'data': [user_profile.runs, user_profile.wickets, int(user_profile.batting_rating), int(user_profile.bowling_rating)],
+                'colors': ['#007bff', '#dc3545', '#ffc107', '#28a745']
+            },
+            'trend': {
+                'labels': [str(item['date']) for item in performance_trend],
+                'data': [item['win_rate'] for item in performance_trend]
+            }
+        }
     
     return render(request, 'profile.html', {
-        'user': request.user,
-        'profile': profile,
+        'user': profile_user,
+        'profile': user_profile,
         'recent_matches': recent_matches,
-        'user_rank': user_rank
-    })
-
-
-def public_profile_view(request, user_id):
-    """Public profile view for other users - shows limited information"""
-    user = get_object_or_404(User, id=user_id)
-    
-    # Check if user is viewing their own profile
-    is_own_profile = request.user.is_authenticated and request.user.id == user.id
-    
-    # Get or create profile for the user
-    from tampere_cricket.accounts.models import Profile
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        profile = Profile.objects.create(user=user)
-    
-    # Update statistics based on completed matches
-    stats = profile.update_statistics()
-    
-    # Get additional data for charts and trends
-    recent_matches = profile.get_recent_matches(limit=10)
-    performance_trend = profile.get_performance_trend(days=30)
-    
-    # Calculate averages
-    avg_runs_per_match = profile.runs / profile.matches_played if profile.matches_played > 0 else 0
-    avg_wickets_per_match = profile.wickets / profile.matches_played if profile.matches_played > 0 else 0
-    
-    # Prepare chart data
-    chart_data = {
-        'win_loss': {
-            'labels': ['Wins', 'Losses'],
-            'data': [profile.wins, profile.losses],
-            'colors': ['#28a745', '#dc3545']
-        },
-        'performance': {
-            'labels': ['Runs', 'Wickets', 'Batting Rating', 'Bowling Rating'],
-            'data': [profile.runs, profile.wickets, int(profile.batting_rating), int(profile.bowling_rating)],
-            'colors': ['#007bff', '#dc3545', '#ffc107', '#28a745']
-        },
-        'trend': {
-            'labels': [str(item['date']) for item in performance_trend],
-            'data': [item['win_rate'] for item in performance_trend]
-        }
-    }
-    
-    # Get user's current rank
-    user_rank = profile.get_rank()
-    
-    return render(request, 'profiles/public_profile.html', {
-        'profile_user': user,
-        'profile': profile,
-        'stats': stats,
-        'recent_matches': recent_matches,
+        'user_rank': user_rank,
+        'is_own_profile': is_own_profile,
+        'is_profile_incomplete': is_profile_incomplete,
         'performance_trend': performance_trend,
         'chart_data': chart_data,
         'avg_runs_per_match': avg_runs_per_match,
-        'avg_wickets_per_match': avg_wickets_per_match,
-        'is_own_profile': is_own_profile,  # Pass flag to template
-        'user_rank': user_rank
+        'avg_wickets_per_match': avg_wickets_per_match
     })
+
+
 
 
 @login_required
@@ -172,3 +190,73 @@ def custom_logout(request):
         logout(request)
         messages.success(request, "You have been successfully logged out.")
     return redirect('home')
+
+
+@login_required
+def player_stats(request):
+    """Player stats page with professional sports-style layout"""
+    # Get or create profile for the user
+    from tampere_cricket.accounts.models import Profile
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+    
+    # Update statistics based on completed matches
+    stats = profile.update_statistics()
+    
+    # Get user's current rank
+    user_rank = profile.get_rank() if profile.matches_played > 0 else None
+    
+    return render(request, 'player_stats.html', {
+        'user': request.user,
+        'profile': profile,
+        'user_rank': user_rank
+    })
+
+
+@require_http_methods(["POST"])
+def check_username(request):
+    """Check if username is available"""
+    try:
+        data = json.loads(request.body)
+        username = data.get('username', '').strip()
+        
+        if not username:
+            return JsonResponse({'available': False, 'message': 'Username is required'})
+        
+        # Check if username exists
+        exists = User.objects.filter(username__iexact=username).exists()
+        
+        return JsonResponse({
+            'available': not exists,
+            'message': 'Username is available' if not exists else 'Username is already taken'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'available': False, 'message': 'Invalid request'})
+    except Exception as e:
+        return JsonResponse({'available': False, 'message': 'Server error'})
+
+
+@login_required
+def change_password(request):
+    """Change user password view"""
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, 'Your password has been changed successfully!')
+                return redirect('profile')
+            except Exception as e:
+                messages.error(request, f'An error occurred: {str(e)}')
+        else:
+            # Display form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    return render(request, 'change_password.html', {'form': form})

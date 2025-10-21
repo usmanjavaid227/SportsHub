@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-secret-key-here')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = ['*','sportshub.herokuapp.com']
 
@@ -92,7 +92,7 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require = os.getenv('SSL_REQUIRE', 'False').lower() == "true" if os.getenv('SSL_REQUIRE') else False
     )
 }
 
@@ -161,6 +161,13 @@ DEFAULT_FROM_EMAIL = 'SportsHub <noreply@sportshub.fi>'
 
 # Password Reset Settings
 PASSWORD_RESET_TIMEOUT = 86400  # 24 hours
+
+# Session Settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds (14 days)
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Allow sessions to persist beyond browser close
 
 # Static files storage for production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

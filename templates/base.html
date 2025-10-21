@@ -54,9 +54,8 @@
             </li>
             <li class="nav-item"><a class="nav-link" href="{% url 'challenges_list' %}">Challenges</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'leaderboard' %}">Leaderboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'grounds' %}">Grounds</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'news' %}">News</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'highlights' %}">Highlights</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
             {% if user.is_authenticated and user.is_staff %}
             <li class="nav-item"><a class="nav-link" href="{% url 'admin_stats:dashboard' %}" style="color: var(--sh-orange); font-weight: 600;">
               Admin Stats
@@ -110,7 +109,7 @@
                             <div class="col-md-6 text-md-end">
                                 <a href="{% url 'privacy_policy' %}" class="text-muted text-decoration-none me-3">Privacy Policy</a>
                                 <a href="{% url 'terms_of_service' %}" class="text-muted text-decoration-none me-3">Terms of Service</a>
-                                <a href="{% url 'contact' %}" class="text-muted text-decoration-none">Contact</a>
+                                <a href="{% url 'contact' %}" class="text-muted text-decoration-none">Contact Us</a>
                             </div>
             </div>
         </div>
@@ -151,6 +150,170 @@
             }
         }, 4000);
     }
+    </script>
+    
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="scroll-to-top" title="Scroll to Top" style="
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--sh-orange);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3);
+        transition: all 0.3s ease;
+        font-size: 18px;
+        opacity: 0;
+        transform: translateY(20px);
+    ">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <style>
+    /* Scroll to Top Button Styles */
+    .scroll-to-top {
+        position: fixed !important;
+        bottom: 30px !important;
+        right: 30px !important;
+        width: 50px !important;
+        height: 50px !important;
+        background: var(--sh-orange) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50% !important;
+        cursor: pointer !important;
+        z-index: 1000 !important;
+        box-shadow: 0 4px 12px rgba(255, 153, 0, 0.3) !important;
+        transition: all 0.3s ease !important;
+        font-size: 18px !important;
+        opacity: 0 !important;
+        transform: translateY(20px) !important;
+    }
+    
+    .scroll-to-top.show {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    
+    .scroll-to-top:hover {
+        background: var(--sh-orange-dark) !important;
+        transform: scale(1.1) translateY(0) !important;
+        box-shadow: 0 6px 16px rgba(255, 153, 0, 0.4) !important;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .scroll-to-top {
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 45px !important;
+            height: 45px !important;
+            font-size: 16px !important;
+        }
+    }
+    
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .scroll-to-top {
+            border: 2px solid white !important;
+        }
+    }
+    
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        .scroll-to-top {
+            transition: opacity 0.3s ease !important;
+        }
+        
+        .scroll-to-top:hover {
+            transform: none !important;
+        }
+    }
+    </style>
+
+    <script>
+    // Scroll to Top Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        let isScrolling = false;
+        
+        // Show/hide button based on scroll position with smooth animation
+        function handleScroll() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.display = 'block';
+                // Add show class after a brief delay for smooth animation
+                setTimeout(() => {
+                    scrollToTopBtn.classList.add('show');
+                }, 10);
+            } else {
+                scrollToTopBtn.classList.remove('show');
+                // Hide button after animation completes
+                setTimeout(() => {
+                    if (!scrollToTopBtn.classList.contains('show')) {
+                        scrollToTopBtn.style.display = 'none';
+                    }
+                }, 300);
+            }
+        }
+        
+        // Throttled scroll event for better performance
+        window.addEventListener('scroll', function() {
+            if (!isScrolling) {
+                requestAnimationFrame(function() {
+                    handleScroll();
+                    isScrolling = false;
+                });
+                isScrolling = true;
+            }
+        });
+        
+        // Smooth scroll to top when clicked
+        scrollToTopBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Check if smooth scrolling is supported
+            if ('scrollBehavior' in document.documentElement.style) {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            } else {
+                // Fallback for older browsers
+                const scrollStep = -window.scrollY / (500 / 15);
+                const scrollInterval = setInterval(function() {
+                    if (window.scrollY !== 0) {
+                        window.scrollBy(0, scrollStep);
+                    } else {
+                        clearInterval(scrollInterval);
+                    }
+                }, 15);
+            }
+        });
+        
+        // Keyboard accessibility
+        scrollToTopBtn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+        
+        // Focus management for accessibility
+        scrollToTopBtn.addEventListener('focus', function() {
+            this.style.outline = '2px solid var(--sh-orange)';
+            this.style.outlineOffset = '2px';
+        });
+        
+        scrollToTopBtn.addEventListener('blur', function() {
+            this.style.outline = 'none';
+        });
+    });
     </script>
     
     {% block extra_js %}{% endblock %}

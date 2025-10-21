@@ -1,28 +1,31 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Leaderboard • ChallengeHub{% endblock %}
+{% block title %}SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="section-heading m-0">
-            <div class="bar"></div>
-            <h2 class="h4 m-0">Leaderboard</h2>
-        </div>
-    </div>
-    
-    <!-- Top 3 Podium -->
-    {% if players|length >= 3 %}
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card shadow-lg border-0 custom-podium-card">
-                <div class="card-header text-center custom-podium-header">
-                    <h5 class="mb-0 text-white">
-                        <i class="fa-solid fa-trophy me-2"></i>Top 3 Players
-                    </h5>
-                </div>
-                <div class="card-body p-4 custom-podium-body">
+    <!-- Collapsible Podium Section -->
+    <div class="accordion mb-5" id="leaderboardAccordion" style="--bs-accordion-bg: rgba(255, 255, 255, 0.05); --bs-accordion-border-color: rgba(255, 255, 255, 0.1);">
+        <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h2 class="accordion-header" id="podiumHeader">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#podiumSection" aria-expanded="true" aria-controls="podiumSection" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                    <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>
+                    <strong>podium</strong>
+                </button>
+            </h2>
+            <div id="podiumSection" class="accordion-collapse collapse show" aria-labelledby="podiumHeader" data-bs-parent="#leaderboardAccordion">
+                <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                    {% if players|length >= 3 %}
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow-lg border-0 custom-podium-card">
+                                <div class="card-header text-center custom-podium-header">
+                                    <h5 class="mb-0 text-white">
+                                        <i class="fa-solid fa-trophy me-2"></i>Champions
+                                    </h5>
+                                </div>
+                                <div class="card-body p-4 custom-podium-body">
                     <div class="row align-items-end justify-content-center">
                         <!-- 2nd Place -->
                         <div class="col-md-3 col-4 text-center mb-3">
@@ -106,11 +109,19 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="text-center py-4">
+        <p class="text-muted">Not enough players for podium display</p>
+    </div>
     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Complete Leaderboard Header -->
     <div class="mb-4">
-        <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0">Complete Leaderboard</h2></div>
+        <div class="section-heading mb-4"><div class="bar"></div><h2 class="h4 m-0"> Leaderboard</h2></div>
     </div>
     
     <!-- Search Bar -->
@@ -147,17 +158,17 @@
         <div class="btn-group w-100" role="group" aria-label="Ranking filters">
             <input type="radio" class="btn-check" name="rankingFilter" id="battingRanking" autocomplete="off">
             <label class="btn btn-outline-tcc filter-btn" for="battingRanking">
-                <i class="fa-solid fa-baseball-bat-ball me-2"></i>Batting
+                Batting
             </label>
             
             <input type="radio" class="btn-check" name="rankingFilter" id="bowlingRanking" autocomplete="off">
             <label class="btn btn-outline-tcc filter-btn" for="bowlingRanking">
-                <i class="fa-solid fa-bullseye me-2"></i>Bowling
+                Bowling
             </label>
             
             <input type="radio" class="btn-check" name="rankingFilter" id="allrounderRanking" autocomplete="off" checked>
             <label class="btn btn-outline-tcc filter-btn active" for="allrounderRanking">
-                <i class="fa-solid fa-star me-2"></i> Overall
+                Overall
             </label>
         </div>
     </div>
@@ -636,6 +647,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize with allrounder data (default)
     console.log('Initializing with allrounder data:', currentPageData.allrounder);
     renderTable(currentPageData.allrounder);
-});
-</script>
+    });
+    </script>
+
+    <style>
+    /* Accordion Styling for Podium Section */
+    .accordion-button:not(.collapsed) {
+        background: rgba(255, 153, 0, 0.1) !important;
+        color: var(--sh-orange) !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+        border-color: var(--sh-orange) !important;
+    }
+
+    .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff9900'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+    }
+
+    /* Podium Section Styling */
+    .custom-podium-card {
+        background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%) !important;
+        border: 1px solid rgba(255,153,0,0.2) !important;
+    }
+
+    .custom-podium-header {
+        background: linear-gradient(135deg, rgba(255,153,0,0.1) 0%, rgba(255,153,0,0.05) 100%) !important;
+        border-bottom: 1px solid rgba(255,153,0,0.2) !important;
+    }
+
+    .custom-podium-body {
+        background: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    /* Podium Item Styling */
+    .podium-item {
+        transition: all 0.3s ease;
+    }
+
+    .podium-item:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Medal Colors */
+    .position-1 .fa-medal {
+        color: #FFD700 !important; /* Gold */
+    }
+
+    .position-2 .fa-medal {
+        color: #C0C0C0 !important; /* Silver */
+    }
+
+    .position-3 .fa-medal {
+        color: #CD7F32 !important; /* Bronze */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .podium-item {
+            margin-bottom: 1rem;
+        }
+        
+        .accordion-button {
+            font-size: 0.9rem;
+        }
+    }
+    </style>
 {% endblock %}

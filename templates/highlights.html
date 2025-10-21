@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}News • ChallengeHub{% endblock %}
+{% block title %}SportsHub{% endblock %}
 {% block content %}
   <div class="container py-5">
-    <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">News & Updates</h2></div>
+    <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">Highlights & Updates</h2></div>
 
     <!-- Filter Section -->
     <div class="row mb-4">
@@ -12,15 +12,15 @@
           <div class="card-body">
             <form method="GET" class="row g-3 align-items-end">
               <div class="col-md-4">
-                <label for="search" class="form-label" style="color: var(--sh-white); font-weight: 600;">Search News</label>
-                <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search news articles...">
+                <label for="search" class="form-label" style="color: var(--sh-white); font-weight: 600;">Search Highlights</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search highlights articles..." style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;" onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'" onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
               </div>
               <div class="col-md-4">
                 <label for="category" class="form-label" style="color: var(--sh-white); font-weight: 600;">Category</label>
-                <select class="form-select" id="category" name="category">
-                  <option value="">All Categories</option>
+                <select class="form-select" id="category" name="category" style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;" onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'" onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
+                  <option value="" style="background: #1a1a1a; color: var(--sh-white);">All Categories</option>
                   {% for category in categories %}
-                    <option value="{{ category.slug }}" {% if current_category and current_category.slug == category.slug %}selected{% endif %}>
+                    <option value="{{ category.slug }}" {% if current_category and current_category.slug == category.slug %}selected{% endif %} style="background: #1a1a1a; color: var(--sh-white);">
                       {{ category.name }}
                     </option>
                   {% endfor %}
@@ -28,7 +28,7 @@
               </div>
               <div class="col-md-4">
                 <button type="submit" class="btn btn-tcc w-100">
-                  <i class="fa-solid fa-filter me-1"></i>Filter News
+                  <i class="fa-solid fa-filter me-1"></i>Filter Highlights
                 </button>
               </div>
             </form>
@@ -41,13 +41,12 @@
     <div class="row mb-4">
       <div class="col-12">
         <div class="d-flex flex-wrap gap-2">
-          <a href="{% url 'news' %}" class="btn {% if not current_category %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm">
-            <i class="fa-solid fa-newspaper me-1"></i>All News
+          <a href="{% url 'highlights' %}" class="btn {% if not current_category %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm">
+            <i class="fa-solid fa-newspaper me-1"></i>All Highlights
           </a>
           {% for category in categories %}
-            <a href="{% url 'news' %}?category={{ category.slug }}" 
-               class="btn {% if current_category and current_category.slug == category.slug %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm"
-               style="{% if current_category and current_category.slug == category.slug %}background-color: {{ category.color }}; border-color: {{ category.color }};{% endif %}">
+            <a href="{% url 'highlights' %}?category={{ category.slug }}" 
+               class="btn {% if current_category and current_category.slug == category.slug %}btn-tcc{% else %}btn-outline-tcc{% endif %} btn-sm">
               <i class="fa-solid fa-tag me-1"></i>{{ category.name }}
             </a>
           {% endfor %}
@@ -64,17 +63,17 @@
           {% if current_category and search_query %}
             Showing {{ news|length }} results for "{{ search_query }}" in {{ current_category.name }} category
           {% elif current_category %}
-            Showing {{ news|length }} articles in {{ current_category.name }} category
+            Showing {{ news|length }} highlights in {{ current_category.name }} category
           {% elif search_query %}
             Showing {{ news|length }} results for "{{ search_query }}"
           {% endif %}
-          <a href="{% url 'news' %}" class="btn btn-sm btn-outline-tcc ms-2">Clear Filters</a>
+          <a href="{% url 'highlights' %}" class="btn btn-sm btn-outline-tcc ms-2">Clear Filters</a>
         </div>
       </div>
     </div>
     {% endif %}
 
-    <!-- News Articles -->
+    <!-- Highlights Articles -->
     {% if news %}
     <div class="row g-4">
       {% for article in news %}
@@ -98,7 +97,11 @@
             </div>
             {% endif %}
             
-            <h5 class="card-title" style="color: var(--sh-white); font-weight: 600;">{{ article.title }}</h5>
+            <h5 class="card-title" style="color: var(--sh-white); font-weight: 600;">
+              <a href="{% url 'highlights_detail' article.slug %}" class="text-decoration-none" style="color: var(--sh-white);">
+                {{ article.title }}
+              </a>
+            </h5>
             
             {% if article.excerpt %}
               <p class="card-text flex-grow-1" style="color: var(--sh-gray); line-height: 1.5;">{{ article.excerpt|truncatewords:20 }}</p>
@@ -107,7 +110,7 @@
             {% endif %}
             
             <div class="mt-auto">
-              <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-between align-items-center mb-2">
                 <small style="color: var(--sh-gray);">
                   <i class="fa-solid fa-calendar me-1" style="color: var(--sh-orange);"></i>
                   {{ article.published_at|date:"M d, Y" }}
@@ -117,12 +120,29 @@
                   {{ article.author.get_full_name|default:article.author.username }}
                 </small>
               </div>
+              <div class="text-end">
+                <a href="{% url 'highlights_detail' article.slug %}" class="btn btn-outline-tcc btn-sm">
+                  <i class="fa-solid fa-arrow-right me-1"></i>Read More
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
       {% endfor %}
     </div>
+    
+    <!-- Load More Button -->
+    {% if has_next %}
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <a href="?{% if current_category %}category={{ current_category.slug }}&{% endif %}{% if search_query %}search={{ search_query }}&{% endif %}page={{ next_page }}" class="btn btn-tcc btn-md">
+          <i class="fa-solid fa-plus me-1"></i>Load More Highlights
+        </a>
+      </div>
+    </div>
+    {% endif %}
+    
     {% else %}
     <!-- No Results -->
     <div class="row">
@@ -130,17 +150,17 @@
         <div class="card text-center py-5" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
           <div class="card-body">
             <i class="fa-solid fa-newspaper fa-3x mb-3" style="color: var(--sh-orange);"></i>
-            <h5 style="color: var(--sh-white);">No News Found</h5>
+            <h5 style="color: var(--sh-white);">No Highlights Found</h5>
             <p class="text-muted">
               {% if current_category or search_query %}
                 No articles match your current filters. Try adjusting your search criteria.
               {% else %}
-                No news articles are available at the moment. Check back later for updates!
+                No recent highlights are available. Highlights are shown for 30 days from creation. Check back later for new updates!
               {% endif %}
             </p>
             {% if current_category or search_query %}
-              <a href="{% url 'news' %}" class="btn btn-tcc">
-                <i class="fa-solid fa-refresh me-1"></i>View All News
+              <a href="{% url 'highlights' %}" class="btn btn-tcc">
+                <i class="fa-solid fa-refresh me-1"></i>View All Highlights
               </a>
             {% endif %}
           </div>

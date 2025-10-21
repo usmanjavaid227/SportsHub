@@ -1,19 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ article.title }} • SportsHub{% endblock %}
+{% block title %}SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8">
+            <!-- Article Card -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                <div class="card-body p-5">
             <!-- Article Header -->
             <div class="mb-4">
                 <div class="d-flex align-items-center mb-3">
-                    <a href="{% url 'news_list' %}" class="btn btn-outline-secondary btn-sm me-3">
-                        <i class="fa-solid fa-arrow-left me-1"></i>Back to News
+                            <a href="{% url 'highlights' %}" class="btn btn-outline-secondary btn-sm me-3">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Back to Highlights
                     </a>
-                    <span class="badge bg-primary" style="background: var(--sh-orange) !important; color: #000;">
+                            {% if article.category %}
+                            <span class="badge me-2" style="background-color: {{ article.category.color }}; color: white;">
+                                <i class="fa-solid fa-tag me-1"></i>{{ article.category.name }}
+                            </span>
+                            {% endif %}
+                            <span class="badge" style="background: var(--sh-orange); color: #000;">
                         <i class="fa-solid fa-calendar me-1"></i>
                         {{ article.published_at|date:"M d, Y" }}
                     </span>
@@ -22,9 +30,9 @@
                 <h1 class="h2 mb-3" style="color: var(--sh-white);">{{ article.title }}</h1>
                 
                 <div class="d-flex align-items-center text-secondary mb-4">
-                    <i class="fa-solid fa-user me-2"></i>
+                            <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
                     <span class="me-4">By {{ article.author.get_full_name|default:article.author.username }}</span>
-                    <i class="fa-solid fa-clock me-2"></i>
+                            <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>
                     <span>{{ article.published_at|timesince }} ago</span>
                 </div>
             </div>
@@ -32,13 +40,11 @@
             <!-- Featured Image -->
             {% if article.featured_image %}
                 <div class="mb-4">
-                    <img src="{{ article.featured_image.url }}" class="img-fluid rounded" alt="{{ article.title }}" style="width: 100%; height: 400px; object-fit: cover;">
+                            <img src="{{ article.featured_image.url }}" class="img-fluid rounded" alt="{{ article.title }}" style="width: 100%; height: 400px; object-fit: cover; border: 1px solid rgba(255,153,0,0.2);">
                 </div>
             {% endif %}
 
             <!-- Article Content -->
-            <div class="card">
-                <div class="card-body p-4">
                     <div class="article-content" style="line-height: 1.8; color: var(--sh-white);">
                         {{ article.content|linebreaks }}
                     </div>
@@ -46,7 +52,9 @@
             </div>
 
             <!-- Article Footer -->
-            <div class="mt-4 pt-4" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="mt-4">
+                <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
+                    <div class="card-body p-4">
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center">
@@ -67,12 +75,14 @@
                     </div>
                     <div class="col-md-6 text-md-end mt-3 mt-md-0">
                         <div class="d-flex flex-wrap gap-2 justify-content-md-end">
-                            <a href="{% url 'news_list' %}" class="btn btn-outline-secondary btn-sm">
-                                <i class="fa-solid fa-list me-1"></i>All News
+                                    <a href="{% url 'highlights' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fa-solid fa-list me-1"></i>All Highlights
                             </a>
                             <a href="{% url 'home' %}" class="btn btn-tcc btn-sm">
                                 <i class="fa-solid fa-home me-1"></i>Home
                             </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

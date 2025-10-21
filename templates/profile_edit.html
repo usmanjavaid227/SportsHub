@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Edit Profile{% endblock %}
+{% block title %}SportsHub{% endblock %}
 {% block content %}
 <div class="container py-5">
   <div class="section-heading"><div class="bar"></div><h2 class="h4 m-0">Edit Profile</h2></div>
@@ -18,118 +18,93 @@
     <div class="col-12 col-lg-8">
       <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
         <div class="card-body">
-          <form method="post" enctype="multipart/form-data">
+          <form method="post" enctype="multipart/form-data" id="profileEditForm">
             {% csrf_token %}
             
-            <!-- Personal Information -->
-            <div class="row mb-4">
-              <div class="col-12">
-                <h5 class="text-primary mb-3">Personal Information</h5>
+            <!-- Accordion for Profile Sections -->
+            <div class="accordion" id="profileAccordion" style="--bs-accordion-bg: rgba(255, 255, 255, 0.05); --bs-accordion-border-color: rgba(255, 255, 255, 0.1);">
+              
+              <!-- Personal Information Section -->
+              <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h2 class="accordion-header" id="personalInfoHeader">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#personalInfoSection" aria-expanded="true" aria-controls="personalInfoSection" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                    <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>
+                    <strong>Personal Information</strong>
+                  </button>
+                </h2>
+                <div id="personalInfoSection" class="accordion-collapse collapse show" aria-labelledby="personalInfoHeader" data-bs-parent="#profileAccordion">
+                  <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">First Name <span class="text-danger">*</span></label>
+                        {{ form.first_name }}
+                        <div id="first_name_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Last Name <span class="text-danger">*</span></label>
+                        {{ form.last_name }}
+                        <div id="last_name_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Email <span class="text-danger">*</span></label>
+                        {{ form.email }}
+                        <div id="email_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Phone Number <span class="text-danger">*</span></label>
+                        {{ form.phone }}
+                        <div id="phone_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">City</label>
+                        {{ form.city }}
+                        <div id="city_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Profile Picture</label>
+                        {{ form.avatar }}
+                        <div id="avatar_error" class="invalid-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">First Name <span class="text-danger">*</span></label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}
-                  <div class="text-danger small">{{ form.first_name.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}
-                  <div class="text-danger small">{{ form.last_name.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Email <span class="text-danger">*</span></label>
-                {{ form.email }}
-                {% if form.email.errors %}
-                  <div class="text-danger small">{{ form.email.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                {{ form.phone }}
-                {% if form.phone.errors %}
-                  <div class="text-danger small">{{ form.phone.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">City <span class="text-danger">*</span></label>
-                {{ form.city }}
-                {% if form.city.errors %}
-                  <div class="text-danger small">{{ form.city.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Profile Picture</label>
-                {{ form.avatar }}
-                {% if form.avatar.errors %}
-                  <div class="text-danger small">{{ form.avatar.errors|striptags }}</div>
-                {% endif %}
+
+              <!-- Cricket Information Section -->
+              <div class="accordion-item" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h2 class="accordion-header" id="cricketInfoHeader">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cricketInfoSection" aria-expanded="false" aria-controls="cricketInfoSection" style="background: rgba(255, 255, 255, 0.05); color: var(--sh-white); border: none;">
+                    <i class="fa-solid fa-cricket-bat-ball me-2" style="color: var(--sh-orange);"></i>
+                    <strong>Cricket Information</strong>
+                  </button>
+                </h2>
+                <div id="cricketInfoSection" class="accordion-collapse collapse" aria-labelledby="cricketInfoHeader" data-bs-parent="#profileAccordion">
+                  <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Primary Role</label>
+                        {{ form.role }}
+                        <div id="role_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Batting Style</label>
+                        {{ form.preferred_batting_style }}
+                        <div id="preferred_batting_style_error" class="invalid-feedback"></div>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label class="form-label" style="color: var(--sh-white); font-weight: 600;">Bowling Style</label>
+                        {{ form.preferred_bowling_style }}
+                        <div id="preferred_bowling_style_error" class="invalid-feedback"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Cricket Information -->
-            <div class="row mb-4">
-              <div class="col-12">
-                <h5 class="text-primary mb-3">Cricket Information</h5>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Primary Role <span class="text-danger">*</span></label>
-                {{ form.role }}
-                {% if form.role.errors %}
-                  <div class="text-danger small">{{ form.role.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Experience Level <span class="text-danger">*</span></label>
-                {{ form.experience_level }}
-                {% if form.experience_level.errors %}
-                  <div class="text-danger small">{{ form.experience_level.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Years Playing <span class="text-danger">*</span></label>
-                {{ form.years_playing }}
-                {% if form.years_playing.errors %}
-                  <div class="text-danger small">{{ form.years_playing.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Batting Style</label>
-                {{ form.preferred_batting_style }}
-                {% if form.preferred_batting_style.errors %}
-                  <div class="text-danger small">{{ form.preferred_batting_style.errors|striptags }}</div>
-                {% endif %}
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Bowling Style</label>
-                {{ form.preferred_bowling_style }}
-                {% if form.preferred_bowling_style.errors %}
-                  <div class="text-danger small">{{ form.preferred_bowling_style.errors|striptags }}</div>
-                {% endif %}
-              </div>
-            </div>
-
-            <!-- Bio -->
-            <div class="row mb-4">
-              <div class="col-12">
-                <h5 class="text-primary mb-3">About You</h5>
-              </div>
-              <div class="col-12 mb-3">
-                <label class="form-label">Bio <span class="text-danger">*</span></label>
-                {{ form.bio }}
-                <div class="form-text">Tell us about your cricket experience, achievements, and what you love about the game.</div>
-                {% if form.bio.errors %}
-                  <div class="text-danger small">{{ form.bio.errors|striptags }}</div>
-                {% endif %}
-              </div>
-            </div>
-
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-4">
               <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary">Update Profile</button>
+              <button type="submit" class="btn btn-tcc">Update Profile</button>
             </div>
           </form>
         </div>
@@ -137,4 +112,186 @@
     </div>
   </div>
 </div>
+
+<style>
+/* Accordion Styling */
+.accordion-button:not(.collapsed) {
+  background: rgba(255, 153, 0, 0.1) !important;
+  color: var(--sh-orange) !important;
+  box-shadow: none !important;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+  border-color: var(--sh-orange) !important;
+}
+
+.accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff9900'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+/* Form Control Styling */
+.form-control, .form-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 153, 0, 0.3) !important;
+  color: var(--sh-white) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--sh-orange) !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+  color: var(--sh-white) !important;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Select Dropdown Styling */
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+}
+
+.form-select option {
+  background-color: #1a1a1a !important;
+  color: var(--sh-white) !important;
+}
+
+.form-select:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+}
+
+/* Validation States */
+.form-control.is-valid, .form-select.is-valid {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Field-level validation functions
+  function validateName(field, type) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById(field.name + '_error');
+    
+    if (value.length < 2) {
+      showError(field, errorElement, `${type} must be at least 2 characters long`);
+      return false;
+    } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+      showError(field, errorElement, `${type} can only contain letters and spaces`);
+      return false;
+    } else {
+      showValid(field, errorElement);
+      return true;
+    }
+  }
+
+  function validateEmail(field) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById(field.name + '_error');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!value) {
+      showError(field, errorElement, 'Email is required');
+      return false;
+    } else if (!emailRegex.test(value)) {
+      showError(field, errorElement, 'Please enter a valid email address');
+      return false;
+    } else {
+      showValid(field, errorElement);
+      return true;
+    }
+  }
+
+  function validatePhone(field) {
+    const value = field.value.trim();
+    const errorElement = document.getElementById(field.name + '_error');
+    const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,15}$/;
+    
+    if (!value) {
+      showError(field, errorElement, 'Phone number is required');
+      return false;
+    } else if (!phoneRegex.test(value)) {
+      showError(field, errorElement, 'Please enter a valid phone number');
+      return false;
+    } else {
+      showValid(field, errorElement);
+      return true;
+    }
+  }
+
+  function showError(field, errorElement, message) {
+    field.classList.remove('is-valid');
+    field.classList.add('is-invalid');
+    errorElement.textContent = message;
+  }
+
+  function showValid(field, errorElement) {
+    field.classList.remove('is-invalid');
+    field.classList.add('is-valid');
+    errorElement.textContent = '';
+  }
+
+  // Add event listeners for real-time validation
+  const firstNameField = document.getElementById('id_first_name');
+  const lastNameField = document.getElementById('id_last_name');
+  const emailField = document.getElementById('id_email');
+  const phoneField = document.getElementById('id_phone');
+
+  if (firstNameField) {
+    firstNameField.addEventListener('input', () => validateName(firstNameField, 'First name'));
+    firstNameField.addEventListener('blur', () => validateName(firstNameField, 'First name'));
+  }
+
+  if (lastNameField) {
+    lastNameField.addEventListener('input', () => validateName(lastNameField, 'Last name'));
+    lastNameField.addEventListener('blur', () => validateName(lastNameField, 'Last name'));
+  }
+
+  if (emailField) {
+    emailField.addEventListener('input', () => validateEmail(emailField));
+    emailField.addEventListener('blur', () => validateEmail(emailField));
+  }
+
+  if (phoneField) {
+    phoneField.addEventListener('input', () => validatePhone(phoneField));
+    phoneField.addEventListener('blur', () => validatePhone(phoneField));
+  }
+
+  // Form submission validation
+  document.getElementById('profileEditForm').addEventListener('submit', function(e) {
+    let isValid = true;
+    
+    // Validate mandatory fields
+    if (firstNameField && !validateName(firstNameField, 'First name')) isValid = false;
+    if (lastNameField && !validateName(lastNameField, 'Last name')) isValid = false;
+    if (emailField && !validateEmail(emailField)) isValid = false;
+    if (phoneField && !validatePhone(phoneField)) isValid = false;
+    
+    if (!isValid) {
+      e.preventDefault();
+      // Scroll to first error
+      const firstError = document.querySelector('.is-invalid');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstError.focus();
+      }
+    }
+  });
+});
+</script>
 {% endblock %}
