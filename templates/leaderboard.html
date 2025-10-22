@@ -471,9 +471,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
                 total_matches_for_ratio: {{ player.total_matches }},
                 // Batting rating: Use actual batting_rating from Profile model
-                batting_runs: {{ player.profile.runs|default:0 }},
+                batting_runs: {{ player.runs|default:0 }},
                 batting_average: {{ player.profile.get_batting_average|default:0 }},
-                rating: Math.round({{ player.profile.batting_rating|default:1000 }}),
+                rating: Math.round({{ player.batting_rating|default:0 }}),
                 avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
                 country: "{{ player.country|default:'' }}",
                 type: "batting"
@@ -493,9 +493,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
                 total_matches_for_ratio: {{ player.total_matches }},
                 // Bowling rating: Use actual bowling_rating from Profile model
-                bowling_wickets: {{ player.profile.wickets|default:0 }},
+                bowling_wickets: {{ player.wickets|default:0 }},
                 bowling_average: {{ player.profile.get_bowling_average|default:0 }},
-                rating: Math.round({{ player.profile.bowling_rating|default:1000 }}),
+                rating: Math.round({{ player.bowling_rating|default:0 }}),
                 avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
                 country: "{{ player.country|default:'' }}",
                 type: "bowling"
@@ -515,11 +515,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 win_ratio: {% if player.total_matches > 0 %}{{ player.total_wins|floatformat:1 }}{% else %}0{% endif %},
                 total_matches_for_ratio: {{ player.total_matches }},
                 // All-rounder rating: Combined batting and bowling Elo ratings
-                batting_runs: {{ player.profile.runs|default:0 }},
+                batting_runs: {{ player.runs|default:0 }},
                 batting_average: {{ player.profile.get_batting_average|default:0 }},
-                bowling_wickets: {{ player.profile.wickets|default:0 }},
+                bowling_wickets: {{ player.wickets|default:0 }},
                 bowling_average: {{ player.profile.get_bowling_average|default:0 }},
-                rating: Math.round(({{ player.profile.batting_rating|default:1000 }} + {{ player.profile.bowling_rating|default:1000 }}) / 2),
+                rating: Math.round(({{ player.batting_rating|default:0 }} + {{ player.bowling_rating|default:0 }}) / 2),
                 avatar: "{% if player.avatar %}{{ player.avatar.url }}{% else %}null{% endif %}",
                 country: "{{ player.country|default:'' }}",
                 type: "allrounder"

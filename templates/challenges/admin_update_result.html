@@ -1,97 +1,186 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}SportsHub{% endblock %}
+{% block title %}Update Match Result - SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row">
-        <div class="col-md-8 mx-auto">
-            <!-- Header -->
-            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
+        <div class="col-12">
+            <!-- Admin Header -->
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,193,7,0.05) 100%); border: 1px solid rgba(255,193,7,0.3); box-shadow: 0 8px 32px rgba(255,193,7,0.1);">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,193,7,0.1) 100%); border-bottom: 1px solid rgba(255,193,7,0.3);">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div style="width: 50px; height: 50px; background: rgba(255,193,7,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-trophy" style="color: #ffc107; font-size: 1.2rem;"></i>
+                            </div>
+                        </div>
+                        <div>
                     <h4 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fas fa-trophy" style="color: var(--sh-orange);"></i> Update Match Result
+                                Update Match Result
                     </h4>
+                            <p class="mb-0" style="color: var(--sh-gray); font-size: 0.9rem;">Admin Panel - Challenge #{{ challenge.id }}</p>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge" style="background: #ffc107; color: #000; font-size: 0.8rem;">ADMIN</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{ challenge.condition_text }}</h5>
-                    <p class="card-text">
-                        <strong>Challenge Type:</strong> {{ challenge.get_challenge_type_display }}<br>
-                        <strong>Challenger:</strong> {{ challenge.challenger.username }} (Rating: {{ challenge.challenger.profile.rating|default:"N/A" }})<br>
-                        <strong>Opponent:</strong> {{ challenge.opponent.username }} (Rating: {{ challenge.opponent.profile.rating|default:"N/A" }})<br>
-                        <strong>Status:</strong> 
-                        <span class="badge badge-{% if challenge.status == 'ACCEPTED' %}success{% elif challenge.status == 'COMPLETED' %}info{% else %}warning{% endif %}">
-                            {{ challenge.get_status_display }}
-                        </span>
-                    </p>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="card-header" style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <h6 class="mb-0" style="color: var(--sh-white);">
+                                        <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>Challenge Overview
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Type:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.get_challenge_type_display }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Status:</span>
+                                        <span class="ms-2 badge" style="background: {% if challenge.status == 'ACCEPTED' %}#28a745{% elif challenge.status == 'COMPLETED' %}#17a2b8{% else %}#ffc107{% endif %}; color: #000;">{{ challenge.get_status_display }}</span>
+                                    </div>
+                                    {% if challenge.condition_text %}
+                                    <div class="mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Description:</span>
+                                        <p style="color: var(--sh-white); font-size: 0.9rem; margin-bottom: 0;">{{ challenge.condition_text }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="card-header" style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <h6 class="mb-0" style="color: var(--sh-white);">
+                                        <i class="fa-solid fa-users me-2" style="color: var(--sh-orange);"></i>Participants
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            <div style="width: 40px; height: 40px; background: rgba(0,123,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-user" style="color: #007bff; font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="color: var(--sh-white); font-weight: 600;">{{ challenge.challenger.username }}</div>
+                                            <div style="color: var(--sh-gray); font-size: 0.8rem;">Challenger • Rating: {{ challenge.challenger.profile.rating|default:"N/A" }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div style="width: 40px; height: 40px; background: rgba(40,167,69,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-user" style="color: #28a745; font-size: 0.9rem;"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="color: var(--sh-white); font-weight: 600;">{{ challenge.opponent.username }}</div>
+                                            <div style="color: var(--sh-gray); font-size: 0.8rem;">Opponent • Rating: {{ challenge.opponent.profile.rating|default:"N/A" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Match Result Form -->
-            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-                    <h5 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fas fa-clipboard-list" style="color: var(--sh-orange);"></i> Match Statistics
-                    </h5>
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.3); box-shadow: 0 8px 32px rgba(255,153,0,0.1);">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, rgba(255,153,0,0.08) 100%); border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div style="width: 40px; height: 40px; background: rgba(255,153,0,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-clipboard-list" style="color: var(--sh-orange); font-size: 1.1rem;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0" style="color: var(--sh-white);">Match Statistics</h5>
+                            <p class="mb-0" style="color: var(--sh-gray); font-size: 0.9rem;">Enter detailed match performance data</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" id="matchResultForm">
                         {% csrf_token %}
                         
                         <!-- Challenger Statistics -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <div class="card border-primary">
-                                    <div class="card-header bg-primary text-white">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-user"></i> {{ challenge.challenger.username }} (Challenger)
-                                        </h6>
+                                <div class="card" style="background: rgba(0,123,255,0.05); border: 1px solid rgba(0,123,255,0.2);">
+                                    <div class="card-header" style="background: rgba(0,123,255,0.1); border-bottom: 1px solid rgba(0,123,255,0.3);">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div style="width: 35px; height: 35px; background: rgba(0,123,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fa-solid fa-user" style="color: #007bff; font-size: 0.9rem;"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0" style="color: var(--sh-white);">{{ challenge.challenger.username }}</h6>
+                                                <small style="color: var(--sh-gray);">Challenger</small>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="row g-3">
                                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.challenger_runs.id_for_label }}">Runs Scored</label>
+                                                    <label for="{{ form.challenger_runs.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-running me-1" style="color: var(--sh-orange);"></i>Runs Scored
+                                                    </label>
                                     {{ form.challenger_runs }}
                                     {% if form.challenger_runs.errors %}
-                                        <div class="text-danger">{{ form.challenger_runs.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.challenger_runs.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.challenger_wickets.id_for_label }}">Wickets Taken</label>
+                                                    <label for="{{ form.challenger_wickets.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-bowling-ball me-1" style="color: var(--sh-orange);"></i>Wickets Taken
+                                                    </label>
                                     {{ form.challenger_wickets }}
                                     {% if form.challenger_wickets.errors %}
-                                        <div class="text-danger">{{ form.challenger_wickets.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.challenger_wickets.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.challenger_sixes.id_for_label }}">Sixes Hit</label>
+                                                    <label for="{{ form.challenger_sixes.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-6 me-1" style="color: var(--sh-orange);"></i>Sixes Hit
+                                                    </label>
                                     {{ form.challenger_sixes }}
                                     {% if form.challenger_sixes.errors %}
-                                        <div class="text-danger">{{ form.challenger_sixes.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.challenger_sixes.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.challenger_fours.id_for_label }}">Fours Hit</label>
+                                                    <label for="{{ form.challenger_fours.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-4 me-1" style="color: var(--sh-orange);"></i>Fours Hit
+                                                    </label>
                                     {{ form.challenger_fours }}
                                     {% if form.challenger_fours.errors %}
-                                        <div class="text-danger">{{ form.challenger_fours.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.challenger_fours.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.challenger_dots.id_for_label }}">Dot Balls Bowled</label>
+                                                    <label for="{{ form.challenger_dots.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-circle me-1" style="color: var(--sh-orange);"></i>Dot Balls
+                                                    </label>
                                     {{ form.challenger_dots }}
                                     {% if form.challenger_dots.errors %}
-                                        <div class="text-danger">{{ form.challenger_dots.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.challenger_dots.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                                             </div>
@@ -104,56 +193,74 @@
                         <!-- Opponent Statistics -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <div class="card border-success">
-                                    <div class="card-header bg-success text-white">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-user"></i> {{ challenge.opponent.username }} (Opponent)
-                                        </h6>
+                                <div class="card" style="background: rgba(40,167,69,0.05); border: 1px solid rgba(40,167,69,0.2);">
+                                    <div class="card-header" style="background: rgba(40,167,69,0.1); border-bottom: 1px solid rgba(40,167,69,0.3);">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div style="width: 35px; height: 35px; background: rgba(40,167,69,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fa-solid fa-user" style="color: #28a745; font-size: 0.9rem;"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0" style="color: var(--sh-white);">{{ challenge.opponent.username }}</h6>
+                                                <small style="color: var(--sh-gray);">Opponent</small>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.opponent_runs.id_for_label }}">Runs Scored</label>
+                                                    <label for="{{ form.opponent_runs.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-running me-1" style="color: var(--sh-orange);"></i>Runs Scored
+                                                    </label>
                                     {{ form.opponent_runs }}
                                     {% if form.opponent_runs.errors %}
-                                        <div class="text-danger">{{ form.opponent_runs.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.opponent_runs.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.opponent_wickets.id_for_label }}">Wickets Taken</label>
+                                                    <label for="{{ form.opponent_wickets.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-bowling-ball me-1" style="color: var(--sh-orange);"></i>Wickets Taken
+                                                    </label>
                                     {{ form.opponent_wickets }}
                                     {% if form.opponent_wickets.errors %}
-                                        <div class="text-danger">{{ form.opponent_wickets.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.opponent_wickets.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.opponent_sixes.id_for_label }}">Sixes Hit</label>
+                                                    <label for="{{ form.opponent_sixes.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-6 me-1" style="color: var(--sh-orange);"></i>Sixes Hit
+                                                    </label>
                                     {{ form.opponent_sixes }}
                                     {% if form.opponent_sixes.errors %}
-                                        <div class="text-danger">{{ form.opponent_sixes.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.opponent_sixes.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.opponent_fours.id_for_label }}">Fours Hit</label>
+                                                    <label for="{{ form.opponent_fours.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-4 me-1" style="color: var(--sh-orange);"></i>Fours Hit
+                                                    </label>
                                     {{ form.opponent_fours }}
                                     {% if form.opponent_fours.errors %}
-                                        <div class="text-danger">{{ form.opponent_fours.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.opponent_fours.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="{{ form.opponent_dots.id_for_label }}">Dot Balls Bowled</label>
+                                                    <label for="{{ form.opponent_dots.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-circle me-1" style="color: var(--sh-orange);"></i>Dot Balls
+                                                    </label>
                                     {{ form.opponent_dots }}
                                     {% if form.opponent_dots.errors %}
-                                        <div class="text-danger">{{ form.opponent_dots.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.opponent_dots.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                                             </div>
@@ -166,56 +273,74 @@
                         <!-- Match Details -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <div class="card border-info">
-                                    <div class="card-header bg-info text-white">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-info-circle"></i> Match Details
-                                        </h6>
+                                <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                    <div class="card-header" style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div style="width: 35px; height: 35px; background: rgba(255,153,0,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fa-solid fa-info-circle" style="color: var(--sh-orange); font-size: 0.9rem;"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0" style="color: var(--sh-white);">Match Details</h6>
+                                                <small style="color: var(--sh-gray);">Additional match information</small>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row">
+                                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.total_overs.id_for_label }}">Total Overs Played</label>
+                                                    <label for="{{ form.total_overs.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-clock me-1" style="color: var(--sh-orange);"></i>Total Overs Played
+                                                    </label>
                                     {{ form.total_overs }}
                                     {% if form.total_overs.errors %}
-                                        <div class="text-danger">{{ form.total_overs.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.total_overs.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.match_duration.id_for_label }}">Match Duration (minutes)</label>
+                                                    <label for="{{ form.match_duration.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-stopwatch me-1" style="color: var(--sh-orange);"></i>Match Duration (minutes)
+                                                    </label>
                                     {{ form.match_duration }}
                                     {% if form.match_duration.errors %}
-                                        <div class="text-danger">{{ form.match_duration.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.match_duration.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.weather_conditions.id_for_label }}">Weather Conditions</label>
+                                                    <label for="{{ form.weather_conditions.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-cloud me-1" style="color: var(--sh-orange);"></i>Weather Conditions
+                                                    </label>
                                     {{ form.weather_conditions }}
                                     {% if form.weather_conditions.errors %}
-                                        <div class="text-danger">{{ form.weather_conditions.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.weather_conditions.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="{{ form.pitch_conditions.id_for_label }}">Pitch Conditions</label>
+                                                    <label for="{{ form.pitch_conditions.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-seedling me-1" style="color: var(--sh-orange);"></i>Pitch Conditions
+                                                    </label>
                                     {{ form.pitch_conditions }}
                                     {% if form.pitch_conditions.errors %}
-                                        <div class="text-danger">{{ form.pitch_conditions.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.pitch_conditions.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="{{ form.notes.id_for_label }}">Match Notes</label>
+                                                    <label for="{{ form.notes.id_for_label }}" style="color: var(--sh-white); font-weight: 600;">
+                                                        <i class="fa-solid fa-sticky-note me-1" style="color: var(--sh-orange);"></i>Match Notes
+                                                    </label>
                                     {{ form.notes }}
                                     {% if form.notes.errors %}
-                                        <div class="text-danger">{{ form.notes.errors.0 }}</div>
+                                                        <div class="text-danger mt-1">{{ form.notes.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                                             </div>
@@ -228,11 +353,19 @@
                         <!-- Winner Selection -->
                         <div class="row mb-4">
                             <div class="col-12">
-                                <div class="card border-warning shadow-sm">
-                                    <div class="card-header bg-gradient-warning text-dark">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-trophy text-warning"></i> Winner Selection
-                                        </h6>
+                                <div class="card" style="background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(255,193,7,0.05) 100%); border: 1px solid rgba(255,193,7,0.3); box-shadow: 0 8px 32px rgba(255,193,7,0.1);">
+                                    <div class="card-header" style="background: linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,193,7,0.1) 100%); border-bottom: 1px solid rgba(255,193,7,0.3);">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div style="width: 40px; height: 40px; background: rgba(255,193,7,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fa-solid fa-trophy" style="color: #ffc107; font-size: 1.1rem;"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-0" style="color: var(--sh-white);">Winner Selection</h5>
+                                                <p class="mb-0" style="color: var(--sh-gray); font-size: 0.9rem;">Determine the match winner</p>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body">
                                         <!-- Automatic Winner Preview -->
@@ -365,13 +498,17 @@
                         <!-- Form Actions -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between">
-                                    <a href="{% url 'challenge_detail' challenge_id=challenge.id %}" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left"></i> Back to Challenge
-                                    </a>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-save"></i> Update Match Result
+                                <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="{% url 'challenge_detail' challenge_id=challenge.id %}" class="btn btn-outline-secondary btn-lg px-4">
+                                                <i class="fa-solid fa-arrow-left me-2"></i>Back to Challenge
+                                            </a>
+                                            <button type="submit" class="btn btn-success btn-lg px-4" id="submitBtn">
+                                                <i class="fa-solid fa-save me-2"></i>Update Match Result
                                     </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -380,23 +517,63 @@
             </div>
 
             <!-- Challenge Information -->
-            <div class="card mt-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-                    <h6 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fas fa-info-circle" style="color: var(--sh-orange);"></i> Challenge Information
-                    </h6>
+            <div class="card mt-4" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.3); box-shadow: 0 8px 32px rgba(255,153,0,0.1);">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, rgba(255,153,0,0.08) 100%); border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div style="width: 40px; height: 40px; background: rgba(255,153,0,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-info-circle" style="color: var(--sh-orange); font-size: 1.1rem;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0" style="color: var(--sh-white);">Challenge Information</h5>
+                            <p class="mb-0" style="color: var(--sh-gray); font-size: 0.9rem;">Detailed challenge specifications</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <p><strong>Challenge Type:</strong> {{ challenge.get_challenge_type_display }}</p>
-                            <p><strong>Metric:</strong> {{ challenge.get_metric_display }}</p>
-                            <p><strong>Target Value:</strong> {{ challenge.target_value }}</p>
+                            <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="card-body">
+                                    <h6 style="color: var(--sh-white); margin-bottom: 1rem;">
+                                        <i class="fa-solid fa-bullseye me-2" style="color: var(--sh-orange);"></i>Challenge Details
+                                    </h6>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Type:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.get_challenge_type_display }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Metric:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.get_metric_display }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Target Value:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.target_value }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Over Count:</strong> {{ challenge.over_count }}</p>
-                            <p><strong>Scheduled At:</strong> {{ challenge.scheduled_at|date:"M d, Y H:i" }}</p>
-                            <p><strong>Created:</strong> {{ challenge.created_at|date:"M d, Y H:i" }}</p>
+                            <div class="card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="card-body">
+                                    <h6 style="color: var(--sh-white); margin-bottom: 1rem;">
+                                        <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange);"></i>Schedule & Timing
+                                    </h6>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Over Count:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.over_count }}</span>
+                        </div>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Scheduled:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.scheduled_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Created:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.created_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -406,25 +583,122 @@
 </div>
 
 <style>
-
-
-
-
-    
+/* Enhanced Form Styling */
 .form-group label {
     font-weight: 600;
-    color: #333;
+    color: var(--sh-white) !important;
+    margin-bottom: 0.5rem;
 }
 
 .form-control {
-    border-radius: 0.375rem;
-    border: 1px solid #ced4da;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.05);
+    color: var(--sh-white);
+    transition: all 0.3s ease;
+    padding: 0.75rem 1rem;
 }
 
 .form-control:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--sh-orange);
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25);
+    background: rgba(255,255,255,0.08);
+    color: var(--sh-white);
+}
+
+.form-control::placeholder {
+    color: rgba(255,255,255,0.6);
+}
+
+/* Enhanced Card Styling */
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #218838, #1ea085);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-outline-secondary {
+    border-color: rgba(255,255,255,0.3);
+    color: var(--sh-white);
+}
+
+.btn-outline-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.5);
+    color: var(--sh-white);
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-success {
+    background: rgba(40,167,69,0.1);
+    border: 1px solid rgba(40,167,69,0.3);
+    color: var(--sh-white);
+}
+
+.alert-info {
+    background: rgba(23,162,184,0.1);
+    border: 1px solid rgba(23,162,184,0.3);
+    color: var(--sh-white);
+}
+
+/* Form Input Focus Effects */
+.form-control:focus {
+    outline: none;
+    border-color: var(--sh-orange);
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25);
+    background: rgba(255,255,255,0.08);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .d-flex.justify-content-between > * {
+        width: 100%;
+    }
 }
 
 .card {

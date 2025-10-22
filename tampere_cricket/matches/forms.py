@@ -10,40 +10,6 @@ class ChallengeForm(forms.ModelForm):
     """Form for creating and editing challenges"""
     
     # Additional fields for challenge metrics
-    metric = forms.ChoiceField(
-        choices=[
-            ('runs', 'Runs'),
-            ('wickets', 'Wickets'),
-            ('sixes', 'Sixes'),
-            ('fours', 'Fours'),
-            ('dots', 'Dot Balls'),
-        ],
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
-    
-    target_value = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'min': '1',
-            'max': '100',
-            'placeholder': 'Enter target value'
-        })
-    )
-    
-    over_count = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'min': '1',
-            'max': '20',
-            'placeholder': 'Number of overs'
-        })
-    )
-    
-    # scheduled_date is handled in the clean method to map to the model's date field
-    
     summary = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
@@ -53,25 +19,12 @@ class ChallengeForm(forms.ModelForm):
         })
     )
     
-    # Override duration field to make it optional
-    duration = forms.IntegerField(
-        required=False,
-        initial=15,
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'min': '15',
-            'max': '300',
-            'step': '15',
-            'placeholder': 'Duration in minutes (default: 15)'
-        })
-    )
-    
     class Meta:
         model = Challenge
         fields = [
             'opponent', 'challenge_type', 'condition_text', 'ground', 
             'date', 'time', 'description', 'team1_batter', 'team1_bowler', 
-            'team2_batter', 'team2_bowler'
+            'team2_batter', 'team2_bowler', 'metric', 'target_value', 'over_count', 'duration'
         ]
         widgets = {
             'opponent': forms.Select(attrs={'class': 'form-select'}),
@@ -99,7 +52,25 @@ class ChallengeForm(forms.ModelForm):
             'team1_batter': forms.Select(attrs={'class': 'form-select'}),
             'team1_bowler': forms.Select(attrs={'class': 'form-select'}),
             'team2_batter': forms.Select(attrs={'class': 'form-select'}),
-            'team2_bowler': forms.Select(attrs={'class': 'form-select'})
+            'team2_bowler': forms.Select(attrs={'class': 'form-select'}),
+            'metric': forms.Select(attrs={'class': 'form-select'}),
+            'target_value': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'max': '100'
+            }),
+            'over_count': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '1',
+                'max': '20'
+            }),
+            'duration': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '15',
+                'max': '300',
+                'step': '15',
+                'placeholder': 'Duration in minutes (default: 15)'
+            })
         }
     
     def __init__(self, *args, **kwargs):
@@ -136,6 +107,16 @@ class ChallengeForm(forms.ModelForm):
         
         self.fields['description'].label = 'Additional Details'
         self.fields['description'].required = False
+        
+        # Set metric field choices
+        self.fields['metric'].choices = [
+            ('', 'Select a metric'),
+            ('runs', 'Runs'),
+            ('wickets', 'Wickets'),
+            ('sixes', 'Sixes'),
+            ('fours', 'Fours'),
+            ('dots', 'Dot Balls'),
+        ]
         
         # New fields labels and help text
         self.fields['metric'].label = 'Challenge Metric'

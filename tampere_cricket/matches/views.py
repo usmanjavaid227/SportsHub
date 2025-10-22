@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.db import models
 from .models import Challenge, TimeSlot, MatchResult
 from .serializers import ChallengeSerializer
 from .forms import ChallengeForm, MatchResultForm
@@ -37,8 +38,14 @@ def challenges_list(request):
     """List all challenges with optional status filtering"""
     status_filter = request.GET.get('status', 'open')  # Default to 'open' instead of 'all'
     
-    # Base queryset
-    challenges = Challenge.objects.all().order_by('-created_at')
+    # Base queryset - show all challenges (OPEN and PENDING are public)
+    challenges = Challenge.objects.filter(
+        models.Q(status='OPEN') |  # Open challenges - visible to all
+        models.Q(status='PENDING') |  # Pending challenges - visible to all but only specific opponent can accept
+        models.Q(status='ACCEPTED') |  # Accepted challenges - visible to participants
+        models.Q(status='COMPLETED') |  # Completed challenges - visible to participants
+        models.Q(status='CANCELLED')  # Cancelled challenges - visible to participants
+    ).order_by('-created_at')
     
     # Apply status filter
     if status_filter == 'open':
@@ -52,7 +59,7 @@ def challenges_list(request):
     elif status_filter == 'cancelled':
         challenges = challenges.filter(status='CANCELLED')
     elif status_filter == 'all':
-        # Show all challenges when explicitly requested
+        # Show all challenges when explicitly requested (but still respect user relationship)
         pass
     
     # Get counts for each status
@@ -89,7 +96,7 @@ def challenge_detail(request, challenge_id):
 
 @login_required
 def challenge_edit(request, challenge_id):
-    """Edit a challenge"""
+    """Edit a challenge - redirects to create form with pre-populated data"""
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
     # Only the creator can edit
@@ -107,43 +114,56 @@ def challenge_edit(request, challenge_id):
             messages.error(request, "Cannot edit challenge in its current status")
         return redirect('challenge_detail', challenge_id=challenge_id)
     
-    if request.method == 'POST':
-        form = ChallengeForm(request.POST, user=request.user, instance=challenge)
-        if form.is_valid():
-            # Update challenge with form data
-            updated_challenge = form.save(commit=False)
-            updated_challenge.challenger = request.user  # Ensure challenger is set
-            updated_challenge.save()
-            
-            messages.success(request, "Challenge updated successfully")
-            return redirect('challenge_detail', challenge_id=challenge_id)
-        else:
-            messages.error(request, "Please correct the errors below")
-    else:
-        form = ChallengeForm(user=request.user, instance=challenge)
-    
-    return render(request, 'challenges/edit.html', {'form': form, 'challenge': challenge})
+    # Redirect to create form with edit parameters
+    return redirect('challenge_create_edit', challenge_id=challenge_id)
 
 
 @login_required
 def challenge_delete(request, challenge_id):
-    """Delete a challenge"""
+    """Delete a challenge with enhanced validation and safety checks"""
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
     # Only the creator can delete
     if request.user != challenge.challenger:
-        return HttpResponseForbidden("You can only delete your own challenges")
-    
-    # Only allow deleting if challenge is OPEN or PENDING
-    if challenge.status not in ['OPEN', 'PENDING']:
-        messages.error(request, "Cannot delete challenge that has been accepted or completed")
+        messages.error(request, "You can only delete your own challenges")
         return redirect('challenge_detail', challenge_id=challenge_id)
     
-    if request.method == 'POST':
-        challenge.delete()
-        messages.success(request, "Challenge deleted successfully")
-        return redirect('challenges_list')
+    # Enhanced status validation with specific messages
+    if challenge.status not in ['OPEN', 'PENDING']:
+        if challenge.status == 'ACCEPTED':
+            messages.error(request, "Cannot delete challenge that has been accepted by the opponent. The challenge is now active and cannot be deleted.")
+        elif challenge.status == 'COMPLETED':
+            messages.error(request, "Cannot delete challenge that has been completed. Completed challenges are kept for record purposes.")
+        elif challenge.status == 'CANCELLED':
+            messages.error(request, "This challenge has already been cancelled.")
+        else:
+            messages.error(request, f"Cannot delete challenge in '{challenge.get_status_display()}' status.")
+        return redirect('challenge_detail', challenge_id=challenge_id)
     
+    # Additional safety checks
+    if challenge.status == 'PENDING' and challenge.opponent:
+        # Check if opponent has been notified (has an opponent but still pending)
+        messages.warning(request, f"This challenge has been sent to {challenge.opponent.username}. Deleting it will cancel the invitation.")
+    
+    if request.method == 'POST':
+        try:
+            # Store challenge details for logging/debugging
+            challenge_title = f"{challenge.get_challenge_type_display()} vs {challenge.opponent.username if challenge.opponent else 'Open to All'}"
+            challenge_date = challenge.date.strftime('%Y-%m-%d') if challenge.date else 'No date set'
+            
+            # Delete the challenge
+            challenge.delete()
+            
+            # Success message with details
+            messages.success(request, f"Challenge '{challenge_title}' scheduled for {challenge_date} has been successfully deleted.")
+            return redirect('challenges_list')
+            
+        except Exception as e:
+            # Handle any unexpected errors during deletion
+            messages.error(request, f"An error occurred while deleting the challenge: {str(e)}")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+    
+    # GET request - show confirmation page
     return render(request, 'challenges/delete_confirm.html', {'challenge': challenge})
 
 
@@ -485,12 +505,19 @@ def admin_update_match_result(request, challenge_id):
 
 @user_passes_test(is_admin)
 def admin_select_winner(request, challenge_id):
-    """Admin view to manually select winner"""
+    """Admin view to manually select winner with enhanced validation"""
     challenge = get_object_or_404(Challenge, id=challenge_id)
     
-    # Check if challenge is in the right status
+    # Enhanced status validation with specific messages
     if challenge.status not in ['ACCEPTED', 'COMPLETED']:
-        messages.error(request, "Can only select winner for accepted or completed challenges.")
+        if challenge.status == 'OPEN':
+            messages.error(request, "Cannot select winner for open challenges. The challenge must be accepted first.")
+        elif challenge.status == 'PENDING':
+            messages.error(request, "Cannot select winner for pending challenges. The challenge must be accepted first.")
+        elif challenge.status == 'CANCELLED':
+            messages.error(request, "Cannot select winner for cancelled challenges.")
+        else:
+            messages.error(request, f"Cannot select winner for challenges in '{challenge.get_status_display()}' status.")
         return redirect('challenge_detail', challenge_id=challenge_id)
     
     # Check if match results exist, if not redirect to update results first
@@ -500,19 +527,44 @@ def admin_select_winner(request, challenge_id):
         messages.warning(request, "Please update match results first before selecting a winner.")
         return redirect('admin_update_match_result', challenge_id=challenge_id)
     
+    # Check if winner is already set
+    if challenge.winner:
+        messages.info(request, f"Winner is already set to {challenge.winner.username}. You can change the winner by selecting a different option.")
+    
     if request.method == 'POST':
         winner_id = request.POST.get('winner')
+        
         if winner_id:
+            # Winner selected
             from django.contrib.auth import get_user_model
             User = get_user_model()
             winner = get_object_or_404(User, id=winner_id)
+            
+            # Store previous winner for comparison
+            previous_winner = challenge.winner
+            
+            # Set new winner
             challenge.winner = winner
             challenge.status = 'COMPLETED'
             challenge.completed_at = timezone.now()
             challenge.save()
-            messages.success(request, f'Winner set to {winner.username}')
+            
+            # Success message with details
+            if previous_winner and previous_winner != winner:
+                messages.success(request, f'Winner changed from {previous_winner.username} to {winner.username}. Challenge completed successfully!')
+            else:
+                messages.success(request, f'Winner set to {winner.username}. Challenge completed successfully!')
+                
+        elif winner_id == '':
+            # Draw selected
+            challenge.winner = None
+            challenge.status = 'COMPLETED'
+            challenge.completed_at = timezone.now()
+            challenge.save()
+            
+            messages.success(request, 'Match recorded as a draw. Challenge completed successfully!')
         else:
-            messages.error(request, 'Please select a winner')
+            messages.error(request, 'Please select a winner or choose draw.')
         
         return redirect('challenge_detail', challenge_id=challenge_id)
     
@@ -526,3 +578,131 @@ def admin_select_winner(request, challenge_id):
         'possible_winners': possible_winners,
         'match_result': match_result
     })
+
+
+@login_required
+def challenge_create_edit(request, challenge_id=None):
+    """Create a new challenge or edit existing one - unified form"""
+    
+    # If challenge_id is provided, we're editing
+    is_edit_mode = challenge_id is not None
+    challenge = None
+    
+    if is_edit_mode:
+        challenge = get_object_or_404(Challenge, id=challenge_id)
+        
+        # Only the creator can edit
+        if request.user != challenge.challenger:
+            messages.error(request, "You can only edit your own challenges")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+        
+        # Only allow editing if challenge is PENDING or OPEN (not yet accepted by opponent)
+        if challenge.status not in ['PENDING', 'OPEN']:
+            if challenge.status == 'ACCEPTED':
+                messages.error(request, "Cannot edit challenge that has been accepted by the opponent")
+            elif challenge.status == 'COMPLETED':
+                messages.error(request, "Cannot edit challenge that has been completed")
+            else:
+                messages.error(request, "Cannot edit challenge in its current status")
+            return redirect('challenge_detail', challenge_id=challenge_id)
+    
+    # Check if profile is complete
+    profile_complete, missing_field = is_profile_complete(request.user)
+    
+    if not profile_complete:
+        messages.warning(
+            request, 
+            f'Please complete your profile before creating a challenge. Missing: {missing_field.replace("_", " ").title()}'
+        )
+        return redirect('profile_edit')
+    
+    # Check for active challenges - prevent creating more than one active challenge at a time
+    # Only check for active challenges when creating new ones, not when editing
+    if not is_edit_mode and has_active_challenge(request.user):
+        active_challenge = get_active_challenge(request.user)
+        messages.warning(
+            request, 
+            f'You already have an active challenge. Please complete or cancel your current challenge before creating a new one. '
+            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.opponent.username if active_challenge.opponent else "Open to All"}'
+        )
+        return redirect('challenge_detail', challenge_id=active_challenge.id)
+    
+    if request.method == 'POST':
+        if is_edit_mode:
+            form = ChallengeForm(request.POST, user=request.user, instance=challenge)
+        else:
+            form = ChallengeForm(request.POST, user=request.user)
+        
+        if form.is_valid():
+            if is_edit_mode:
+                # Update existing challenge
+                updated_challenge = form.save(commit=False)
+                updated_challenge.challenger = request.user  # Ensure challenger is set
+                updated_challenge.save()
+                
+                messages.success(request, "Challenge updated successfully")
+                return redirect('challenge_detail', challenge_id=challenge_id)
+            else:
+                # Create new challenge
+                challenge = form.save(commit=False)
+                challenge.challenger = request.user
+                challenge.status = 'OPEN'
+                challenge.created_at = timezone.now()
+                
+                # If a specific opponent is selected, set status to PENDING
+                # If no opponent (Open to All), set status to OPEN
+                if challenge.opponent:
+                    challenge.status = 'PENDING'
+                else:
+                    challenge.status = 'OPEN'
+                
+                # Handle time slot - set time from selected time slot
+                time_slot_id = request.POST.get('time_slot')
+                if time_slot_id:
+                    try:
+                        from tampere_cricket.matches.models import TimeSlot
+                        time_slot = TimeSlot.objects.get(id=time_slot_id)
+                        challenge.time = time_slot.start_time
+                    except TimeSlot.DoesNotExist:
+                        pass
+                
+                # Set scheduled_at if both date and time are provided
+                if challenge.date and challenge.time:
+                    from datetime import datetime
+                    scheduled_at = datetime.combine(challenge.date, challenge.time)
+                    # Make it timezone-aware
+                    challenge.scheduled_at = timezone.make_aware(scheduled_at)
+                
+                # Handle summary field - combine with description if provided
+                summary = form.cleaned_data.get('summary', '')
+                if summary and challenge.description:
+                    challenge.description = f"{challenge.description}\n\nAdditional Comments: {summary}"
+                elif summary:
+                    challenge.description = f"Additional Comments: {summary}"
+                
+                # Save the challenge
+                try:
+                    challenge.save()
+                    
+                    if challenge.opponent:
+                        messages.success(request, f'Challenge sent to {challenge.opponent.username}! They can now accept or decline.')
+                    else:
+                        messages.success(request, f'Challenge created successfully! Your challenge is now open to all players.')
+                    
+                    return redirect('challenge_detail', challenge_id=challenge.id)
+                except Exception as e:
+                    messages.error(request, f'Error creating challenge: {str(e)}')
+                    return render(request, 'challenges/create.html', {'form': form, 'is_edit_mode': is_edit_mode, 'challenge': challenge})
+        else:
+            # Form is not valid, show errors
+            messages.error(request, 'Please correct the errors below.')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        if is_edit_mode:
+            form = ChallengeForm(user=request.user, instance=challenge)
+        else:
+            form = ChallengeForm(user=request.user)
+    
+    return render(request, 'challenges/create.html', {'form': form, 'is_edit_mode': is_edit_mode, 'challenge': challenge})

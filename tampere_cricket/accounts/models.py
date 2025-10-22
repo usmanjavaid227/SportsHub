@@ -165,32 +165,57 @@ class Profile(models.Model):
     
     def _update_ratings(self):
         """Update Elo-style ratings based on performance - starts from 0"""
+        # Initialize all ratings to 0
+        self.rating = 0.0
+        self.batting_rating = 0.0
+        self.bowling_rating = 0.0
+        
+        # If no matches played, all ratings remain 0
         if self.matches_played == 0:
-            self.rating = 0.0
-            self.batting_rating = 0.0
-            self.bowling_rating = 0.0
             return
         
-        # Rating starts from 0 and increases with wins
-        # Base points: 10 points per win, 5 points per run, 3 points per wicket
-        base_rating = (self.wins * 10) + (self.runs * 0.5) + (self.wickets * 3)
+        # If no wins, runs, or wickets, rating remains 0
+        if self.wins == 0 and self.runs == 0 and self.wickets == 0:
+            return
         
-        # Win rate bonus: up to 50 points for 100% win rate
+        # Calculate win rate
         win_rate = self.wins / self.matches_played if self.matches_played > 0 else 0
-        win_rate_bonus = win_rate * 50
         
-        # Performance bonus based on averages
+        # ELO-style rating calculation
+        # Base rating starts at 1000 (standard ELO starting point)
+        base_rating = 1000.0
+        
+        # Win bonus: +50 points per win
+        win_bonus = self.wins * 50
+        
+        # Performance bonuses
+        runs_bonus = self.runs * 0.1  # Small bonus for runs
+        wickets_bonus = self.wickets * 2  # Bonus for wickets
+        
+        # Win rate multiplier (up to 2x for 100% win rate)
+        win_rate_multiplier = 1 + win_rate
+        
+        # Calculate averages for performance metrics
         runs_per_match = self.runs / self.matches_played if self.matches_played > 0 else 0
         wickets_per_match = self.wickets / self.matches_played if self.matches_played > 0 else 0
         
-        # Batting rating: starts from 0, increases with runs and win rate
-        self.batting_rating = (self.runs * 0.3) + (runs_per_match * 2) + (win_rate * 25)
+        # Batting rating: based on runs and win rate
+        if self.runs > 0:
+            self.batting_rating = (base_rating * 0.3) + (self.runs * 0.2) + (runs_per_match * 5) + (win_rate * 100)
+        else:
+            self.batting_rating = 0.0
         
-        # Bowling rating: starts from 0, increases with wickets and win rate
-        self.bowling_rating = (self.wickets * 2) + (wickets_per_match * 10) + (win_rate * 25)
+        # Bowling rating: based on wickets and win rate
+        if self.wickets > 0:
+            self.bowling_rating = (base_rating * 0.3) + (self.wickets * 3) + (wickets_per_match * 8) + (win_rate * 100)
+        else:
+            self.bowling_rating = 0.0
         
         # Overall rating: combination of all factors
-        self.rating = base_rating + win_rate_bonus + (runs_per_match * 1) + (wickets_per_match * 5)
+        if self.wins > 0 or self.runs > 0 or self.wickets > 0:
+            self.rating = (base_rating * 0.4) + win_bonus + runs_bonus + wickets_bonus + (win_rate * 200)
+        else:
+            self.rating = 0.0
     
     def get_win_rate(self):
         """Get win rate percentage"""

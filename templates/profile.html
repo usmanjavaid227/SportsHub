@@ -285,72 +285,90 @@
                             <div id="recentMatches" class="accordion-collapse collapse" aria-labelledby="recentMatchesHeader" data-bs-parent="#profileAccordion">
                                 <div class="accordion-body" style="background: rgba(255, 255, 255, 0.03); color: var(--sh-white);">
     {% if recent_matches %}
-        <div class="table-responsive">
-                                        <table class="table table-sm" style="color: var(--sh-white);">
-                                            <thead style="background: rgba(255,153,0,0.1); border-bottom: 1px solid rgba(255,153,0,0.2);">
+        <div class="card custom-leaderboard-card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                                        <table class="recent-matches-table" style="color: var(--sh-white); margin-bottom: 0;">
+                                            <thead class="recent-matches-header">
                                                 <tr>
-                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Date</th>
-                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Opponent</th>
-                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Result</th>
-                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Runs</th>
-                                                    <th class="text-white fw-bold" style="color: var(--sh-white) !important;">Wickets</th>
+                                                    <th class="text-center" style="color: var(--sh-white) !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 0.75rem; border-bottom: 2px solid var(--sh-orange);">
+                                                        <i class="fa-solid fa-calendar-days me-2" style="color: var(--sh-orange);"></i>Date
+                                                    </th>
+                                                    <th class="text-center" style="color: var(--sh-white) !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 0.75rem; border-bottom: 2px solid var(--sh-orange);">
+                                                        <i class="fa-solid fa-user me-2" style="color: var(--sh-orange);"></i>Opponent
+                                                    </th>
+                                                    <th class="text-center" style="color: var(--sh-white) !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 0.75rem; border-bottom: 2px solid var(--sh-orange);">
+                                                        <i class="fa-solid fa-trophy me-2" style="color: var(--sh-orange);"></i>Result
+                                                    </th>
+                                                    <th class="text-center" style="color: var(--sh-white) !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 0.75rem; border-bottom: 2px solid var(--sh-orange);">
+                                                        <i class="fa-solid fa-bat me-2" style="color: var(--sh-orange);"></i>Runs
+                                                    </th>
+                                                    <th class="text-center" style="color: var(--sh-white) !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem 0.75rem; border-bottom: 2px solid var(--sh-orange);">
+                                                        <i class="fa-solid fa-bowling-ball me-2" style="color: var(--sh-orange);"></i>Wickets
+                                                    </th>
               </tr>
             </thead>
-                                            <tbody style="background: rgba(255, 255, 255, 0.02);">
+                                            <tbody class="recent-matches-body">
               {% for match in recent_matches %}
-                                                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                                                    <td style="color: var(--sh-white);">
+                                                <tr class="recent-match-row" style="transition: all 0.3s ease;">
+                                                    <td class="text-center" style="color: var(--sh-white); padding: 1rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-weight: 500;">
                   {% if match.completed_at %}
-                    {{ match.completed_at|date:"M d, Y" }}
+                    <span class="match-date">{{ match.completed_at|date:"M d, Y" }}</span>
                   {% elif match.scheduled_at %}
-                    {{ match.scheduled_at|date:"M d, Y" }}
+                    <span class="match-date">{{ match.scheduled_at|date:"M d, Y" }}</span>
                   {% elif match.date %}
-                    {{ match.date|date:"M d, Y" }}
+                    <span class="match-date">{{ match.date|date:"M d, Y" }}</span>
                   {% else %}
-                    {{ match.created_at|date:"M d, Y" }}
+                    <span class="match-date">{{ match.created_at|date:"M d, Y" }}</span>
                   {% endif %}
                 </td>
-                                                    <td style="color: var(--sh-white);">
+                                                    <td class="text-center" style="color: var(--sh-white); padding: 1rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-weight: 500;">
                   {% if match.challenger == user %}
-                    {{ match.opponent.username }}
+                    <span class="opponent-name">{{ match.opponent.username }}</span>
                   {% else %}
-                    {{ match.challenger.username }}
+                    <span class="opponent-name">{{ match.challenger.username }}</span>
                   {% endif %}
                 </td>
-                                                    <td style="color: var(--sh-white);">
+                                                    <td class="text-center" style="padding: 1rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                   {% if match.winner == user %}
-                                                            <span class="badge" style="background: #28a745; color: white;">Won</span>
+                                                            <span class="badge match-result-won">
+                                                                <i class="fa-solid fa-trophy me-1"></i>Won
+                                                            </span>
                   {% else %}
-                                                            <span class="badge" style="background: #dc3545; color: white;">Lost</span>
+                                                            <span class="badge match-result-lost">
+                                                                <i class="fa-solid fa-times me-1"></i>Lost
+                                                            </span>
                   {% endif %}
                 </td>
-                                                    <td style="color: var(--sh-white);">
+                                                    <td class="text-center" style="color: var(--sh-white); padding: 1rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-weight: 600; font-size: 1.1rem;">
                   {% if match.match_result %}
                     {% if match.challenger == user %}
-                      {{ match.match_result.challenger_runs }}
+                      <span class="runs-score">{{ match.match_result.challenger_runs }}</span>
                     {% else %}
-                      {{ match.match_result.opponent_runs }}
+                      <span class="runs-score">{{ match.match_result.opponent_runs }}</span>
                     {% endif %}
                   {% else %}
-                    -
+                    <span class="no-data">-</span>
                   {% endif %}
                 </td>
-                                                    <td style="color: var(--sh-white);">
+                                                    <td class="text-center" style="color: var(--sh-white); padding: 1rem 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-weight: 600; font-size: 1.1rem;">
                   {% if match.match_result %}
                     {% if match.challenger == user %}
-                      {{ match.match_result.challenger_wickets }}
+                      <span class="wickets-score">{{ match.match_result.challenger_wickets }}</span>
                     {% else %}
-                      {{ match.match_result.opponent_wickets }}
+                      <span class="wickets-score">{{ match.match_result.opponent_wickets }}</span>
                     {% endif %}
                   {% else %}
-                    -
+                    <span class="no-data">-</span>
                   {% endif %}
                 </td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
-                                    </div>
+                </div>
+            </div>
+        </div>
                                     {% else %}
                                     <div class="text-center text-muted">
                                         <i class="fa-solid fa-history fa-3x mb-3" style="color: var(--sh-orange);"></i>

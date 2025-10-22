@@ -1,68 +1,161 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}SportsHub{% endblock %}
+{% block title %}Delete Challenge - SportsHub{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
-                <div class="card-header" style="background: rgba(220,53,69,0.1); border-bottom: 1px solid #dc3545;">
-                    <h4 class="mb-0" style="color: var(--sh-white);">
-                        <i class="fa-solid fa-trash me-2" style="color: #dc3545;"></i>Delete Challenge
-                    </h4>
+        <div class="col-12 col-lg-8">
+            <!-- Main Delete Confirmation Card -->
+            <div class="card mb-4" style="background: linear-gradient(135deg, rgba(220,53,69,0.05) 0%, rgba(220,53,69,0.02) 100%); border: 1px solid rgba(220,53,69,0.3); box-shadow: 0 8px 32px rgba(220,53,69,0.1);">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(220,53,69,0.15) 0%, rgba(220,53,69,0.08) 100%); border-bottom: 1px solid rgba(220,53,69,0.3);">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div style="width: 50px; height: 50px; background: rgba(220,53,69,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fa-solid fa-trash" style="color: #dc3545; font-size: 1.2rem;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="mb-0" style="color: var(--sh-white);">
+                                Delete Challenge
+                            </h4>
+                            <p class="mb-0" style="color: var(--sh-gray); font-size: 0.9rem;">Permanent action - cannot be undone</p>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="card-body">
-                    <div class="alert" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);">
-                        <i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i>
-                        <strong>Warning:</strong> This action cannot be undone. The challenge will be permanently deleted.
-                    </div>
-                    
-                    <h5>Challenge Details:</h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Challenger:</strong> {{ challenge.challenger.username }}</p>
-                            <p><strong>Opponent:</strong> {{ challenge.opponent.username|default:"Open to All" }}</p>
-                            <p><strong>Type:</strong> {{ challenge.get_challenge_type_display }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Date:</strong> {{ challenge.date|date:"F d, Y" }}</p>
-                            <p><strong>Time:</strong> {{ challenge.time|time:"g:i A" }}</p>
-                            <p><strong>Status:</strong> {{ challenge.get_status_display }}</p>
+                    <!-- Warning Alert -->
+                    <div class="alert mb-4" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white); border-radius: 8px;">
+                        <div class="d-flex align-items-start">
+                            <i class="fa-solid fa-exclamation-triangle me-3 mt-1" style="color: #ffc107; font-size: 1.1rem;"></i>
+                            <div>
+                                <h6 class="mb-2" style="color: #ffc107;"><strong>⚠️ Warning: Permanent Deletion</strong></h6>
+                                <p class="mb-0">This action will permanently delete the challenge and all associated data. This cannot be undone.</p>
+                            </div>
                         </div>
                     </div>
                     
-                    {% if challenge.metric and challenge.target_value %}
-                    <div class="mt-3">
-                        <h6>Challenge Metrics:</h6>
-                        <p><strong>{{ challenge.metric|title }}:</strong> {{ challenge.target_value }}</p>
-                        {% if challenge.over_count %}
-                        <p><strong>Overs:</strong> {{ challenge.over_count }}</p>
-                        {% endif %}
+                    <!-- Challenge Details Card -->
+                    <div class="card mb-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);">
+                        <div class="card-header" style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <h6 class="mb-0" style="color: var(--sh-white);">
+                                <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>Challenge Details
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-user me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Challenger:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.challenger.username }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-user-friends me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Opponent:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.opponent.username|default:"Open to All" }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-bullseye me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Type:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.get_challenge_type_display }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-calendar me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Date:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.date|date:"F d, Y" }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-clock me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Time:</span>
+                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.time|time:"g:i A" }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fa-solid fa-flag me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                        <span style="color: var(--sh-gray); font-size: 0.9rem;">Status:</span>
+                                        <span class="ms-2 badge" style="background: var(--sh-orange); color: #000;">{{ challenge.get_status_display }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if challenge.metric and challenge.target_value %}
+                            <div class="mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                                <h6 style="color: var(--sh-white); margin-bottom: 1rem;">
+                                    <i class="fa-solid fa-chart-line me-2" style="color: var(--sh-orange);"></i>Challenge Metrics
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-target me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                            <span style="color: var(--sh-gray); font-size: 0.9rem;">{{ challenge.metric|title }}:</span>
+                                            <span class="ms-2" style="color: var(--sh-white); font-weight: 500;">{{ challenge.target_value }}</span>
+                                        </div>
+                                    </div>
+                                    {% if challenge.over_count %}
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-stopwatch me-2" style="color: var(--sh-orange); width: 16px;"></i>
+                                            <span style="color: var(--sh-gray); font-size: 0.9rem;">Overs:</span>
+                                            <span class="ms-2" style="color: var(--sh-white); font-weight: 500;">{{ challenge.over_count }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if challenge.description %}
+                            <div class="mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                                <h6 style="color: var(--sh-white); margin-bottom: 1rem;">
+                                    <i class="fa-solid fa-align-left me-2" style="color: var(--sh-orange);"></i>Description
+                                </h6>
+                                <p style="color: var(--sh-gray); font-style: italic; margin-bottom: 0;">{{ challenge.description }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endif %}
                     
-                    {% if challenge.description %}
-                    <div class="mt-3">
-                        <h6>Description:</h6>
-                        <p class="text-muted">{{ challenge.description }}</p>
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 justify-content-center">
+                        <form method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg px-4" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(220,53,69,0.3);">
+                                <i class="fa-solid fa-trash me-2"></i>Yes, Delete Challenge
+                            </button>
+                        </form>
+                        <a href="{% url 'challenge_detail' challenge.id %}" class="btn btn-outline-secondary btn-lg px-4" style="border-radius: 8px;">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Cancel
+                        </a>
                     </div>
-                    {% endif %}
-                </div>
-                <div class="card-footer">
-                    <form method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger me-2">
-                            <i class="fa-solid fa-trash me-1"></i>Yes, Delete Challenge
-                        </button>
-                    </form>
-                    <a href="{% url 'challenge_detail' challenge.id %}" class="btn btn-secondary">
-                        <i class="fa-solid fa-arrow-left me-1"></i>Cancel
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(220,53,69,0.4) !important;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(220,53,69,0.15) !important;
+}
+</style>
 {% endblock %}

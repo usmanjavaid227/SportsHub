@@ -3,78 +3,245 @@
 
 {% block title %}SportsHub{% endblock %}
 
+{% block extra_css %}
+<style>
+/* Custom date input styling with orange theme */
+input[type="date"] {
+    background: #111 !important;
+    color: var(--sh-white) !important;
+    border: 1px solid #333 !important;
+    border-radius: 0.375rem !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+input[type="date"]:focus {
+    background: #111 !important;
+    color: var(--sh-white) !important;
+    border-color: var(--sh-orange) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.25) !important;
+    outline: none !important;
+}
+
+input[type="date"]:hover {
+    border-color: var(--sh-orange) !important;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) - Enhanced calendar icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background: var(--sh-orange) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23000000'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 16px 16px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 8px !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    background-color: var(--sh-orange-dark) !important;
+    transform: scale(1.1) !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Firefox - Enhanced calendar icon styling */
+input[type="date"]::-moz-calendar-picker-indicator {
+    background: var(--sh-orange) !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23000000'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 16px 16px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    width: 20px !important;
+    height: 20px !important;
+    opacity: 1 !important;
+}
+
+input[type="date"]::-moz-calendar-picker-indicator:hover {
+    background-color: var(--sh-orange-dark) !important;
+    transform: scale(1.1) !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Date picker dropdown styling */
+input[type="date"]::-webkit-datetime-edit {
+    color: var(--sh-white) !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    background: transparent !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+    color: var(--sh-white) !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+    color: var(--sh-white) !important;
+    background: transparent !important;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field:focus,
+input[type="date"]::-webkit-datetime-edit-day-field:focus,
+input[type="date"]::-webkit-datetime-edit-year-field:focus {
+    background: rgba(255, 153, 0, 0.1) !important;
+    color: var(--sh-orange) !important;
+}
+
+/* Additional styling to ensure calendar icon is visible */
+input[type="date"] {
+    position: relative !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 1 !important;
+    background: var(--sh-orange) !important;
+    border: none !important;
+    outline: none !important;
+    padding: 4px !important;
+    border-radius: 3px !important;
+}
+
+/* Force calendar icon to be orange */
+input[type="date"]::-webkit-calendar-picker-indicator:before {
+    content: '' !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: var(--sh-orange) !important;
+    border-radius: 3px !important;
+}
+
+/* Custom scrollbar styling for modal */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--sh-orange);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--sh-orange-dark);
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
 <div class="row justify-content-center">
     <div class="col-md-8">
     <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.05) 0%, rgba(255,153,0,0.02) 100%); border: 1px solid rgba(255,153,0,0.2);">
         <div class="card-header" style="background: rgba(255,153,0,0.1); border-bottom: 1px solid var(--sh-orange);">
-          <h4 class="mb-0" style="color: var(--sh-white);"><i class="fa-solid fa-plus-circle me-2" style="color: var(--sh-orange);"></i>Create New Challenge</h4>
+          <h4 class="mb-0" style="color: var(--sh-white);">
+            {% if is_edit_mode %}
+              <i class="fa-solid fa-edit me-2" style="color: var(--sh-orange);"></i>Edit Challenge
+            {% else %}
+              <i class="fa-solid fa-plus-circle me-2" style="color: var(--sh-orange);"></i>Create New Challenge
+            {% endif %}
+          </h4>
         </div>
       <div class="card-body">
           <!-- Active Challenge Warning -->
+          {% if not is_edit_mode %}
           <div class="alert mb-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
             <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
             <strong>Challenge Creation Rule:</strong> You can only have one active challenge at a time. 
             Complete or cancel your current challenge before creating a new one.
           </div>
+          {% endif %}
           
-          <form method="post" enctype="multipart/form-data">
+          {% if is_edit_mode %}
+          <div class="alert mb-4" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+            <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
+            <strong>Edit Mode:</strong> You are editing your challenge. All fields are pre-populated with current values.
+            You can only edit challenges that are still pending or open.
+          </div>
+          {% endif %}
+          
+          <form method="post" enctype="multipart/form-data" action="{% if is_edit_mode %}{% url 'challenge_create_edit' challenge.id %}{% else %}{% url 'challenge_create' %}{% endif %}">
           {% csrf_token %}
             
-            <!-- Sport Selection (Fixed) -->
+            <!-- Sport Selection -->
             <div class="mb-3">
-              <label class="form-label">Sport <span class="text-danger">*</span></label>
-              <select class="form-select" disabled style="background-color: #f8f9fa; color: #000;">
+              <label class="form-label" style="color: var(--sh-white);">Sport <span class="text-danger">*</span></label>
+              <select class="form-select" id="sport-select" name="sport" style="background: #111; color: var(--sh-white); border-color: #333;" onchange="handleSportChange(this)">
                 <option value="cricket" selected>Cricket</option>
+                <option value="football">Football</option>
+                <option value="badminton">Badminton</option>
+                <option value="volleyball">Volleyball</option>
+                <option value="table_tennis">Table Tennis</option>
               </select>
-              <div class="form-text" style="color: #000;">Currently only Cricket is supported</div>
+              <div class="form-text" style="color: var(--sh-gray);">Currently only Cricket is supported</div>
+              <div id="sport-warning" class="alert alert-warning mt-2" style="display: none; background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);">
+                <i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i>
+                <strong>Coming Soon:</strong> Only Cricket challenges are currently supported. Other sports will be available soon!
+              </div>
             </div>
-
-            <!-- Opponent Selection -->
-          <div class="mb-3">
-              <label class="form-label">Opponent <span class="text-danger">*</span></label>
-            {{ form.opponent }}
-            {% if form.opponent.errors %}
-              <div class="text-danger small">{{ form.opponent.errors|striptags }}</div>
-            {% endif %}
-          </div>
 
             <!-- Challenge Type -->
             <div class="mb-3">
-              <label class="form-label">Challenge Type <span class="text-danger">*</span></label>
+              <label class="form-label" style="color: var(--sh-white);">Challenge Type <span class="text-danger">*</span></label>
               {{ form.challenge_type }}
               {% if form.challenge_type.errors %}
                 <div class="text-danger small">{{ form.challenge_type.errors|striptags }}</div>
               {% endif %}
             </div>
 
+            <!-- Opponent Selection (for regular challenges) -->
+            <div class="mb-3" id="opponent-section">
+              <label class="form-label" style="color: var(--sh-white);">Opponent <span class="text-danger">*</span></label>
+              {{ form.opponent }}
+              {% if form.opponent.errors %}
+                <div class="text-danger small">{{ form.opponent.errors|striptags }}</div>
+              {% endif %}
+            </div>
+
             <!-- Single Wicket Challenge Participants -->
             <div id="single-wicket-participants" class="mb-4" style="display: none;">
-              <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                  <h6 class="mb-0">
-                    <i class="fas fa-users"></i> Single Wicket Challenge Participants
+              <div class="card" style="background: linear-gradient(135deg, rgba(255,153,0,0.08) 0%, rgba(255,153,0,0.03) 100%); border: 1px solid rgba(255,153,0,0.3);">
+                <div class="card-header" style="background: rgba(255,153,0,0.15); border-bottom: 1px solid rgba(255,153,0,0.3);">
+                  <h6 class="mb-0" style="color: var(--sh-white);">
+                    <i class="fa-solid fa-users me-2" style="color: var(--sh-orange);"></i>Single Wicket Challenge Participants
                   </h6>
                 </div>
                 <div class="card-body">
                   <div class="row">
                     <!-- Team 1 -->
                     <div class="col-md-6">
-                      <div class="card border-info">
-                        <div class="card-header bg-info text-white">
-                          <h6 class="mb-0">Team 1</h6>
+                      <div class="card" style="background: rgba(23, 162, 184, 0.1); border: 1px solid rgba(23, 162, 184, 0.3);">
+                        <div class="card-header" style="background: rgba(23, 162, 184, 0.2); border-bottom: 1px solid rgba(23, 162, 184, 0.3);">
+                          <h6 class="mb-0" style="color: var(--sh-white);">
+                            <i class="fa-solid fa-users me-2" style="color: #17a2b8;"></i>Team 1
+                          </h6>
                         </div>
                         <div class="card-body">
                           <div class="mb-3">
-                            <label class="form-label">Batter <span class="text-danger">*</span></label>
+                            <label class="form-label" style="color: var(--sh-white);">Batter <span class="text-danger">*</span></label>
                             {{ form.team1_batter }}
                             {% if form.team1_batter.errors %}
                               <div class="text-danger small">{{ form.team1_batter.errors|striptags }}</div>
                             {% endif %}
                           </div>
                           <div class="mb-3">
-                            <label class="form-label">Bowler <span class="text-danger">*</span></label>
+                            <label class="form-label" style="color: var(--sh-white);">Bowler <span class="text-danger">*</span></label>
                             {{ form.team1_bowler }}
                             {% if form.team1_bowler.errors %}
                               <div class="text-danger small">{{ form.team1_bowler.errors|striptags }}</div>
@@ -86,20 +253,22 @@
                     
                     <!-- Team 2 -->
                     <div class="col-md-6">
-                      <div class="card border-success">
-                        <div class="card-header bg-success text-white">
-                          <h6 class="mb-0">Team 2</h6>
+                      <div class="card" style="background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3);">
+                        <div class="card-header" style="background: rgba(40, 167, 69, 0.2); border-bottom: 1px solid rgba(40, 167, 69, 0.3);">
+                          <h6 class="mb-0" style="color: var(--sh-white);">
+                            <i class="fa-solid fa-users me-2" style="color: #28a745;"></i>Team 2
+                          </h6>
                         </div>
                         <div class="card-body">
                           <div class="mb-3">
-                            <label class="form-label">Batter <span class="text-danger">*</span></label>
+                            <label class="form-label" style="color: var(--sh-white);">Batter <span class="text-danger">*</span></label>
                             {{ form.team2_batter }}
                             {% if form.team2_batter.errors %}
                               <div class="text-danger small">{{ form.team2_batter.errors|striptags }}</div>
                             {% endif %}
                           </div>
                           <div class="mb-3">
-                            <label class="form-label">Bowler <span class="text-danger">*</span></label>
+                            <label class="form-label" style="color: var(--sh-white);">Bowler <span class="text-danger">*</span></label>
                             {{ form.team2_bowler }}
                             {% if form.team2_bowler.errors %}
                               <div class="text-danger small">{{ form.team2_bowler.errors|striptags }}</div>
@@ -110,8 +279,8 @@
                     </div>
                   </div>
                   
-                  <div class="alert alert-info mt-3">
-                    <i class="fas fa-info-circle"></i>
+                  <div class="alert mt-3" style="background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+                    <i class="fa-solid fa-info-circle me-2" style="color: var(--sh-orange);"></i>
                     <strong>Single Wicket Challenge:</strong> Each team has one batter and one bowler. 
                     The winner is determined by which batter scores more runs. 
                     <strong>Important:</strong> The same player cannot be selected in both teams.
@@ -120,55 +289,57 @@
               </div>
             </div>
 
+            <!-- Challenge Metrics (only for non-single wicket challenges) -->
+            <div id="challenge-metrics-section" class="mb-3">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label" style="color: var(--sh-white);">Challenge Metric <span id="metric-required" class="text-danger">*</span></label>
+                    {{ form.metric }}
+                    {% if form.metric.errors %}
+                      <div class="text-danger small">{{ form.metric.errors|striptags }}</div>
+                    {% endif %}
+                    <div class="form-text" style="color: var(--sh-gray);">What will be measured? (e.g., Runs, Wickets, Sixes)</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label" style="color: var(--sh-white);">Target Value <span id="target-required" class="text-danger">*</span></label>
+                    {{ form.target_value }}
+                    {% if form.target_value.errors %}
+                      <div class="text-danger small">{{ form.target_value.errors|striptags }}</div>
+                    {% endif %}
+                    <div class="form-text" style="color: var(--sh-gray);">What is the target to achieve?</div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label" style="color: var(--sh-white);">Number of Overs <span id="overs-required" class="text-danger">*</span></label>
+                    {{ form.over_count }}
+                    {% if form.over_count.errors %}
+                      <div class="text-danger small">{{ form.over_count.errors|striptags }}</div>
+                    {% endif %}
+                    <div class="form-text" style="color: var(--sh-gray);">How many overs for this challenge?</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
         <!-- Challenge Details -->
         <div class="mb-3">
-          <label class="form-label">Challenge Description <span class="text-danger">*</span></label>
+          <label class="form-label" style="color: var(--sh-white);">Challenge Description <span class="text-danger">*</span></label>
           {{ form.condition_text }}
-          <div class="form-text">
-            <i class="fa-solid fa-magic me-1"></i>This description will be automatically generated based on your selections above. You can edit it if needed.
+          <div class="form-text" style="color: var(--sh-gray);">
+            <i class="fa-solid fa-magic me-1" style="color: var(--sh-orange);"></i>This description will be automatically generated based on your selections above. You can edit it if needed.
           </div>
           {% if form.condition_text.errors %}
             <div class="text-danger small">{{ form.condition_text.errors|striptags }}</div>
           {% endif %}
         </div>
 
-            <!-- Challenge Metrics -->
-            <div class="row">
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label class="form-label">Challenge Metric <span class="text-danger">*</span></label>
-                  {{ form.metric }}
-                  {% if form.metric.errors %}
-                    <div class="text-danger small">{{ form.metric.errors|striptags }}</div>
-                  {% endif %}
-                  <div class="form-text">What will be measured? (e.g., Runs, Wickets, Sixes)</div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label class="form-label">Target Value <span class="text-danger">*</span></label>
-                  {{ form.target_value }}
-                  {% if form.target_value.errors %}
-                    <div class="text-danger small">{{ form.target_value.errors|striptags }}</div>
-                  {% endif %}
-                  <div class="form-text">What is the target to achieve?</div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="mb-3">
-                  <label class="form-label">Number of Overs <span class="text-danger">*</span></label>
-                  {{ form.over_count }}
-                  {% if form.over_count.errors %}
-                    <div class="text-danger small">{{ form.over_count.errors|striptags }}</div>
-                  {% endif %}
-                  <div class="form-text">How many overs for this challenge?</div>
-                </div>
-              </div>
-            </div>
-
             <!-- Ground Selection -->
             <div class="mb-3">
-              <label class="form-label">Ground <span class="text-danger">*</span></label>
+              <label class="form-label" style="color: var(--sh-white);">Ground <span class="text-danger">*</span></label>
               {{ form.ground }}
               {% if form.ground.errors %}
                 <div class="text-danger small">{{ form.ground.errors|striptags }}</div>
@@ -177,77 +348,24 @@
 
             <!-- Date Selection -->
             <div class="mb-3">
-              <label class="form-label">Challenge Date <span class="text-danger">*</span></label>
-              <div class="input-group">
-                {{ form.date }}
-                <button type="button" class="btn btn-outline-info" id="show-calendar-btn">
-                  <i class="fa-solid fa-calendar"></i>
-                </button>
-              </div>
-              <div class="form-text">
-                <i class="fa-solid fa-circle text-success me-1"></i>Green: Available slots
-                <i class="fa-solid fa-circle text-warning me-1 ms-3"></i>Yellow: All slots booked
-                <i class="fa-solid fa-circle text-danger me-1 ms-3"></i>Red: No slots available
-              </div>
+              <label class="form-label" style="color: var(--sh-white);">Challenge Date <span class="text-danger">*</span></label>
+              {{ form.date }}
+              <div class="form-text" style="color: var(--sh-gray);">
+                </div>
               {% if form.date.errors %}
                 <div class="text-danger small">{{ form.date.errors|striptags }}</div>
               {% endif %}
             </div>
 
-            <!-- Simple Calendar Modal -->
-            <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="calendarModalLabel">Select Challenge Date</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <h6>Quick Date Selection</h6>
-                        <div class="d-grid gap-2">
-                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(0)">Today</button>
-                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(1)">Tomorrow</button>
-                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(2)">Day After Tomorrow</button>
-                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(3)">In 3 Days</button>
-                          <button type="button" class="btn btn-outline-primary" onclick="selectQuickDate(7)">Next Week</button>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <h6>Manual Date Entry</h6>
-                        <div class="mb-3">
-                          <label class="form-label">Select Date</label>
-                          <input type="date" id="manual-date-input" class="form-control" min="2024-10-04" style="background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 153, 0, 0.3) !important; color: var(--sh-white) !important;" onfocus="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='var(--sh-orange)'; this.style.boxShadow='0 0 0 0.2rem rgba(255, 153, 0, 0.25)'" onblur="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 153, 0, 0.3)'; this.style.boxShadow='none'">
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="selectManualDate()">Use This Date</button>
-                      </div>
-                    </div>
-                    <div class="mt-3">
-                      <div class="alert alert-info">
-                        <small>
-                          <i class="fa-solid fa-circle text-success me-1"></i>Green: Available slots
-                          <i class="fa-solid fa-circle text-warning me-1 ms-3"></i>Yellow: All slots booked
-                          <i class="fa-solid fa-circle text-danger me-1 ms-3"></i>Red: No slots available
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <!-- Time Slot Selection -->
             <div class="mb-3">
-              <label class="form-label">Available Time Slots <span class="text-danger">*</span></label>
+              <label class="form-label" style="color: var(--sh-white);">Available Time Slots <span class="text-danger">*</span></label>
               <select name="time_slot" id="time-slot-select" class="form-select" required>
                 <option value="">Select a date first</option>
               </select>
-              <div id="time-slot-loading" class="form-text" style="display: none;">
-                <i class="fa-solid fa-spinner fa-spin me-1"></i>Loading time slots...
+              <div id="time-slot-loading" class="form-text" style="display: none; color: var(--sh-gray);">
+                <i class="fa-solid fa-spinner fa-spin me-1" style="color: var(--sh-orange);"></i>Loading time slots...
               </div>
               <div id="time-slot-error" class="form-text text-danger" style="display: none;">
                 Error loading time slots. Please try again.
@@ -259,28 +377,34 @@
 
             <!-- Summary -->
           <div class="mb-3">
-              <label class="form-label">Summary/Comments</label>
+              <label class="form-label" style="color: var(--sh-white);">Summary/Comments</label>
               {{ form.summary }}
               {% if form.summary.errors %}
                 <div class="text-danger small">{{ form.summary.errors|striptags }}</div>
               {% endif %}
-              <div class="form-text">Additional comments or special conditions (optional)</div>
+              <div class="form-text" style="color: var(--sh-gray);">Additional comments or special conditions (optional)</div>
           </div>
 
             <!-- Challenge Rules Agreement -->
+            {% if not is_edit_mode %}
             <div class="mb-4">
               <div class="form-check">
                 <input class="form-check-input challenge-rules-checkbox" type="checkbox" id="challenge_rules" name="challenge_rules" required>
-                <label class="form-check-label text-white" for="challenge_rules">
-                  I have read and agree to the <a href="{% url 'challenge_rules' %}" target="_blank" class="text-decoration-none" style="color: var(--sh-orange);">Challenge Rules & Guidelines</a>
+                <label class="form-check-label" style="color: var(--sh-white);" for="challenge_rules">
+                  I have read and agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#challengeRulesModal" class="text-decoration-none" style="color: var(--sh-orange);">Challenge Rules & Guidelines</a>
                 </label>
               </div>
             </div>
+            {% endif %}
 
             <!-- Submit Button -->
             <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
-                <i class="fa-solid fa-plus me-2"></i>Create Challenge
+              <button type="submit" class="btn btn-tcc btn-lg" id="submitBtn" {% if not is_edit_mode %}disabled{% endif %}>
+                {% if is_edit_mode %}
+                  <i class="fa-solid fa-save me-2"></i>Update Challenge
+                {% else %}
+                  <i class="fa-solid fa-plus me-2"></i>Create Challenge
+                {% endif %}
               </button>
           </div>
         </form>
@@ -289,10 +413,133 @@
   </div>
   </div>
   </div>
+
+<!-- Challenge Rules & Guidelines Modal -->
+<div class="modal fade" id="challengeRulesModal" tabindex="-1" aria-labelledby="challengeRulesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content" style="background: #000; border: 1px solid rgba(255,153,0,0.3); max-height: 80vh;">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,153,0,0.3);">
+        <h5 class="modal-title text-white" id="challengeRulesModalLabel">
+          <i class="fa-solid fa-gavel me-2" style="color: var(--sh-orange);"></i>
+          Challenge Rules & Guidelines
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body" style="color: var(--sh-white); max-height: 60vh; overflow-y: auto;">
+        <div class="challenge-rules-content">
+          <div class="mb-4">
+            <h6 class="text-white mb-3">1. Challenge Creation Rules</h6>
+            <ul class="text-muted">
+              <li>You can only have one active challenge at a time</li>
+              <li>Complete or cancel your current challenge before creating a new one</li>
+              <li>All challenge details must be accurate and complete</li>
+              <li>Challenge dates must be scheduled at least 24 hours in advance</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">2. Challenge Types</h6>
+            <ul class="text-muted">
+              <li><strong>Single Wicket:</strong> Team-based challenges with specific participants</li>
+              <li><strong>Batting Challenge:</strong> Individual batting performance challenges</li>
+              <li><strong>Bowling Challenge:</strong> Individual bowling performance challenges</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">3. Participant Requirements</h6>
+            <ul class="text-muted">
+              <li>All participants must have complete profiles</li>
+              <li>Participants must be registered users of SportsHub</li>
+              <li>Single wicket challenges require exactly 4 participants (2 teams of 2)</li>
+              <li>Regular challenges can be open to any registered user</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">4. Challenge Metrics</h6>
+            <ul class="text-muted">
+              <li>Metrics must be measurable and fair</li>
+              <li>Target values should be realistic and achievable</li>
+              <li>Overs count must be appropriate for the challenge type</li>
+              <li>All metrics are optional for Single Wicket challenges</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">5. Ground and Scheduling</h6>
+            <ul class="text-muted">
+              <li>Ground selection must be accurate and available</li>
+              <li>Time slots are managed by administrators</li>
+              <li>Contact administrators if time slots are not available</li>
+              <li>Challenge dates cannot be changed once accepted</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">6. Challenge Acceptance</h6>
+            <ul class="text-muted">
+              <li>Challenges can be accepted by eligible participants</li>
+              <li>Once accepted, challenges cannot be cancelled without mutual agreement</li>
+              <li>Participants must confirm their availability before accepting</li>
+              <li>No-shows will result in automatic challenge completion for the present participant</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">7. Fair Play and Conduct</h6>
+            <ul class="text-muted">
+              <li>All participants must maintain good sportsmanship</li>
+              <li>Cheating or unsportsmanlike conduct will result in account suspension</li>
+              <li>Respect all participants regardless of skill level</li>
+              <li>Follow all local laws and regulations</li>
+            </ul>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-white mb-3">8. Dispute Resolution</h6>
+            <ul class="text-muted">
+              <li>Disputes should be reported to administrators immediately</li>
+              <li>Administrators have final authority on all challenge decisions</li>
+              <li>Evidence should be provided when reporting disputes</li>
+              <li>Decisions made by administrators are final</li>
+            </ul>
+          </div>
+
+          <div class="alert alert-warning" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);">
+            <i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i>
+            <strong>Important:</strong> By creating a challenge, you agree to abide by these rules and guidelines. Violations may result in account restrictions or suspension.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid rgba(255,153,0,0.3);">
+        <button type="button" class="btn btn-outline-tcc me-2" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-tcc" id="acceptRulesBtn" data-bs-dismiss="modal">
+          <i class="fa-solid fa-check me-1"></i>Accept Rules
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Sport selection handler
+function handleSportChange(selectElement) {
+    const warningDiv = document.getElementById('sport-warning');
+    if (selectElement.value !== 'cricket') {
+        warningDiv.style.display = 'block';
+        // Reset to cricket after showing warning
+        setTimeout(() => {
+            selectElement.value = 'cricket';
+            warningDiv.style.display = 'none';
+        }, 3000);
+    } else {
+        warningDiv.style.display = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const challengeTypeSelect = document.getElementById('id_challenge_type');
     const conditionTextInput = document.querySelector('textarea[name="condition_text"]');
@@ -304,12 +551,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const timeSlotLoading = document.getElementById('time-slot-loading');
     const timeSlotError = document.getElementById('time-slot-error');
     const singleWicketParticipants = document.getElementById('single-wicket-participants');
+    const opponentSection = document.getElementById('opponent-section');
+    const challengeMetricsSection = document.getElementById('challenge-metrics-section');
 
-    // Function to toggle single wicket participants
-    function toggleSingleWicketParticipants() {
-        if (challengeTypeSelect && singleWicketParticipants) {
+    // Function to toggle single wicket participants, opponent section, and metrics section
+    function toggleChallengeTypeFields() {
+        if (challengeTypeSelect) {
             if (challengeTypeSelect.value === 'SINGLE_WICKET') {
-                singleWicketParticipants.style.display = 'block';
+                // Show single wicket participants and metrics, hide opponent
+                if (singleWicketParticipants) {
+                    singleWicketParticipants.style.display = 'block';
+                }
+                if (opponentSection) {
+                    opponentSection.style.display = 'none';
+                }
+                if (challengeMetricsSection) {
+                    challengeMetricsSection.style.display = 'block';
+                }
                 // Make single wicket fields required
                 const teamFields = ['team1_batter', 'team1_bowler', 'team2_batter', 'team2_bowler'];
                 teamFields.forEach(fieldName => {
@@ -318,8 +576,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         field.required = true;
                     }
                 });
+                // Make metrics fields not required (optional for single wicket)
+                const metricsFields = ['metric', 'target_value', 'over_count'];
+                metricsFields.forEach(fieldName => {
+                    const field = document.querySelector(`select[name="${fieldName}"], input[name="${fieldName}"]`);
+                    if (field) {
+                        field.required = false;
+                    }
+                });
+                // Hide required asterisks for metrics fields in single wicket
+                const metricRequired = document.getElementById('metric-required');
+                const targetRequired = document.getElementById('target-required');
+                const oversRequired = document.getElementById('overs-required');
+                if (metricRequired) metricRequired.style.display = 'none';
+                if (targetRequired) targetRequired.style.display = 'none';
+                if (oversRequired) oversRequired.style.display = 'none';
             } else {
-                singleWicketParticipants.style.display = 'none';
+                // Show opponent and metrics, hide single wicket participants
+                if (singleWicketParticipants) {
+                    singleWicketParticipants.style.display = 'none';
+                }
+                if (opponentSection) {
+                    opponentSection.style.display = 'block';
+                }
+                if (challengeMetricsSection) {
+                    challengeMetricsSection.style.display = 'block';
+                }
                 // Make single wicket fields not required
                 const teamFields = ['team1_batter', 'team1_bowler', 'team2_batter', 'team2_bowler'];
                 teamFields.forEach(fieldName => {
@@ -329,15 +611,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         field.value = '';
                     }
                 });
+                // Make metrics fields required
+                const metricsFields = ['metric', 'target_value', 'over_count'];
+                metricsFields.forEach(fieldName => {
+                    const field = document.querySelector(`select[name="${fieldName}"], input[name="${fieldName}"]`);
+                    if (field) {
+                        field.required = true;
+                    }
+                });
+                // Show required asterisks for metrics fields in non-single wicket challenges
+                const metricRequired = document.getElementById('metric-required');
+                const targetRequired = document.getElementById('target-required');
+                const oversRequired = document.getElementById('overs-required');
+                if (metricRequired) metricRequired.style.display = 'inline';
+                if (targetRequired) targetRequired.style.display = 'inline';
+                if (oversRequired) oversRequired.style.display = 'inline';
             }
         }
     }
 
     // Add event listener for challenge type change
     if (challengeTypeSelect) {
-        challengeTypeSelect.addEventListener('change', toggleSingleWicketParticipants);
+        challengeTypeSelect.addEventListener('change', toggleChallengeTypeFields);
         // Initial call to set correct state
-        toggleSingleWicketParticipants();
+        toggleChallengeTypeFields();
     }
 
     // Function to generate challenge description
@@ -436,8 +733,15 @@ document.addEventListener('DOMContentLoaded', function() {
             loadTimeSlots(selectedDate);
         }
     });
+    
+    // In edit mode, trigger time slot loading if date is already set
+    if (isEditMode && dateInput && dateInput.value) {
+        // Store the current time value to select the corresponding slot after loading
+        const currentTime = document.querySelector('input[name="time"]')?.value;
+        loadTimeSlots(dateInput.value, currentTime);
+    }
 
-    function loadTimeSlots(date) {
+    function loadTimeSlots(date, selectedTime = null) {
         timeSlotSelect.innerHTML = '<option value="">Loading...</option>';
         timeSlotLoading.style.display = 'block';
         timeSlotError.style.display = 'none';
@@ -457,14 +761,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             option.disabled = true;
                             option.textContent += ' - FULL';
                         }
+                        
+                        // In edit mode, select the slot that matches the current time
+                        if (selectedTime && slot.start_time === selectedTime) {
+                            option.selected = true;
+                        }
+                        
                         timeSlotSelect.appendChild(option);
                     });
                 } else {
                     timeSlotSelect.innerHTML = '<option value="">No admin-created time slots available for this date</option>';
                     // Show additional info about admin-created slots
                     const infoDiv = document.createElement('div');
-                    infoDiv.className = 'alert alert-info mt-2';
-                    infoDiv.innerHTML = '<i class="fa-solid fa-info-circle me-2"></i>Time slots are created by administrators. Please contact an admin to create time slots for this date.';
+                    infoDiv.className = 'alert mt-2';
+                    infoDiv.style.cssText = 'background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);';
+                    infoDiv.innerHTML = '<i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i><span style="color: var(--sh-white);">Time slots are created by administrators. Please contact an admin to create time slots for this date.</span>';
                     timeSlotSelect.parentNode.appendChild(infoDiv);
                 }
             })
@@ -476,92 +787,71 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Calendar modal functions
-    document.getElementById('show-calendar-btn').addEventListener('click', function() {
-        const modalElement = document.getElementById('calendarModal');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-        
-        // Set minimum date to today
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
-        const manualDateInput = document.getElementById('manual-date-input');
-        if (manualDateInput) {
-            manualDateInput.min = todayStr;
-            manualDateInput.value = todayStr;
-        }
-    });
-
-    // Quick date selection
-    window.selectQuickDate = function(daysFromToday) {
-        const today = new Date();
-        const selectedDate = new Date(today);
-        selectedDate.setDate(today.getDate() + daysFromToday);
-        const dateStr = selectedDate.toISOString().split('T')[0];
-        
-        document.querySelector('input[name="date"]').value = dateStr;
-        bootstrap.Modal.getInstance(document.getElementById('calendarModal')).hide();
-        loadTimeSlots(dateStr);
-    };
-
-    // Manual date selection
-    window.selectManualDate = function() {
-        const manualDateInput = document.getElementById('manual-date-input');
-        const dateStr = manualDateInput.value;
-        
-        if (dateStr) {
-            document.querySelector('input[name="date"]').value = dateStr;
-            bootstrap.Modal.getInstance(document.getElementById('calendarModal')).hide();
-            loadTimeSlots(dateStr);
-        } else {
-            alert('Please select a date first.');
-        }
-    };
 
     // Trigger change event on page load
-    challengeTypeSelect.dispatchEvent(new Event('change'));
+    if (challengeTypeSelect) {
+        challengeTypeSelect.dispatchEvent(new Event('change'));
+    }
     
-    // Challenge Rules Checkbox Handler
+    // Challenge Rules Checkbox Handler (only for create mode)
     const rulesCheckbox = document.getElementById('challenge_rules');
     const submitBtn = document.getElementById('submitBtn');
+    const isEditMode = {{ is_edit_mode|yesno:"true,false" }};
+    
+    // Accept Rules Button Handler
+    const acceptRulesBtn = document.getElementById('acceptRulesBtn');
+    if (acceptRulesBtn && rulesCheckbox && !isEditMode) {
+        acceptRulesBtn.addEventListener('click', function() {
+            rulesCheckbox.checked = true;
+            // Trigger change event to update form state
+            rulesCheckbox.dispatchEvent(new Event('change'));
+        });
+    }
     
     if (rulesCheckbox && submitBtn) {
-        // Enable/disable submit button based on checkbox state
-        rulesCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                // Add a subtle animation to the button
-                submitBtn.style.transform = 'scale(1.02)';
-                setTimeout(() => {
-                    submitBtn.style.transform = 'scale(1)';
-                }, 200);
-            } else {
-                submitBtn.disabled = true;
-                submitBtn.style.opacity = '0.6';
-            }
-        });
-        
-        // Form validation
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
-            if (!rulesCheckbox.checked) {
-                e.preventDefault();
-                alert('You must agree to the Challenge Rules & Guidelines to create a challenge.');
-                return false;
-            }
-        });
-        
-        // Add click animation to checkbox
-        rulesCheckbox.addEventListener('click', function() {
-            if (!this.checked) {
-                // Add a subtle bounce effect when checking
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 100);
-            }
-        });
+        if (isEditMode) {
+            // In edit mode, enable submit button immediately
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        } else {
+            // In create mode, handle rules checkbox
+            // Enable/disable submit button based on checkbox state
+            rulesCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    // Add a subtle animation to the button
+                    submitBtn.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        submitBtn.style.transform = 'scale(1)';
+                    }, 200);
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.6';
+                }
+            });
+            
+            // Form validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                if (!rulesCheckbox.checked) {
+                    e.preventDefault();
+                    alert('You must agree to the Challenge Rules & Guidelines to create a challenge.');
+                    return false;
+                }
+            });
+            
+            // Add click animation to checkbox
+            rulesCheckbox.addEventListener('click', function() {
+                if (!this.checked) {
+                    // Add a subtle bounce effect when checking
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            });
+        }
     }
     
     // Single Wicket Team Validation
@@ -788,12 +1078,26 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Select dropdown styling */
-select.form-select {
+.form-select {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
     background-repeat: no-repeat !important;
     background-position: right 0.75rem center !important;
     background-size: 16px 12px !important;
     padding-right: 2.5rem !important;
+}
+
+.form-select:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+}
+
+.form-select:hover {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ff9900' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
 }
 </style>
 {% endblock %}

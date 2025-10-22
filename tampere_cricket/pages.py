@@ -11,8 +11,11 @@ def home(request):
     """Home page view"""
     from django.db.models import Count, Q
     
-    # Get top 3 recent challenges
-    recent_challenges = Challenge.objects.filter(status__in=['OPEN', 'PENDING', 'ACCEPTED']).order_by('-created_at')[:3]
+    # Get top 3 recent challenges - show OPEN and PENDING challenges to all users
+    recent_challenges = Challenge.objects.filter(
+        Q(status='OPEN') |  # Open challenges - visible to all
+        Q(status='PENDING')  # Pending challenges - visible to all but only specific opponent can accept
+    ).order_by('-created_at')[:3]
     
     # Get top 3 players for leaderboard preview using Profile statistics
     from tampere_cricket.accounts.models import Profile
@@ -118,10 +121,13 @@ def leaderboard(request):
             player.total_losses = profile.losses
             player.win_rate = profile.get_win_rate()
             player.rating = profile.rating
+            player.batting_rating = profile.batting_rating
+            player.bowling_rating = profile.bowling_rating
+            player.runs = profile.runs
+            player.wickets = profile.wickets
             
-            # Only include players with matches
-            if player.total_matches > 0:
-                all_players.append(player)
+            # Include all players (even those with 0 rating)
+            all_players.append(player)
         except Profile.DoesNotExist:
             # Create profile if it doesn't exist
             profile = Profile.objects.create(user=user)
@@ -133,15 +139,20 @@ def leaderboard(request):
             player.total_losses = profile.losses
             player.win_rate = profile.get_win_rate()
             player.rating = profile.rating
+            player.batting_rating = profile.batting_rating
+            player.bowling_rating = profile.bowling_rating
+            player.runs = profile.runs
+            player.wickets = profile.wickets
             
-            if player.total_matches > 0:
-                all_players.append(player)
+            # Include all players (even those with 0 rating)
+            all_players.append(player)
     
     # Apply search filter if provided
     if search_query:
         all_players = [player for player in all_players if search_query.lower() in player.username.lower()]
     
     # Sort by rating (descending), then by total_matches (descending), then by total_wins (descending)
+    # Players with 0 rating will be sorted by matches played and wins
     all_players = sorted(all_players, key=lambda x: (x.rating, x.total_matches, x.total_wins), reverse=True)
     
     # Create paginator
