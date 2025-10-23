@@ -156,8 +156,11 @@ if USE_CLOUDINARY:
         api_secret=os.getenv('CLOUDINARY_API_SECRET')
     )
     
-    # Media files will be uploaded to Cloudinary
-    # The MEDIA_URL will be handled by Cloudinary automatically
+    # Use custom Cloudinary storage
+    DEFAULT_FILE_STORAGE = 'tampere_cricket.cloudinary_storage.CloudinaryStorage'
+    
+    # Override MEDIA_URL to use Cloudinary
+    MEDIA_URL = f'https://res.cloudinary.com/{os.getenv("CLOUDINARY_CLOUD_NAME")}/image/upload/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
