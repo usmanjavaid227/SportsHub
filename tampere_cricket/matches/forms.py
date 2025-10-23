@@ -90,9 +90,9 @@ class ChallengeForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
-        # Filter opponents to exclude the current user
+        # Filter opponents to exclude the current user and deleted users
         if user:
-            self.fields['opponent'].queryset = User.objects.exclude(id=user.id)
+            self.fields['opponent'].queryset = User.active_objects().exclude(id=user.id)
         
         # Add labels and help text
         self.fields['opponent'].label = 'Opponent'

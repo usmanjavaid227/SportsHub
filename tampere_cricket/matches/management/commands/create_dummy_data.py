@@ -186,7 +186,7 @@ class Command(BaseCommand):
         )
         
         # Assign team members
-        available_users = [u for u in User.objects.all() if u != challenger]
+        available_users = [u for u in User.active_objects() if u != challenger]
         if len(available_users) >= 3:
             team1_batter = random.choice(available_users)
             available_users.remove(team1_batter)
@@ -222,7 +222,7 @@ class Command(BaseCommand):
         )
         
         # Assign opponent
-        available_users = [u for u in User.objects.all() if u != challenger]
+        available_users = [u for u in User.active_objects() if u != challenger]
         if available_users:
             challenge.opponent = random.choice(available_users)
             challenge.save()
@@ -247,7 +247,7 @@ class Command(BaseCommand):
         )
         
         # Assign opponent
-        available_users = [u for u in User.objects.all() if u != challenger]
+        available_users = [u for u in User.active_objects() if u != challenger]
         if available_users:
             challenge.opponent = random.choice(available_users)
             challenge.save()
