@@ -107,8 +107,9 @@
                     </p>
                 </div>
                             <div class="col-md-6 text-md-end">
-                                <a href="{% url 'privacy_policy' %}" class="text-muted text-decoration-none me-3">Privacy Policy</a>
-                                <a href="{% url 'terms_of_service' %}" class="text-muted text-decoration-none me-3">Terms of Service</a>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal" class="text-muted text-decoration-none me-3">Privacy Policy</a>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-muted text-decoration-none me-3">Terms of Service</a>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#challengeRulesModal" class="text-muted text-decoration-none me-3">Challenge Rules</a>
                                 <a href="{% url 'contact' %}" class="text-muted text-decoration-none">Contact Us</a>
                             </div>
             </div>
@@ -315,6 +316,291 @@
         });
     });
     </script>
+    
+    <!-- Privacy Policy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <h5 class="modal-title text-white" id="privacyModalLabel">
+                        <i class="fa-solid fa-shield-halved me-2" style="color: var(--sh-orange);"></i>
+                        Privacy Policy
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" style="max-height: 50vh; overflow-y: auto; color: var(--sh-white);">
+                    <div class="privacy-content">
+                        <h6 class="text-white mb-3">1. Information We Collect</h6>
+                        <p class="text-muted mb-3">
+                            We collect information you provide directly to us, such as when you create an account, 
+                            participate in challenges, or contact us for support.
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Account information (username, email, profile details)</li>
+                            <li>Challenge participation data and results</li>
+                            <li>Communication records and support requests</li>
+                            <li>Device and usage information for service improvement</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">2. How We Use Your Information</h6>
+                        <p class="text-muted mb-3">
+                            We use the information we collect to:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Provide and maintain our services</li>
+                            <li>Process challenge registrations and results</li>
+                            <li>Communicate with you about your account and our services</li>
+                            <li>Improve our platform and user experience</li>
+                            <li>Ensure platform security and prevent fraud</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">3. Information Sharing</h6>
+                        <p class="text-muted mb-3">
+                            We do not sell, trade, or otherwise transfer your personal information to third parties 
+                            without your consent, except as described in this policy.
+                        </p>
+
+                        <h6 class="text-white mb-3">4. Data Security</h6>
+                        <p class="text-muted mb-3">
+                            We implement appropriate security measures to protect your personal information against 
+                            unauthorized access, alteration, disclosure, or destruction.
+                        </p>
+
+                        <h6 class="text-white mb-3">5. Your Rights</h6>
+                        <p class="text-muted mb-3">
+                            You have the right to access, update, or delete your personal information. 
+                            You can also opt out of certain communications from us.
+                        </p>
+
+                        <h6 class="text-white mb-3">6. Contact Us</h6>
+                        <p class="text-muted mb-3">
+                            If you have any questions about this Privacy Policy, please contact us at:
+                        </p>
+                        <div class="contact-info" style="background: rgba(255,153,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,153,0,0.2);">
+                            <p class="text-white mb-2"><strong>SportsHub</strong></p>
+                            <p class="text-muted mb-1">Email: privacy@sportshub.com</p>
+                            <p class="text-muted mb-0">Phone: +1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,153,0,0.3);">
+                    <button type="button" class="btn btn-outline-tcc" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <h5 class="modal-title text-white" id="termsModalLabel">
+                        <i class="fa-solid fa-file-contract me-2" style="color: var(--sh-orange);"></i>
+                        Terms of Service
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" style="max-height: 50vh; overflow-y: auto; color: var(--sh-white);">
+                    <div class="terms-content">
+                        <h6 class="text-white mb-3">1. Acceptance of Terms</h6>
+                        <p class="text-muted mb-3">
+                            By accessing and using SportsHub, you accept and agree to be bound by the terms 
+                            and provision of this agreement.
+                        </p>
+
+                        <h6 class="text-white mb-3">2. Use License</h6>
+                        <p class="text-muted mb-3">
+                            Permission is granted to temporarily use SportsHub for personal, non-commercial 
+                            transitory viewing only. This is the grant of a license, not a transfer of title.
+                        </p>
+
+                        <h6 class="text-white mb-3">3. User Responsibilities</h6>
+                        <ul class="text-muted mb-4">
+                            <li>Provide accurate and complete information when creating your account</li>
+                            <li>Maintain the security of your account credentials</li>
+                            <li>Use the platform in accordance with all applicable laws</li>
+                            <li>Respect other users and maintain sportsmanlike conduct</li>
+                            <li>Report any violations or suspicious activity</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">4. Prohibited Uses</h6>
+                        <p class="text-muted mb-3">
+                            You may not use our platform:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>For any unlawful purpose or to solicit others to perform unlawful acts</li>
+                            <li>To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances</li>
+                            <li>To infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
+                            <li>To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate</li>
+                            <li>To submit false or misleading information</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">5. Challenge Participation</h6>
+                        <p class="text-muted mb-3">
+                            When participating in challenges, you agree to:
+                        </p>
+                        <ul class="text-muted mb-4">
+                            <li>Follow all challenge rules and guidelines</li>
+                            <li>Maintain fair play and sportsmanship</li>
+                            <li>Report results accurately and honestly</li>
+                            <li>Respect other participants and officials</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">6. Limitation of Liability</h6>
+                        <p class="text-muted mb-3">
+                            In no event shall SportsHub, nor its directors, employees, partners, agents, suppliers, 
+                            or affiliates, be liable for any indirect, incidental, special, consequential, or punitive 
+                            damages, including without limitation, loss of profits, data, use, goodwill, or other 
+                            intangible losses.
+                        </p>
+
+                        <h6 class="text-white mb-3">7. Contact Information</h6>
+                        <p class="text-muted mb-3">
+                            If you have any questions about these Terms of Service, please contact us at:
+                        </p>
+                        <div class="contact-info" style="background: rgba(255,153,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,153,0,0.2);">
+                            <p class="text-white mb-2"><strong>SportsHub</strong></p>
+                            <p class="text-muted mb-1">Email: legal@sportshub.com</p>
+                            <p class="text-muted mb-0">Phone: +1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,153,0,0.3);">
+                    <button type="button" class="btn btn-outline-tcc" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenge Rules Modal -->
+    <div class="modal fade" id="challengeRulesModal" tabindex="-1" aria-labelledby="challengeRulesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(255,153,0,0.3);">
+                    <h5 class="modal-title text-white" id="challengeRulesModalLabel">
+                        <i class="fa-solid fa-gavel me-2" style="color: var(--sh-orange);"></i>
+                        Challenge Rules & Guidelines
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+                </div>
+                <div class="modal-body" style="max-height: 50vh; overflow-y: auto; color: var(--sh-white);">
+                    <div class="challenge-rules-content">
+                        <h6 class="text-white mb-3">1. General Challenge Rules</h6>
+                        <ul class="text-muted mb-4">
+                            <li>Challenges must be sports-related and conducted in a fair, competitive manner</li>
+                            <li>All participants must be registered users of SportsHub</li>
+                            <li>Challenges must be created with clear, specific terms and conditions</li>
+                            <li>Participants must agree to the challenge terms before accepting</li>
+                            <li>All matches must be conducted at approved sports grounds</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">2. Challenge Creation Guidelines</h6>
+                        <ul class="text-muted mb-4">
+                            <li>Provide clear description of the challenge format and rules</li>
+                            <li>Specify the date, time, and location of the challenge</li>
+                            <li>Set appropriate skill level requirements</li>
+                            <li>Define scoring system and winning conditions</li>
+                            <li>Include any special equipment or requirements</li>
+                            <li>Set reasonable time limits for challenge completion</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">3. Fair Play & Sportsmanship</h6>
+                        <ul class="text-muted mb-4">
+                            <li>Respect all opponents and officials</li>
+                            <li>Follow the rules of the specific sport</li>
+                            <li>Accept decisions made by officials or moderators</li>
+                            <li>Report any violations or disputes immediately</li>
+                            <li>Maintain a positive attitude throughout the challenge</li>
+                            <li>Help create a welcoming environment for all participants</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">4. Prohibited Activities</h6>
+                        <ul class="text-muted mb-4">
+                            <li>Cheating, match-fixing, or manipulating results</li>
+                            <li>Using performance-enhancing substances</li>
+                            <li>Harassment, intimidation, or unsportsmanlike conduct</li>
+                            <li>Creating fake accounts or impersonating others</li>
+                            <li>Sharing account credentials with other users</li>
+                            <li>Exploiting technical glitches or system vulnerabilities</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">5. Challenge Types</h6>
+                        <ul class="text-muted mb-4">
+                            <li><strong>Single Wicket:</strong> Team-based challenges with specific participants</li>
+                            <li><strong>Batting Challenge:</strong> Individual batting performance challenges</li>
+                            <li><strong>Bowling Challenge:</strong> Individual bowling performance challenges</li>
+                        </ul>
+
+                        <h6 class="text-white mb-3">6. Dispute Resolution</h6>
+                        <p class="text-muted mb-3">
+                            All disputes should be reported through the platform's dispute resolution system. 
+                            Our moderators will review and make final decisions on all disputes.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid rgba(255,153,0,0.3);">
+                    <button type="button" class="btn btn-outline-tcc" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Styling -->
+    <style>
+    .modal-content {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        max-height: 80vh;
+    }
+
+    .modal-dialog {
+        max-width: 500px;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-body::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+        border-radius: 5px;
+        border: 1px solid rgba(255,153,0,0.2);
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+        background: var(--sh-orange);
+        border-radius: 5px;
+        border: 1px solid rgba(255,153,0,0.3);
+    }
+
+    .modal-body::-webkit-scrollbar-thumb:hover {
+        background: #ff8800;
+        border: 1px solid rgba(255,153,0,0.5);
+    }
+
+    /* Firefox scrollbar styling */
+    .modal-body {
+        scrollbar-width: thin;
+        scrollbar-color: var(--sh-orange) rgba(255,255,255,0.1);
+    }
+
+    .contact-info {
+        background: rgba(255,153,0,0.1);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,153,0,0.2);
+    }
+
+    /* Ensure scrollbar is always visible when content overflows */
+    .modal-body {
+        overflow-y: auto !important;
+        scrollbar-gutter: stable;
+    }
+    </style>
     
     {% block extra_js %}{% endblock %}
 </body>

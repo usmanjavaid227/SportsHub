@@ -33,7 +33,8 @@
       <div class="row g-4">
         {% for ch in recent_challenges %}
           <div class="col-12 col-md-6 col-xl-4 fade-in">
-            <div class="card h-100" style="background: linear-gradient(135deg, rgba(255,153,0,0.08) 0%, rgba(255,153,0,0.03) 100%); border: 1px solid rgba(255,153,0,0.3) !important; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 15px; overflow: hidden;">
+            <a href="{% url 'challenge_detail' ch.id %}" class="text-decoration-none" style="display: block;">
+              <div class="card h-100" style="background: linear-gradient(135deg, rgba(255,153,0,0.08) 0%, rgba(255,153,0,0.03) 100%); border: 1px solid rgba(255,153,0,0.3) !important; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 15px; overflow: hidden; cursor: pointer;">
               <!-- Challenge Header -->
               <div class="challenge-header position-relative" style="background: linear-gradient(135deg, rgba(255,153,0,0.15) 0%, rgba(255,153,0,0.05) 100%); padding: 1.5rem;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -221,6 +222,7 @@
                 </div>
               </div>
             </div>
+            </a>
           </div>
         {% empty %}
           <div class="col-12">
@@ -262,6 +264,33 @@
           <label class="btn btn-outline-tcc filter-btn active" for="allrounderRanking">
             Overall
           </label>
+        </div>
+      </div>
+      
+      <!-- Search Bar -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <form method="GET" class="d-flex">
+            <div class="input-group">
+              <input type="text" 
+                     class="form-control" 
+                     name="search" 
+                     placeholder="Search players by username..." 
+                     id="playerSearch"
+                     style="background: #0A0A0A; border: 1px solid rgba(255,153,0,0.3); color: var(--sh-white);">
+              <button class="btn btn-outline-tcc" type="button" id="searchBtn">
+                <i class="fa-solid fa-search"></i>
+              </button>
+              <button class="btn btn-outline-secondary" type="button" id="clearSearch" style="display: none;">
+                <i class="fa-solid fa-times"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-6 text-end">
+          <small class="text-muted">
+            Showing top 5 players
+          </small>
         </div>
       </div>
 
@@ -800,8 +829,8 @@
   <!-- JavaScript for Ranking Filters -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Actual data from Django backend with category-specific ratings
-      const rankingData = {
+      // Current page data from Django backend with category-specific ratings
+      const currentPageData = {
         batting: [
           {% with top=players|default_if_none:None %}
           {% if top %}
@@ -898,7 +927,6 @@
 
         data.forEach(player => {
           const row = document.createElement('tr');
-          row.className = 'border-bottom border-secondary';
           
           // Rank column
           let rankIcon = '';
@@ -927,8 +955,8 @@
           // Avatar
           const avatarHtml = player.avatar && player.avatar !== 'null' 
             ? `<img src="${player.avatar}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="${player.username}">`
-            : `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                <i class="fa-solid fa-user text-white"></i>
+            : `<div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
+                <i class="fa-solid fa-user"></i>
               </div>`;
 
           // Country flag
@@ -942,7 +970,7 @@
             <td class="text-center">
               <div class="d-flex align-items-center justify-content-center">
                 ${rankIcon}
-                <span class="fw-bold" style="color: #FFD700;">${player.rank}</span>
+                <span class="fw-bold" style="color: var(--sh-orange);">${player.rank}</span>
               </div>
             </td>
             <td class="text-center">${changeHtml}</td>
@@ -959,7 +987,7 @@
               <span class="badge badge-matches">${player.total_matches}</span>
             </td>
             <td class="text-center">
-              <span class="badge badge-wins">${player.total_wins}</span>
+              <span class="badge badge-wins" style="background-color: #28a745 !important; color: #fff !important;">${player.total_wins}</span>
             </td>
             <td class="text-center">
               <span class="badge badge-losses">${player.total_losses || 0}</span>
@@ -982,27 +1010,53 @@
         table.id = 'leaderboardTable';
       }
 
-      // Sort each category by their respective ratings
-      rankingData.batting.sort((a, b) => b.rating - a.rating);
-      rankingData.bowling.sort((a, b) => b.rating - a.rating);
-      rankingData.allrounder.sort((a, b) => b.rating - a.rating);
-      
-      // Update rank numbers after sorting
-      rankingData.batting.forEach((player, index) => {
-        player.rank = index + 1;
-      });
-      rankingData.bowling.forEach((player, index) => {
-        player.rank = index + 1;
-      });
-      rankingData.allrounder.forEach((player, index) => {
-        player.rank = index + 1;
+      // Debug: Log available data
+      console.log('Available ranking data:', currentPageData);
+      console.log('Batting data length:', currentPageData.batting.length);
+      console.log('Bowling data length:', currentPageData.bowling.length);
+      console.log('Allrounder data length:', currentPageData.allrounder.length);
+
+      // Search functionality
+      const searchInput = document.getElementById('playerSearch');
+      const searchBtn = document.getElementById('searchBtn');
+      const clearSearchBtn = document.getElementById('clearSearch');
+      let currentFilter = 'allrounder';
+      let currentData = currentPageData.allrounder;
+
+      function filterData(data, searchTerm) {
+        if (!searchTerm) return data;
+        return data.filter(player => 
+          player.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        const filteredData = filterData(currentData, searchTerm);
+        renderTable(filteredData);
+        
+        // Show/hide clear button
+        if (searchTerm) {
+          clearSearchBtn.style.display = 'block';
+        } else {
+          clearSearchBtn.style.display = 'none';
+        }
+      }
+
+      // Search event listeners
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          performSearch();
+        }
       });
 
-      // Debug: Log available data
-      console.log('Available ranking data:', rankingData);
-      console.log('Batting data length:', rankingData.batting.length);
-      console.log('Bowling data length:', rankingData.bowling.length);
-      console.log('Allrounder data length:', rankingData.allrounder.length);
+      clearSearchBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        renderTable(currentData);
+      });
 
       // Filter button event listeners
       document.querySelectorAll('input[name="rankingFilter"]').forEach(radio => {
@@ -1010,9 +1064,14 @@
           if (this.checked) {
             const filterType = this.id.replace('Ranking', '');
             console.log('Filter changed to:', filterType);
-            const data = rankingData[filterType] || [];
-            console.log('Data for', filterType, ':', data);
-            renderTable(data);
+            currentFilter = filterType;
+            currentData = currentPageData[filterType] || [];
+            console.log('Data for', filterType, ':', currentData);
+            
+            // Apply current search if any
+            const searchTerm = searchInput.value.trim();
+            const filteredData = filterData(currentData, searchTerm);
+            renderTable(filteredData);
             
             // Update active state
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1024,8 +1083,8 @@
       });
 
       // Initialize with allrounder data (default)
-      console.log('Initializing with allrounder data:', rankingData.allrounder);
-      renderTable(rankingData.allrounder);
+      console.log('Initializing with allrounder data:', currentPageData.allrounder);
+      renderTable(currentPageData.allrounder);
     });
   </script>
 

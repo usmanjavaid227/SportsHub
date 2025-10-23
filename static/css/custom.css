@@ -645,6 +645,48 @@ footer hr {
     color: var(--sh-orange) !important;
 }
 
+/* Clickable challenge cards styling */
+.challenge-card a {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.challenge-card a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.challenge-card {
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+.challenge-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 40px rgba(255, 153, 0, 0.3), 0 6px 20px rgba(0,0,0,0.4) !important;
+    border-color: rgba(255, 153, 0, 0.6) !important;
+}
+
+/* Custom Podium Styling */
+.custom-podium-card {
+    background: #0A0A0A !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,.25) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+.custom-podium-header {
+    background: #0A0A0A !important;
+    border-bottom: 2px solid var(--sh-orange) !important;
+    color: var(--sh-white) !important;
+}
+
+.custom-podium-body {
+    background: #0A0A0A !important;
+    color: var(--sh-white) !important;
+}
+
 /* News page styling */
 .news-card {
     transition: all 0.3s ease;
