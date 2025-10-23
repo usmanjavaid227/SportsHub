@@ -1,5 +1,7 @@
 /* SportsHub theme */
 :root{--sh-black:#000000;--sh-orange:#FF9900;--sh-orange-dark:#E68A00;--sh-white:#FFFFFF;--sh-gray:#B3B3B3;--sh-red:#FF3333}
+/* Deleted user styling */
+.deleted-user{color:#666 !important;opacity:0.6;text-decoration:line-through;font-style:italic}
 body{background:var(--sh-black);color:var(--sh-white);font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
 main, main *{color:inherit}
 h1,h2,h3,h4,h5,h6{color:var(--sh-white);text-transform:uppercase}

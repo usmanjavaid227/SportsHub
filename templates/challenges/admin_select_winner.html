@@ -43,14 +43,14 @@
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-user me-2" style="color: var(--sh-orange); width: 16px;"></i>
                                         <span style="color: var(--sh-gray); font-size: 0.9rem;">Challenger:</span>
-                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.challenger.username }}</span>
+                                        <span class="ms-2 {{ challenge.challenger.get_css_class }}" style="color: var(--sh-white);">{{ challenge.get_challenger_display_name }}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-user-friends me-2" style="color: var(--sh-orange); width: 16px;"></i>
                                         <span style="color: var(--sh-gray); font-size: 0.9rem;">Opponent:</span>
-                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.opponent.username|default:"Open to All" }}</span>
+                                        <span class="ms-2 {{ challenge.opponent.get_css_class|default:'' }}" style="color: var(--sh-white);">{{ challenge.get_opponent_display_name|default:"Open to All" }}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-flag me-2" style="color: var(--sh-orange); width: 16px;"></i>
@@ -107,7 +107,7 @@
                                                     <i class="fa-solid fa-user" style="color: var(--sh-orange);"></i>
                                                 </div>
                                                 <div class="winner-info">
-                                                    <div class="winner-name">{{ challenge.challenger.username }}</div>
+                                                    <div class="winner-name {{ challenge.challenger.get_css_class }}">{{ challenge.get_challenger_display_name }}</div>
                                                     <div class="winner-role">Challenger</div>
                                                 </div>
                                                 <div class="winner-badge">
@@ -143,7 +143,7 @@
                                                     <i class="fa-solid fa-user-friends" style="color: var(--sh-orange);"></i>
                                                 </div>
                                                 <div class="winner-info">
-                                                    <div class="winner-name">{{ challenge.opponent.username }}</div>
+                                                    <div class="winner-name {{ challenge.opponent.get_css_class|default:'' }}">{{ challenge.get_opponent_display_name }}</div>
                                                     <div class="winner-role">Opponent</div>
                                                 </div>
                                                 <div class="winner-badge">
@@ -222,7 +222,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="text-primary">{{ challenge.challenger.username }} (Challenger)</h6>
+                            <h6 class="text-primary {{ challenge.challenger.get_css_class }}">{{ challenge.get_challenger_display_name }} (Challenger)</h6>
                             <ul class="list-unstyled small">
                                 <li><strong>Runs:</strong> {{ match_result.challenger_runs|default:"0" }}</li>
                                 <li><strong>Wickets:</strong> {{ match_result.challenger_wickets|default:"0" }}</li>
@@ -233,7 +233,7 @@
                         </div>
                         {% if challenge.opponent %}
                         <div class="col-md-6">
-                            <h6 class="text-success">{{ challenge.opponent.username }} (Opponent)</h6>
+                            <h6 class="text-success {{ challenge.opponent.get_css_class|default:'' }}">{{ challenge.get_opponent_display_name }} (Opponent)</h6>
                             <ul class="list-unstyled small">
                                 <li><strong>Runs:</strong> {{ match_result.opponent_runs|default:"0" }}</li>
                                 <li><strong>Wickets:</strong> {{ match_result.opponent_wickets|default:"0" }}</li>
@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedWinner = document.querySelector('input[name="winner"]:checked');
         if (selectedWinner) {
             const winnerName = selectedWinner.value ? 
-                (selectedWinner.value === '{{ challenge.challenger.id }}' ? '{{ challenge.challenger.username }}' : '{{ challenge.opponent.username }}') : 
+                (selectedWinner.value === '{{ challenge.challenger.id }}' ? '{{ challenge.get_challenger_display_name }}' : '{{ challenge.get_opponent_display_name }}') : 
                 'Draw/Tie';
             
             if (!confirm(`Are you sure you want to set the winner as: ${winnerName}?`)) {

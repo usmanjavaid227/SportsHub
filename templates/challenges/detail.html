@@ -71,15 +71,15 @@
                             <div class="vs-participant text-center">
                                 <div class="participant-avatar mb-2">
                                     {% if challenge.challenger.avatar %}
-                                        <img src="{{ challenge.challenger.avatar.url }}" alt="{{ challenge.challenger.username }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
+                                        <img src="{{ challenge.challenger.avatar.url }}" alt="{{ challenge.get_challenger_display_name }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
                                             {% else %}
                                         <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--sh-orange); color: #000; font-weight: bold;">
-                                            {{ challenge.challenger.username|first|upper }}
+                                            {{ challenge.get_challenger_display_name|first|upper }}
     </div>
     {% endif %}
                                 </div>
                                 <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none">
-                                    <h5 class="mb-0" style="color: var(--sh-orange);">{{ challenge.challenger.username }}</h5>
+                                    <h5 class="mb-0 {{ challenge.challenger.get_css_class }}" style="color: var(--sh-orange);">{{ challenge.get_challenger_display_name }}</h5>
                                 </a>
                             </div>
                             <div class="vs-divider mx-4">
@@ -89,10 +89,10 @@
                                 <div class="participant-avatar mb-2">
                                     {% if challenge.opponent %}
                                         {% if challenge.opponent.avatar %}
-                                            <img src="{{ challenge.opponent.avatar.url }}" alt="{{ challenge.opponent.username }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
+                                            <img src="{{ challenge.opponent.avatar.url }}" alt="{{ challenge.get_opponent_display_name }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
                                             {% else %}
                                             <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: var(--sh-orange); color: #000; font-weight: bold;">
-                                                {{ challenge.opponent.username|first|upper }}
+                                                {{ challenge.get_opponent_display_name|first|upper }}
                                                 </div>
                                             {% endif %}
                                             {% else %}
@@ -103,7 +103,7 @@
                                 </div>
                                 {% if challenge.opponent %}
                                     <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">
-                                        <h5 class="mb-0" style="color: var(--sh-orange);">{{ challenge.opponent.username }}</h5>
+                                        <h5 class="mb-0 {{ challenge.opponent.get_css_class }}" style="color: var(--sh-orange);">{{ challenge.get_opponent_display_name }}</h5>
                                     </a>
                                 {% else %}
                                     <h5 class="mb-0" style="color: var(--sh-gray);">TBD</h5>
@@ -457,11 +457,11 @@
                                             <img src="{{ challenge.challenger.avatar.url }}" alt="{{ challenge.challenger.username }}" class="rounded-circle mb-3" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
                                         {% else %}
                                             <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 60px; height: 60px; background: var(--sh-orange); color: #000; font-weight: bold;">
-                                                {{ challenge.challenger.username|first|upper }}
+                                                {{ challenge.get_challenger_display_name|first|upper }}
                                                 </div>
                                             {% endif %}
                                         <a href="{% url 'public_profile' challenge.challenger.id %}" class="text-decoration-none">
-                                            <div class="h5 mb-0" style="color: var(--sh-orange);">{{ challenge.challenger.username }}</div>
+                                            <div class="h5 mb-0 {{ challenge.challenger.get_css_class }}" style="color: var(--sh-orange);">{{ challenge.get_challenger_display_name }}</div>
                                         </a>
                                         </div>
                                         </div>
@@ -473,11 +473,11 @@
                                                 <img src="{{ challenge.opponent.avatar.url }}" alt="{{ challenge.opponent.username }}" class="rounded-circle mb-3" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--sh-orange);">
                                             {% else %}
                                                 <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 60px; height: 60px; background: var(--sh-orange); color: #000; font-weight: bold;">
-                                                    {{ challenge.opponent.username|first|upper }}
+                                                    {{ challenge.get_opponent_display_name|first|upper }}
                                     </div>
                                     {% endif %}
                                             <a href="{% url 'public_profile' challenge.opponent.id %}" class="text-decoration-none">
-                                                <div class="h5 mb-0" style="color: var(--sh-orange);">{{ challenge.opponent.username }}</div>
+                                                <div class="h5 mb-0 {{ challenge.opponent.get_css_class }}" style="color: var(--sh-orange);">{{ challenge.get_opponent_display_name }}</div>
                                             </a>
                                             {% else %}
                                             <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 60px; height: 60px; background: #666; color: #fff; font-weight: bold;">
@@ -551,7 +551,7 @@
                         <!-- Batting/Bowling Challenge Results -->
                         <div class="row">
                             <div class="col-md-6">
-                                <h6 style="color: var(--sh-orange);">{{ challenge.challenger.username }}</h6>
+                                <h6 class="{{ challenge.challenger.get_css_class }}" style="color: var(--sh-orange);">{{ challenge.get_challenger_display_name }}</h6>
                                 <div class="row">
                                     <div class="col-6">
                                         <small class="text-muted">Runs</small>
@@ -564,7 +564,7 @@
                 </div>
             </div>
                             <div class="col-md-6">
-                                <h6 style="color: var(--sh-orange);">{{ challenge.opponent.username|default:"Opponent" }}</h6>
+                                <h6 class="{{ challenge.opponent.get_css_class|default:'' }}" style="color: var(--sh-orange);">{{ challenge.get_opponent_display_name|default:"Opponent" }}</h6>
                                 <div class="row">
                                     <div class="col-6">
                                         <small class="text-muted">Runs</small>
@@ -671,44 +671,81 @@
             <div class="d-flex justify-content-center gap-3 flex-wrap">
                 {% if user.is_authenticated %}
                     {% if challenge.status == 'OPEN' and user != challenge.challenger %}
-                            {% if challenge.challenge_type == 'SINGLE_WICKET' %}
+                        {% if challenge.challenge_type == 'SINGLE_WICKET' %}
                             {% if user in challenge.get_participants %}
-                                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                                <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
                                     <i class="fa-solid fa-handshake me-1"></i> Accept Challenge
                                 </a>
                             {% else %}
                                 <button type="button" class="btn btn-outline-tcc" onclick="showNotInvolvedModal()">
                                     <i class="fa-solid fa-handshake me-1"></i> Accept Challenge
                                 </button>
-                                {% endif %}
-                            {% else %}
-                                    <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
                                 <i class="fa-solid fa-handshake me-1"></i> Accept Challenge
                             </a>
                         {% endif %}
-                    {% elif challenge.status == 'ACCEPTED' and user == challenge.challenger %}
-                        <a href="{% url 'challenge_edit' challenge.id %}" class="btn btn-outline-tcc">
-                            <i class="fa-solid fa-edit me-1"></i> Edit Challenge
+                    {% elif challenge.status == 'PENDING' and user == challenge.opponent %}
+                        <!-- PENDING challenges: Only the specific opponent can accept -->
+                        <a href="{% url 'challenge_accept' challenge.id %}" class="btn btn-tcc">
+                            <i class="fa-solid fa-handshake me-1"></i> Accept Challenge
                         </a>
+                    {% elif challenge.status == 'PENDING' and user != challenge.opponent %}
+                        <!-- PENDING challenges: No action available for non-opponents -->
+                    {% elif challenge.status == 'ACCEPTED' %}
+                        <!-- ACCEPTED challenges: Both players committed, show appropriate actions -->
+                        {% if user == challenge.challenger or user == challenge.opponent %}
+                            <button type="button" class="btn btn-outline-success" disabled>
+                                <i class="fa-solid fa-handshake me-1"></i> Challenge Accepted
+                            </button>
                         {% endif %}
-                        
+                    {% elif challenge.status == 'COMPLETED' %}
+                        <!-- COMPLETED challenges: Match finished with results -->
+                        <button type="button" class="btn btn-outline-success" disabled>
+                            <i class="fa-solid fa-check-circle me-1"></i> Challenge Completed
+                        </button>
+                    {% elif challenge.status == 'CANCELLED' %}
+                        <!-- CANCELLED challenges: Challenge cancelled -->
+                        <button type="button" class="btn btn-outline-danger" disabled>
+                            <i class="fa-solid fa-times-circle me-1"></i> Challenge Cancelled
+                        </button>
+                    {% endif %}
+                    
                     {% if user == challenge.challenger and challenge.status in 'OPEN,PENDING' %}
                         <a href="{% url 'challenge_edit' challenge.id %}" class="btn btn-outline-tcc">
                             <i class="fa-solid fa-edit me-1"></i> Edit Challenge
                         </a>
-                            <a href="{% url 'challenge_delete' challenge.id %}" class="btn btn-outline-danger">
+                        <a href="{% url 'challenge_delete' challenge.id %}" class="btn btn-outline-danger">
                             <i class="fa-solid fa-trash me-1"></i> Delete Challenge
-                            </a>
-                        {% endif %}
-                                        {% endif %}
+                        </a>
+                    {% endif %}
+                {% elif not user.is_authenticated and challenge.status == 'OPEN' %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-tcc">
+                        <i class="fa-solid fa-sign-in-alt me-1"></i> Login to Accept
+                    </a>
+                {% elif not user.is_authenticated and challenge.status == 'PENDING' %}
+                    <!-- PENDING challenges: No action available for unauthenticated users -->
+                {% elif not user.is_authenticated and challenge.status == 'ACCEPTED' %}
+                    <button type="button" class="btn btn-outline-success" disabled>
+                        <i class="fa-solid fa-handshake me-1"></i> Challenge Accepted
+                    </button>
+                {% elif not user.is_authenticated and challenge.status == 'COMPLETED' %}
+                    <button type="button" class="btn btn-outline-success" disabled>
+                        <i class="fa-solid fa-check-circle me-1"></i> Challenge Completed
+                    </button>
+                {% elif not user.is_authenticated and challenge.status == 'CANCELLED' %}
+                    <button type="button" class="btn btn-outline-danger" disabled>
+                        <i class="fa-solid fa-times-circle me-1"></i> Challenge Cancelled
+                    </button>
+                {% endif %}
                 
                 <a href="{% url 'challenges_list' %}" class="btn btn-outline-tcc">
                     <i class="fa-solid fa-arrow-left me-1"></i> Back to Challenges
                 </a>
-                                                </div>
-                                                </div>
-                                            </div>
-                                        </div>
+            </div>
+        </div>
+    </div>
 
 <!-- Not Involved Modal -->
 <div class="modal fade" id="notInvolvedModal" tabindex="-1" aria-labelledby="notInvolvedModalLabel" aria-hidden="true">

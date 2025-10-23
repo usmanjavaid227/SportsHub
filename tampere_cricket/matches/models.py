@@ -43,7 +43,7 @@ class Challenge(models.Model):
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
     scheduled_at = models.DateTimeField(null=True, blank=True)
-    duration = models.PositiveIntegerField(help_text="Duration in minutes", default=15)
+    duration = models.PositiveIntegerField(help_text="Duration in minutes", default=15, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
     description = models.TextField(blank=True)
     
@@ -188,10 +188,8 @@ class Challenge(models.Model):
     
     def get_display_name_for_user(self, user):
         """Get display name for a user, handling soft-deleted users"""
-        if user and not user.is_deleted:
-            return user.username
-        elif user and user.is_deleted:
-            return f"[Deleted User]"
+        if user:
+            return user.get_display_name()
         else:
             return "Unknown"
     
@@ -265,7 +263,7 @@ class MatchResult(models.Model):
     notes = models.TextField(blank=True, help_text="Additional match notes or comments")
     
     def __str__(self):
-        return f"Match Result: {self.challenge.challenger.username} vs {self.challenge.opponent.username if self.challenge.opponent else 'Open Challenge'}"
+        return f"Match Result: {self.challenge.get_challenger_display_name()} vs {self.challenge.get_opponent_display_name() if self.challenge.opponent else 'Open Challenge'}"
     
     def get_challenger_score(self):
         """Get challenger's total score based on challenge metric"""

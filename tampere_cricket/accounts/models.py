@@ -53,10 +53,8 @@ class User(AbstractUser):
         self.is_active = False  # Also deactivate the account
         self.save()
         
-        # Update username to avoid conflicts if user tries to re-register
-        self.username = f"deleted_{self.id}_{self.username}"
-        self.email = f"deleted_{self.id}_{self.email}"
-        self.save()
+        # Don't change username/email to avoid showing "deleted_username" everywhere
+        # The is_deleted flag is sufficient to exclude users from queries
     
     def restore(self):
         """Restore a soft-deleted user"""
@@ -75,6 +73,16 @@ class User(AbstractUser):
     def deleted_objects(cls):
         """Manager for soft-deleted users"""
         return cls.objects.filter(is_deleted=True)
+    
+    def get_display_name(self):
+        """Get display name for user, handling soft-deleted users"""
+        return self.username
+    
+    def get_css_class(self):
+        """Get CSS class for styling deleted users"""
+        if self.is_deleted:
+            return "deleted-user"
+        return ""
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

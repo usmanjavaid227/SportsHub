@@ -69,7 +69,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div style="color: var(--sh-white); font-weight: 600;">{{ challenge.challenger.username }}</div>
+                                            <div class="{{ challenge.challenger.get_css_class }}" style="color: var(--sh-white); font-weight: 600;">{{ challenge.get_challenger_display_name }}</div>
                                             <div style="color: var(--sh-gray); font-size: 0.8rem;">Challenger • Rating: {{ challenge.challenger.profile.rating|default:"N/A" }}</div>
                                         </div>
                                     </div>
@@ -80,7 +80,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div style="color: var(--sh-white); font-weight: 600;">{{ challenge.opponent.username }}</div>
+                                            <div class="{{ challenge.opponent.get_css_class|default:'' }}" style="color: var(--sh-white); font-weight: 600;">{{ challenge.get_opponent_display_name }}</div>
                                             <div style="color: var(--sh-gray); font-size: 0.8rem;">Opponent • Rating: {{ challenge.opponent.profile.rating|default:"N/A" }}</div>
                                         </div>
                                     </div>
@@ -122,7 +122,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h6 class="mb-0" style="color: var(--sh-white);">{{ challenge.challenger.username }}</h6>
+                                                <h6 class="mb-0 {{ challenge.challenger.get_css_class }}" style="color: var(--sh-white);">{{ challenge.get_challenger_display_name }}</h6>
                                                 <small style="color: var(--sh-gray);">Challenger</small>
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <h6 class="mb-0" style="color: var(--sh-white);">{{ challenge.opponent.username }}</h6>
+                                                <h6 class="mb-0 {{ challenge.opponent.get_css_class|default:'' }}" style="color: var(--sh-white);">{{ challenge.get_opponent_display_name }}</h6>
                                                 <small style="color: var(--sh-gray);">Opponent</small>
                                             </div>
                                         </div>
@@ -400,7 +400,7 @@
                                                                     <div class="winner-card">
                                                                         <div class="winner-header">
                                                                             <i class="fas fa-user text-primary"></i>
-                                                                            <span class="winner-name">{{ challenge.challenger.username }}</span>
+                                                                            <span class="winner-name {{ challenge.challenger.get_css_class }}">{{ challenge.get_challenger_display_name }}</span>
                                                                             <span class="badge badge-primary">Challenger</span>
                                                                         </div>
                                                                         <div class="winner-stats">
@@ -427,7 +427,7 @@
                                                                     <div class="winner-card">
                                                                         <div class="winner-header">
                                                                             <i class="fas fa-user text-success"></i>
-                                                                            <span class="winner-name">{{ challenge.opponent.username }}</span>
+                                                                            <span class="winner-name {{ challenge.opponent.get_css_class|default:'' }}">{{ challenge.get_opponent_display_name }}</span>
                                                                             <span class="badge badge-success">Opponent</span>
                                                                         </div>
                                                                         <div class="winner-stats">
@@ -935,8 +935,8 @@ document.addEventListener('DOMContentLoaded', function() {
         targetValue: {{ challenge.target_value|default:"null" }},
         challengerId: {{ challenge.challenger.id }},
         opponentId: {{ challenge.opponent.id }},
-        challengerName: '{{ challenge.challenger.username }}',
-        opponentName: '{{ challenge.opponent.username }}',
+        challengerName: '{{ challenge.get_challenger_display_name }}',
+        opponentName: '{{ challenge.get_opponent_display_name }}',
         team1BatterId: {{ challenge.team1_batter.id|default:"null" }},
         team1BowlerId: {{ challenge.team1_bowler.id|default:"null" }},
         team2BatterId: {{ challenge.team2_batter.id|default:"null" }},

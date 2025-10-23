@@ -208,18 +208,14 @@
                             </a>
                         {% elif ch.status == 'PENDING' and user != ch.opponent %}
                             <!-- PENDING challenges: Show that it's sent to someone else -->
-                            <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled>
-                                <i class="fa-solid fa-user-check me-1"></i>Sent to {{ ch.opponent.username }}
-                            </button>
+                            <!-- Sent to button removed -->
                         {% endif %}
                     {% elif not user.is_authenticated and ch.status == 'OPEN' %}
                         <a href="{% url 'login' %}" class="btn btn-outline-tcc btn-sm flex-fill">
                             <i class="fa-solid fa-sign-in-alt me-1"></i>Login to Accept
                         </a>
                     {% elif not user.is_authenticated and ch.status == 'PENDING' %}
-                        <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" disabled>
-                            <i class="fa-solid fa-user-check me-1"></i>Sent to {{ ch.opponent.username }}
-                        </button>
+                        <!-- Sent to button removed -->
                     {% endif %}
                   </div>
                 </div>

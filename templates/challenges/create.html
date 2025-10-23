@@ -388,10 +388,14 @@ input[type="date"]::-webkit-calendar-picker-indicator:before {
             <!-- Challenge Rules Agreement -->
             {% if not is_edit_mode %}
             <div class="mb-4">
+              <div class="alert alert-warning" style="background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.3); color: var(--sh-white);">
+                <i class="fa-solid fa-exclamation-triangle me-2" style="color: #ffc107;"></i>
+                <strong>Important:</strong> You must agree to the Challenge Rules & Guidelines to create a challenge.
+              </div>
               <div class="form-check">
-                <input class="form-check-input challenge-rules-checkbox" type="checkbox" id="challenge_rules" name="challenge_rules" required>
-                <label class="form-check-label" style="color: var(--sh-white);" for="challenge_rules">
-                  I have read and agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#challengeRulesModal" class="text-decoration-none" style="color: var(--sh-orange);">Challenge Rules & Guidelines</a>
+                <input class="form-check-input challenge-rules-checkbox" type="checkbox" id="challenge_rules" name="challenge_rules" required style="transform: scale(1.2);" onchange="toggleSubmitButton()">
+                <label class="form-check-label" style="color: var(--sh-white); font-weight: bold;" for="challenge_rules">
+                  ✓ I have read and agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#challengeRulesModal" class="text-decoration-none" style="color: var(--sh-orange);">Challenge Rules & Guidelines</a>
                 </label>
               </div>
             </div>
@@ -406,6 +410,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:before {
                   <i class="fa-solid fa-plus me-2"></i>Create Challenge
                 {% endif %}
               </button>
+              {% if not is_edit_mode %}
+              <div class="form-text text-center mt-2" style="color: var(--sh-gray);">
+                <i class="fa-solid fa-info-circle me-1"></i>
+                The button will be enabled after you agree to the Challenge Rules & Guidelines above.
+              </div>
+              {% endif %}
           </div>
         </form>
       </div>
@@ -525,6 +535,24 @@ input[type="date"]::-webkit-calendar-picker-indicator:before {
 
 {% block extra_js %}
 <script>
+// Simple fallback function for button toggle
+function toggleSubmitButton() {
+    const checkbox = document.getElementById('challenge_rules');
+    const button = document.getElementById('submitBtn');
+    
+    if (checkbox && button) {
+        if (checkbox.checked) {
+            button.disabled = false;
+            button.style.opacity = '1';
+            console.log('Fallback: Button enabled');
+        } else {
+            button.disabled = true;
+            button.style.opacity = '0.6';
+            console.log('Fallback: Button disabled');
+        }
+    }
+}
+
 // Sport selection handler
 function handleSportChange(selectElement) {
     const warningDiv = document.getElementById('sport-warning');
@@ -794,32 +822,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Challenge Rules Checkbox Handler (only for create mode)
-    const rulesCheckbox = document.getElementById('challenge_rules');
-    const submitBtn = document.getElementById('submitBtn');
-    const isEditMode = {{ is_edit_mode|yesno:"true,false" }};
-    
-    // Accept Rules Button Handler
-    const acceptRulesBtn = document.getElementById('acceptRulesBtn');
-    if (acceptRulesBtn && rulesCheckbox && !isEditMode) {
-        acceptRulesBtn.addEventListener('click', function() {
-            rulesCheckbox.checked = true;
-            // Trigger change event to update form state
-            rulesCheckbox.dispatchEvent(new Event('change'));
-        });
-    }
-    
-    if (rulesCheckbox && submitBtn) {
+    function setupChallengeRulesHandler() {
+        const rulesCheckbox = document.getElementById('challenge_rules');
+        const submitBtn = document.getElementById('submitBtn');
+        const isEditMode = {{ is_edit_mode|yesno:"true,false" }};
+        
+        console.log('Debug: Setting up challenge rules handler');
+        console.log('Debug: isEditMode =', isEditMode);
+        console.log('Debug: rulesCheckbox =', rulesCheckbox);
+        console.log('Debug: submitBtn =', submitBtn);
+        
+        if (!rulesCheckbox || !submitBtn) {
+            console.log('Debug: Missing elements - rulesCheckbox:', !!rulesCheckbox, 'submitBtn:', !!submitBtn);
+            return;
+        }
+        
         if (isEditMode) {
             // In edit mode, enable submit button immediately
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
+            console.log('Debug: Edit mode - button enabled');
         } else {
             // In create mode, handle rules checkbox
-            // Enable/disable submit button based on checkbox state
-            rulesCheckbox.addEventListener('change', function() {
-                if (this.checked) {
+            console.log('Debug: Create mode - setting up checkbox handler');
+            
+            // Initial state - make sure button is disabled
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            
+            // Function to update button state
+            function updateButtonState() {
+                if (rulesCheckbox.checked) {
                     submitBtn.disabled = false;
                     submitBtn.style.opacity = '1';
+                    console.log('Debug: Button enabled');
                     // Add a subtle animation to the button
                     submitBtn.style.transform = 'scale(1.02)';
                     setTimeout(() => {
@@ -828,18 +864,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     submitBtn.disabled = true;
                     submitBtn.style.opacity = '0.6';
+                    console.log('Debug: Button disabled');
                 }
-            });
+            }
+            
+            // Enable/disable submit button based on checkbox state
+            rulesCheckbox.addEventListener('change', updateButtonState);
+            rulesCheckbox.addEventListener('click', updateButtonState);
+            
+            // Also check on page load in case checkbox is already checked
+            updateButtonState();
             
             // Form validation
             const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                if (!rulesCheckbox.checked) {
-                    e.preventDefault();
-                    alert('You must agree to the Challenge Rules & Guidelines to create a challenge.');
-                    return false;
-                }
-            });
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log('Debug: Form submit attempted, checkbox checked =', rulesCheckbox.checked);
+                    if (!rulesCheckbox.checked) {
+                        e.preventDefault();
+                        alert('You must agree to the Challenge Rules & Guidelines to create a challenge.');
+                        return false;
+                    }
+                });
+            }
             
             // Add click animation to checkbox
             rulesCheckbox.addEventListener('click', function() {
@@ -852,6 +899,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+    }
+    
+    // Set up the handler when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupChallengeRulesHandler);
+    } else {
+        setupChallengeRulesHandler();
     }
     
     // Single Wicket Team Validation

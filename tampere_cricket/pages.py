@@ -239,7 +239,7 @@ def challenge_create_view(request):
         messages.warning(
             request, 
             f'You already have an active challenge. Please complete or cancel your current challenge before creating a new one. '
-            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.opponent.username if active_challenge.opponent else "Open to All"}'
+            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.get_opponent_display_name() if active_challenge.opponent else "Open to All"}'
         )
         return redirect('challenge_detail', challenge_id=active_challenge.id)
 

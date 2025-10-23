@@ -50,12 +50,12 @@
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-user me-2" style="color: var(--sh-orange); width: 16px;"></i>
                                         <span style="color: var(--sh-gray); font-size: 0.9rem;">Challenger:</span>
-                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.challenger.username }}</span>
+                                        <span class="ms-2 {{ challenge.challenger.get_css_class }}" style="color: var(--sh-white);">{{ challenge.get_challenger_display_name }}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-user-friends me-2" style="color: var(--sh-orange); width: 16px;"></i>
                                         <span style="color: var(--sh-gray); font-size: 0.9rem;">Opponent:</span>
-                                        <span class="ms-2" style="color: var(--sh-white);">{{ challenge.opponent.username|default:"Open to All" }}</span>
+                                        <span class="ms-2 {{ challenge.opponent.get_css_class|default:'' }}" style="color: var(--sh-white);">{{ challenge.get_opponent_display_name|default:"Open to All" }}</span>
                                     </div>
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fa-solid fa-bullseye me-2" style="color: var(--sh-orange); width: 16px;"></i>

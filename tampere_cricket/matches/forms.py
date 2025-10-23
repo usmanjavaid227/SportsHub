@@ -19,6 +19,20 @@ class ChallengeForm(forms.ModelForm):
         })
     )
     
+    # Explicitly define metric as a ChoiceField
+    metric = forms.ChoiceField(
+        choices=[
+            ('', 'Select a metric'),
+            ('runs', 'Runs'),
+            ('wickets', 'Wickets'),
+            ('sixes', 'Sixes'),
+            ('fours', 'Fours'),
+            ('dots', 'Dot Balls'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
     class Meta:
         model = Challenge
         fields = [
@@ -53,7 +67,6 @@ class ChallengeForm(forms.ModelForm):
             'team1_bowler': forms.Select(attrs={'class': 'form-select'}),
             'team2_batter': forms.Select(attrs={'class': 'form-select'}),
             'team2_bowler': forms.Select(attrs={'class': 'form-select'}),
-            'metric': forms.Select(attrs={'class': 'form-select'}),
             'target_value': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '1',
@@ -104,24 +117,14 @@ class ChallengeForm(forms.ModelForm):
         
         self.fields['duration'].label = 'Duration (minutes)'
         self.fields['duration'].help_text = 'How long should the challenge last?'
+        self.fields['duration'].required = False
         
         self.fields['description'].label = 'Additional Details'
         self.fields['description'].required = False
         
-        # Set metric field choices
-        self.fields['metric'].choices = [
-            ('', 'Select a metric'),
-            ('runs', 'Runs'),
-            ('wickets', 'Wickets'),
-            ('sixes', 'Sixes'),
-            ('fours', 'Fours'),
-            ('dots', 'Dot Balls'),
-        ]
-        
         # New fields labels and help text
         self.fields['metric'].label = 'Challenge Metric'
         self.fields['metric'].help_text = 'What will be measured? (e.g., Runs, Wickets, Sixes)'
-        self.fields['metric'].required = False
         
         self.fields['target_value'].label = 'Target Value'
         self.fields['target_value'].help_text = 'What is the target to achieve?'
@@ -250,24 +253,24 @@ class MatchResultForm(forms.ModelForm):
         
         if challenge:
             # Set labels based on challenge participants
-            self.fields['challenger_runs'].label = f"{challenge.challenger.username} - Runs"
-            self.fields['challenger_wickets'].label = f"{challenge.challenger.username} - Wickets"
-            self.fields['challenger_sixes'].label = f"{challenge.challenger.username} - Sixes"
-            self.fields['challenger_fours'].label = f"{challenge.challenger.username} - Fours"
-            self.fields['challenger_dots'].label = f"{challenge.challenger.username} - Dot Balls"
+            self.fields['challenger_runs'].label = f"{challenge.get_challenger_display_name()} - Runs"
+            self.fields['challenger_wickets'].label = f"{challenge.get_challenger_display_name()} - Wickets"
+            self.fields['challenger_sixes'].label = f"{challenge.get_challenger_display_name()} - Sixes"
+            self.fields['challenger_fours'].label = f"{challenge.get_challenger_display_name()} - Fours"
+            self.fields['challenger_dots'].label = f"{challenge.get_challenger_display_name()} - Dot Balls"
             
             # Set up manual winner choices
             winner_choices = [
                 ('', 'Automatic (based on statistics)'),
-                (str(challenge.challenger.id), f"{challenge.challenger.username} (Challenger)")
+                (str(challenge.challenger.id), f"{challenge.get_challenger_display_name()} (Challenger)")
             ]
             if challenge.opponent:
-                winner_choices.append((str(challenge.opponent.id), f"{challenge.opponent.username} (Opponent)"))
-                self.fields['opponent_runs'].label = f"{challenge.opponent.username} - Runs"
-                self.fields['opponent_wickets'].label = f"{challenge.opponent.username} - Wickets"
-                self.fields['opponent_sixes'].label = f"{challenge.opponent.username} - Sixes"
-                self.fields['opponent_fours'].label = f"{challenge.opponent.username} - Fours"
-                self.fields['opponent_dots'].label = f"{challenge.opponent.username} - Dot Balls"
+                winner_choices.append((str(challenge.opponent.id), f"{challenge.get_opponent_display_name()} (Opponent)"))
+                self.fields['opponent_runs'].label = f"{challenge.get_opponent_display_name()} - Runs"
+                self.fields['opponent_wickets'].label = f"{challenge.get_opponent_display_name()} - Wickets"
+                self.fields['opponent_sixes'].label = f"{challenge.get_opponent_display_name()} - Sixes"
+                self.fields['opponent_fours'].label = f"{challenge.get_opponent_display_name()} - Fours"
+                self.fields['opponent_dots'].label = f"{challenge.get_opponent_display_name()} - Dot Balls"
             else:
                 # Hide opponent fields for open challenges
                 for field_name in ['opponent_runs', 'opponent_wickets', 'opponent_sixes', 'opponent_fours', 'opponent_dots']:

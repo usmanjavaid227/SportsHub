@@ -143,12 +143,12 @@ def challenge_delete(request, challenge_id):
     # Additional safety checks
     if challenge.status == 'PENDING' and challenge.opponent:
         # Check if opponent has been notified (has an opponent but still pending)
-        messages.warning(request, f"This challenge has been sent to {challenge.opponent.username}. Deleting it will cancel the invitation.")
+        messages.warning(request, f"This challenge has been sent to {challenge.get_opponent_display_name()}. Deleting it will cancel the invitation.")
     
     if request.method == 'POST':
         try:
             # Store challenge details for logging/debugging
-            challenge_title = f"{challenge.get_challenge_type_display()} vs {challenge.opponent.username if challenge.opponent else 'Open to All'}"
+            challenge_title = f"{challenge.get_challenge_type_display()} vs {challenge.get_opponent_display_name() if challenge.opponent else 'Open to All'}"
             challenge_date = challenge.date.strftime('%Y-%m-%d') if challenge.date else 'No date set'
             
             # Delete the challenge
@@ -235,11 +235,17 @@ def challenge_accept(request, challenge_id):
                 messages.error(request, 'You must agree to the Challenge Rules & Guidelines to accept this challenge.')
                 return render(request, 'challenges/accept_confirm.html', {'challenge': challenge})
             
+            # Check if challenge is still available for acceptance (prevent race conditions)
+            if challenge.status != 'OPEN':
+                messages.error(request, "This challenge is no longer available for acceptance.")
+                return redirect('challenge_detail', challenge_id=challenge_id)
+            
+            # Set the opponent and change status to ACCEPTED
             challenge.opponent = request.user
             challenge.status = 'ACCEPTED'
             challenge.accepted_at = timezone.now()
             challenge.save()
-            messages.success(request, "Challenge accepted successfully!")
+            messages.success(request, "Challenge accepted successfully! You are now the opponent.")
             return redirect('challenge_detail', challenge_id=challenge_id)
     
     return render(request, 'challenges/accept_confirm.html', {'challenge': challenge})
@@ -264,11 +270,16 @@ def open_challenge_accept(request, challenge_id):
         messages.error(request, "This challenge is not available for acceptance")
         return redirect('challenge_detail', challenge_id=challenge_id)
     
+    # Check if challenge is still available for acceptance (prevent race conditions)
+    if challenge.status != 'OPEN':
+        messages.error(request, "This challenge is no longer available for acceptance.")
+        return redirect('challenge_detail', challenge_id=challenge_id)
+    
     challenge.opponent = request.user
     challenge.status = 'ACCEPTED'
     challenge.accepted_at = timezone.now()
     challenge.save()
-    messages.success(request, "Challenge accepted successfully!")
+    messages.success(request, "Challenge accepted successfully! You are now the opponent.")
     return redirect('challenge_detail', challenge_id=challenge_id)
 
 
@@ -325,7 +336,7 @@ def challenge_create(request):
         messages.warning(
             request, 
             f'You already have an active challenge. Please complete or cancel your current challenge before creating a new one. '
-            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.opponent.username if active_challenge.opponent else "Open to All"}'
+            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.get_opponent_display_name() if active_challenge.opponent else "Open to All"}'
         )
         return redirect('challenge_detail', challenge_id=active_challenge.id)
     
@@ -374,7 +385,7 @@ def challenge_create(request):
             try:
                 challenge.save()
                 if challenge.opponent:
-                    messages.success(request, f'Challenge sent to {challenge.opponent.username}! They can now accept or decline.')
+                    messages.success(request, f'Challenge sent to {challenge.get_opponent_display_name()}! They can now accept or decline.')
                 else:
                     messages.success(request, f'Challenge created successfully! Your challenge is now open to all players.')
                 return redirect('challenge_detail', challenge_id=challenge.id)
@@ -491,7 +502,7 @@ def admin_update_match_result(request, challenge_id):
             challenge.completed_at = timezone.now()  # Set completion timestamp
             challenge.save()
             
-            messages.success(request, f'Match results updated successfully! Winner: {winner.username}')
+            messages.success(request, f'Match results updated successfully! Winner: {winner.get_display_name()}')
             return redirect('challenge_detail', challenge_id=challenge_id)
     else:
         form = MatchResultForm(instance=match_result, challenge=challenge)
@@ -529,7 +540,7 @@ def admin_select_winner(request, challenge_id):
     
     # Check if winner is already set
     if challenge.winner:
-        messages.info(request, f"Winner is already set to {challenge.winner.username}. You can change the winner by selecting a different option.")
+        messages.info(request, f"Winner is already set to {challenge.get_winner_display_name()}. You can change the winner by selecting a different option.")
     
     if request.method == 'POST':
         winner_id = request.POST.get('winner')
@@ -551,9 +562,9 @@ def admin_select_winner(request, challenge_id):
             
             # Success message with details
             if previous_winner and previous_winner != winner:
-                messages.success(request, f'Winner changed from {previous_winner.username} to {winner.username}. Challenge completed successfully!')
+                messages.success(request, f'Winner changed from {previous_winner.get_display_name()} to {winner.get_display_name()}. Challenge completed successfully!')
             else:
-                messages.success(request, f'Winner set to {winner.username}. Challenge completed successfully!')
+                messages.success(request, f'Winner set to {winner.get_display_name()}. Challenge completed successfully!')
                 
         elif winner_id == '':
             # Draw selected
@@ -623,7 +634,7 @@ def challenge_create_edit(request, challenge_id=None):
         messages.warning(
             request, 
             f'You already have an active challenge. Please complete or cancel your current challenge before creating a new one. '
-            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.opponent.username if active_challenge.opponent else "Open to All"}'
+            f'Current challenge: {active_challenge.challenge_type} vs {active_challenge.get_opponent_display_name() if active_challenge.opponent else "Open to All"}'
         )
         return redirect('challenge_detail', challenge_id=active_challenge.id)
     
@@ -685,7 +696,7 @@ def challenge_create_edit(request, challenge_id=None):
                     challenge.save()
                     
                     if challenge.opponent:
-                        messages.success(request, f'Challenge sent to {challenge.opponent.username}! They can now accept or decline.')
+                        messages.success(request, f'Challenge sent to {challenge.get_opponent_display_name()}! They can now accept or decline.')
                     else:
                         messages.success(request, f'Challenge created successfully! Your challenge is now open to all players.')
                     
