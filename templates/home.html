@@ -348,8 +348,9 @@
                   <td>
                     <div class="d-flex align-items-center">
                       <div class="me-3">
+                        {% load cloudinary_tags %}
                         {% if p.avatar %}
-                          <img src="{{ p.avatar.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ p.username }}">
+                          <img src="{{ p.avatar|cloudinary_url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="{{ p.username }}">
                         {% else %}
                           <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: var(--sh-orange); color: #000;">
                             <i class="fa-solid fa-user"></i>

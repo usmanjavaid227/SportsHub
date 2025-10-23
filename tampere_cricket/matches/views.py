@@ -58,6 +58,15 @@ def challenges_list(request):
         challenges = challenges.filter(status='PENDING')
     elif status_filter == 'cancelled':
         challenges = challenges.filter(status='CANCELLED')
+    elif status_filter == 'my_challenges':
+        # Show only challenges where the user is involved (challenger or opponent)
+        if request.user.is_authenticated:
+            challenges = challenges.filter(
+                models.Q(challenger=request.user) |  # User is the challenger
+                models.Q(opponent=request.user)     # User is the opponent
+            )
+        else:
+            challenges = Challenge.objects.none()  # No challenges for non-authenticated users
     elif status_filter == 'all':
         # Show all challenges when explicitly requested (but still respect user relationship)
         pass
@@ -71,6 +80,14 @@ def challenges_list(request):
         'pending': Challenge.objects.filter(status='PENDING').count(),
         'cancelled': Challenge.objects.filter(status='CANCELLED').count(),
     }
+    
+    # Add my_challenges count for authenticated users
+    if request.user.is_authenticated:
+        status_counts['my_challenges'] = Challenge.objects.filter(
+            models.Q(challenger=request.user) | models.Q(opponent=request.user)
+        ).count()
+    else:
+        status_counts['my_challenges'] = 0
     
     # Check if user profile is complete (for authenticated users)
     profile_complete = True
